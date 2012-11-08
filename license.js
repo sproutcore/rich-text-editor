@@ -1,14 +1,14 @@
 // ==========================================================================
 // Project:   SproutCore WYSIWYG 
-// Copyright: C 2012 Matygo Education Incorporated operating as Learndot
+// Copyright: ©2012 Matygo Educational Incorporated operating as Learndot
 // Author:    Joe Gaudet (joe@learndot.com) and contributors (see contributors.txt)
 // License:   Licensed under MIT license (see license.js) 
 // ==========================================================================
-/*globals SproutCoreWysiwyg */
+//
 /*!
  * ==========================================================================
- * SproutCore -- JavaScript Application Framework
- * Copyright ©2012 Matygo Education Incorporated operating as Learndot
+ * SproutCore WYSIWYG
+ * Copyright ©2012 Matygo Educational Incorporated operating as Learndot
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a 
  * copy of this software and associated documentation files (the "Software"), 
