@@ -1,0 +1,119 @@
+@import "compass/css3";
+
+/*
+ *	The CSS that is applied to the actual wysiwyg view
+ *  and the output content.
+ */
+$theme.sc-label-view.sc-wysiwyg-text, body.sc-wysiwyg {
+	word-wrap:break-word;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #404040;
+	-webkit-font-smoothing: antialiased;
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+	font-size: 18px;
+	line-height: 25px;
+	
+	.smoothed {
+		-webkit-font-smoothing: antialiased;
+		font-smoothing: antialiased;
+		font-smooth: always;
+	}
+	
+	
+    a {
+        color: #3b74d5;
+        
+        &:hover {
+            color: #3b74d5;
+            cursor: pointer;
+        }
+        
+        &:active {
+            color: #3b74d5;
+            cursor: pointer;
+        }
+        
+        &:visited {
+            color: #3b74d5; 
+        }
+    }
+	
+	h1 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 32px;
+	}
+
+	h2 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 28px;
+	}
+
+	h3 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 24px;
+	}
+
+	h4 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 20px;
+	}
+
+	h5 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 18px;
+	}
+
+	h6 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 14px;
+	}
+	
+	// div is included because they are momentarily 
+	// inserted before we reformat them as p
+	p, div {
+		margin-bottom: 15px;
+	}
+
+	pre {
+		margin-bottom: 10px;
+	}
+
+	ul {
+		list-style: disc outside none !important;
+		li {
+			list-style: disc outside none !important;
+		}
+	}
+
+	ol {
+		padding: 0px 0px 15px 40px;
+		margin-left: 8px !important;	
+		
+		li {
+			padding: 2px 2px 0px 2px;
+		}
+		
+		li:last-child {
+			padding: 2px 2px 2px 2px;
+		}
+	}
+
+	ul {
+		padding: 0px 0px 15px 40px;
+		margin: 0 0 0 0 !important;
+		
+		li {
+			padding: 2px 2px 0px 2px;
+		}
+		
+		li:last-child {
+			padding: 2px 2px 2px 2px;
+		}
+	}	
+}

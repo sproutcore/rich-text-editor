@@ -1,0 +1,102 @@
+// ==========================================================================
+// Project:   SproutCoreWysiwyg Editor
+// Author: Joe Gaudet - joe@learndot.com
+// ==========================================================================
+
+@import "compass/css3";
+
+
+/*
+ *	SC.WYSIWYGView
+ */
+$theme.sc-view.sc-wysiwyg-view {
+	@include transition(box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out);
+	@include box-shadow(0px 0px 5px rgba(#00cdf5, 0));
+	@include border-radius(5px);
+	background-color: #fefefe;
+	border: 1px solid #aaa;
+	
+	&.focus {
+		@include box-shadow(0px 0px 5px rgba(#0059e0, 1));
+		border-color: #0059e0;
+	}
+}
+
+/*
+ *	SC.WYSIWYGEditorView
+ */
+$theme.sc-wysiwyg-editor {
+	@include border-bottom-radius(5px);
+	@include box-shadow(0 1px 5px rgba(black, 0.2) inset);
+	border: none;
+	background: none;
+}
+
+/*
+ *	SC.WYSIWYGToolbarView
+ */
+$theme.sc-toolbar-view.sc-wysiwyg-toolbar {
+	@include border-top-radius(5px);
+}
+
+/*
+ *	SC.WYSIWYGSelectView - menu items
+ */
+$theme.sc-view.select-button.menu {
+	.sc-menu-item.sc-wysiwyg-menu-item {
+		&.focus, a:hover {
+			span { color: white; }
+			border-top: 1px solid #5394c7;
+			border-bottom: 1px solid #2d57a3;
+			
+			// replace this if you want non css3 compatibility
+			background-color: #5fa8e6;
+			@include background(linear-gradient(#5fa8e6, #3b74d5));	
+			text-shadow: 0px -1px 1px rgba(0, 0, 0, .6);
+		}
+	}
+}
+
+$theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item {
+	h1 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 32px;
+		line-height: 40px;
+	}
+
+	h2 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 28px;
+		line-height: 38px;
+	}
+
+	h3 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 24px;
+		line-height: 35px;
+	}
+
+	h4 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 20px;
+		line-height: 30px;
+	}
+
+	h5 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 18px;
+		line-height: 24px;
+	}
+
+	h6 {
+		@extend .smoothed;
+		font-weight: bold;
+		font-size: 14px;
+		line-height: 20px;
+	}
+}

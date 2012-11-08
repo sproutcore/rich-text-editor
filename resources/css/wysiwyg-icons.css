@@ -1,0 +1,112 @@
+@import "compass/css3";
+
+
+/*
+ *	Command toolbar icons, retina ready. Need some polishing.
+ */
+$theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
+
+	.bold {
+		width: 12px;
+		height: 15px;
+		@include slice("../images/icons/bold.png");
+	}
+	
+	.italic {
+		width: 9px;
+		height: 15px;
+		@include slice("../images/icons/italic.png");
+	}
+	
+	.underline {
+		width: 13px;
+		height: 15px;
+		@include slice("../images/icons/text_underline.png");
+	}
+	
+	.insert-ordered-list {
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/list.png");
+
+	}
+
+	.insert-unordered-list {
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/list.png");		
+	}
+
+	.justify-left {
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/align_left.png");
+	}
+
+	.justify-full {
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/justify.png");
+	}
+
+	.justify-center {
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/align_center.png");
+	}
+
+	.justify-right{
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/align_right.png");
+	}
+	
+	.indent {
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/left_indent.png");
+	}
+	
+	.outdent{
+		width: 15px;
+		height: 14px;
+		@include slice("../images/icons/right_indent.png");
+	}
+	
+	.insert-image {
+		width: 15px;
+		height: 13px;
+		@include slice("../images/icons/picture.png");
+	}
+	
+	.embed {
+		width: 19px;
+		height: 9px;
+		@include slice("../images/icons/embed.png");
+	}
+	
+	.link {
+		width: 14px;
+		height: 14px;
+		@include slice("../images/icons/link.png");
+	}
+	
+	.embed-video {
+		width: 14px;
+		height: 17px;
+		@include slice("../images/icons/film.png");
+	}
+	
+	.vimeo {
+		width: 15px;
+		height: 15px;
+		@include slice("../images/icons/vimeo.png");
+	}
+	
+	.youtube {
+		width: 15px;
+		height: 15px;
+		@include slice("../images/icons/youtube.png");
+	}
+
+}
