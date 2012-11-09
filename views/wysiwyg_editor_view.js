@@ -82,6 +82,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		return this._document;
 	}.property(),
 
+	$document: function() {
+		if (!this._$document) this._$document = SC.$(this.get('document'));
+	}.property(),
+
+	$body: function() {
+		var doc = this.get('document');
+		if (!this._$body) this._$body = doc ? SC.$(doc.body) : null;
+		return this._$body;
+	}.property(),
+
 	/**
 	 * Executes a command against the iFrame:
 	 * 
@@ -213,6 +223,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			var document = this.get('document');
 			if (document) this.$(document.body).html(value);
 		}
+
+		this._updateFrameHeight();
 		this._changeByEditor = false;
 	}.observes('value'),
 
@@ -222,7 +234,26 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	_domValueDidChange: function() {
 		// get the value from the inner document
 		this._changeByEditor = true;
-		this.set('value', this.get('document').body.innerHTML);
+		this.set('value', this.get('$body').html());
+	},
+
+	/**
+	 * Recompute frame height based on the size of the content inside of the
+	 * iFrame.
+	 */
+	_updateFrameHeight: function() {
+		if (!this._iframeIsLoaded) return;
+		var $body = this.get('$body');
+		var lastNode = $body.children().last();
+		// if we've deleted all of those nodes. lets put the empty one
+		// in
+		if (lastNode.length === 0) {
+			$body.html(this.get('carriageReturnText'));
+			lastNode = $body.children().last();
+			this._domValueDidChange();
+		}
+		var calcHeight = lastNode.offset().top + lastNode.height();
+		this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
 	},
 
 	/**
@@ -324,26 +355,27 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		// this._selectElement($body.children().first());
 
 		this._setupEvents();
+
+		this._iframeIsLoaded = true;
 	},
 
 	/**
-	 * We still need to listen to the mouseDown event
-	 * and focus this window in the case that editor is
-	 * clicked before the window has first responder.
+	 * We still need to listen to the mouseDown event and focus this window in
+	 * the case that editor is clicked before the window has first responder.
+	 * 
 	 * @param evt
 	 * @returns
 	 */
 	mouseDown: function(evt) {
 		if (!this.get('document').hasFocus()) {
 			$(this.$(this.get('document').body)).focus();
+			this._updateFrameHeight();
 		}
 		return YES;
 	},
 
-	// TODO: This is a mess -- needs to have more well partitioned
-	// responsibilities
 	keyUp: function(evt) {
-		var doc = this.get('document');
+
 		// we don't allow regular returns because they are
 		// divs we want paragraphs
 		if (evt.keyCode === SC.Event.KEY_RETURN) {
@@ -351,20 +383,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 				this.execCommand('formatBlock', null, 'p');
 			}
 		}
-
-		// if we don't use native scrolling we need to update the frame size
-		// based on doc size.
-		// this could probably be done better
-		var lastNode = SC.$(doc.body).children().last();
-		// if we've deleted all of those nodes. lets put the empty one
-		// in
-		if (lastNode.length === 0) {
-			SC.$(doc.body).html(this.get('carriageReturnText'));
-			lastNode = SC.$(doc.body).children().last();
-			this._domValueDidChange();
-		}
-		var calcHeight = lastNode.offset().top + lastNode.height();
-		this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
 
 		this._domValueDidChange();
 

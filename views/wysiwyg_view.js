@@ -112,7 +112,17 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 				if (anchorNode && anchorNode.parentNode) {
 					var $node = SC.$(anchorNode.parentNode);
 					var position = $node.position();
-					this.getPath('parentView.parentView').scrollTo(0, position.top);
+					var scrollView = this.getPath('parentView.parentView');
+					var verticalScrollOffset = scrollView.get('verticalScrollOffset');
+
+					// scrolling up
+					if (verticalScrollOffset > position.top) {
+						scrollView.scrollTo(0, position.top);
+					}
+					// scrolling down
+					else {
+						scrollView.scrollTo(0, position.top + $node.height());
+					}
 				}
 				return ret;
 			},
