@@ -108,21 +108,16 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			 */
 			keyUp: function(evt) {
 				var ret = sc_super();
-				var anchorNode = this.get('document').getSelection().anchorNode;
-				if (anchorNode && anchorNode.parentNode) {
-					var $node = SC.$(anchorNode.parentNode);
-					var position = $node.position();
-					var scrollView = this.getPath('parentView.parentView');
-					var verticalScrollOffset = scrollView.get('verticalScrollOffset');
 
-					// scrolling up
-					if (verticalScrollOffset > position.top) {
-						scrollView.scrollTo(0, position.top);
-					}
-					// scrolling down
-					else {
-						scrollView.scrollTo(0, position.top + $node.height());
-					}
+				// TODO: find an ie solution to this
+				var position = this.get('document').getSelection().getRangeAt(0).getClientRects()[0].top;
+				var scrollView = this.getPath('parentView.parentView');
+
+				var verticalScrollOffset = scrollView.get('verticalScrollOffset');
+
+				// scrolling up
+				if (position < verticalScrollOffset || position > verticalScrollOffset + scrollView.get('frame').height - 20) {
+					scrollView.scrollTo(0, position);
 				}
 				return ret;
 			},

@@ -131,7 +131,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		var document = this.get('document');
 		return document && document.queryCommandValue(commandName);
 	},
-
+	
 	/**
 	 * Insert some html at the current caret position
 	 * 
