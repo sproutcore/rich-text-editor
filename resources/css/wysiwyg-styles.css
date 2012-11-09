@@ -4,7 +4,7 @@
  *	The CSS that is applied to the actual wysiwyg view
  *  and the output content.
  */
-$theme.sc-label-view.sc-wysiwyg-text, body.sc-wysiwyg {
+$theme.sc-view.sc-label-view.sc-wysiwyg-text, $theme.sc-view.sc-wysiwyg-static-value-view, body.sc-wysiwyg {
 	word-wrap:break-word;
 	font-family: Helvetica, Arial, sans-serif;
 	color: #404040;
@@ -12,6 +12,7 @@ $theme.sc-label-view.sc-wysiwyg-text, body.sc-wysiwyg {
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 	font-size: 18px;
 	line-height: 25px;
+	white-space: normal;
 	
 	.smoothed {
 		-webkit-font-smoothing: antialiased;
@@ -42,6 +43,7 @@ $theme.sc-label-view.sc-wysiwyg-text, body.sc-wysiwyg {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 32px;
+		line-height: 48px;
 	}
 
 	h2 {

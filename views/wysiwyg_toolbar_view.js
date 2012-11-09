@@ -9,6 +9,8 @@ sc_require('delegates/wysiwyg_toolbar_view_delegate');
 
 SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {
 
+	acceptsFirstResponder: NO,
+
 	classNames: 'sc-wysiwyg-toolbar',
 
 	controller: null,

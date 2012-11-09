@@ -66,11 +66,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 */
 	carriageReturnText: '<p><br /></p>',
 
-	init: function() {
-		sc_super();
-		this._value = this.get('carriageReturnText');
-	},
-
 	/**
 	 * Pointer to the window inside of the iFrame
 	 */
@@ -210,26 +205,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	_changeByEditor: false,
 
 	/**
-	 * @property {String} html document inside of the editor
+	 * Syncronize the value with the dom.
 	 */
-	value: function(key, value) {
-		if (value !== undefined) {
-			// SET
-			if (value) {
-				if (!this._changeByEditor) {
-					this.$(this.get('document').body).html(value);
-				}
-			} else {
-				value = this.get('carriageReturnText');
-			}
-			this._value = value;
-			this._changeByEditor = false;
-		} else {
-			// GET
-			value = this._value;
+	_valueDidChange: function() {
+		var value = this.get('value');
+		if (value && !this._changeByEditor) {
+			var document = this.get('document');
+			if (document) this.$(document.body).html(value);
 		}
-		return value;
-	}.property().idempotent(),
+		this._changeByEditor = false;
+	}.observes('value'),
 
 	/**
 	 * @private notify the dom that values have been updated.
@@ -271,6 +256,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		// TODO: remove these to prevent memory leaks
 		responder.listenFor([ 'keydown', 'keyup', 'beforedeactivate', 'mousedown', 'mouseup', 'click', 'dblclick', 'mousemove', 'selectstart', 'contextmenu' ], window);
 
+		SC.Event.add(window, 'mousedown', this, this.mouseDown);
+
 		// focus wire up the focus
 		if (SC.browser.isIE8OrLower) {
 			SC.Event.add(window, 'focusin', this, this.focus);
@@ -288,6 +275,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 */
 	_teardownEvents: function() {
 		var window = this.get('window');
+
+		SC.Event.add(window, 'remove', this, this.mouseDown);
 
 		// focus wire up the focus
 		if (SC.browser.isIE8OrLower) {
@@ -331,23 +320,23 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 
 		// load the intial value and select the first shild
 		var $body = this.$(doc.body);
-		$body.append(this.get('value'));
-		this._selectElement($body.children().first());
+		$body.append(this.get('value') || this.get('carriageReturnText'));
+		// this._selectElement($body.children().first());
 
 		this._setupEvents();
 	},
 
-	mouseWheel: function(evt) {
-		return NO;
-	},
-
+	/**
+	 * We still need to listen to the mouseDown event
+	 * and focus this window in the case that editor is
+	 * clicked before the window has first responder.
+	 * @param evt
+	 * @returns
+	 */
 	mouseDown: function(evt) {
-		evt.allowDefault();
-		return YES;
-	},
-
-	mouseUp: function(evt) {
-		evt.allowDefault();
+		if (!this.get('document').hasFocus()) {
+			$(this.$(this.get('document').body)).focus();
+		}
 		return YES;
 	},
 

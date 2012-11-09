@@ -18,7 +18,13 @@ sc_require('views/wysiwyg_toolbar_view');
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, {
+SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
+
+	contentKeys: {
+		contentValueKey: 'value',
+		contentErrorKey: 'error',
+		contentIsInErrorKey: 'isInError'
+	},
 
 	acceptsFirstResponder: YES,
 
@@ -106,7 +112,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, {
 				if (anchorNode && anchorNode.parentNode) {
 					var $node = SC.$(anchorNode.parentNode);
 					var position = $node.position();
-					this.getPath('parentView.parentView').scrollTo(0, position.top + $node.height());
+					this.getPath('parentView.parentView').scrollTo(0, position.top);
 				}
 				return ret;
 			},
@@ -125,6 +131,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, {
 			blur: function(evt) {
 				this.get('wysiwygView').blur(evt);
 			}
+
 		})
 	}),
 
@@ -143,7 +150,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, {
 	mouseUp: function(evt) {
 		evt.allowDefault();
 		this.controller.updateState();
-		return this.get('editor').mouseUp(evt);
+		return YES;
 	},
 
 	keyUp: function(evt) {
