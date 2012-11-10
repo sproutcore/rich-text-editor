@@ -131,7 +131,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		var document = this.get('document');
 		return document && document.queryCommandValue(commandName);
 	},
-	
+
 	/**
 	 * Insert some html at the current caret position
 	 * 
@@ -223,7 +223,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			var document = this.get('document');
 			if (document) this.$(document.body).html(value);
 		}
-
+		console.log(value);
 		this._updateFrameHeight();
 		this._changeByEditor = false;
 	}.observes('value'),
@@ -329,25 +329,37 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	_iframeDidLoad: function(evt) {
 		var doc = this.get('document');
 		if (!doc) return;
-		docu = doc;
 		doc.designMode = "on";
-		doc.execCommand("styleWithCSS", true, null);
+		docu = doc;
 
-		// find the style sheet for this frame, and mess
-		// with it.
-		var sheets = document.styleSheets;
-		for ( var i = 0; i < sheets.length; i++) {
-			var sheet = sheets[i];
-			if (sheet.href && sheet.href.match(/wysiwyg/)) {
-				var cssLink = doc.createElement("link");
-				cssLink.href = sheet.href;
-				cssLink.rel = "stylesheet";
-				cssLink.type = "text/css";
-				doc.head.appendChild(cssLink);
-				doc.body.className = "sc-wysiwyg";
-				break;
-			}
+		if (SC.browser.isIE) {
+//			doc.execCommand("styleWithCSS", 1, true);
+		} else {
+			doc.execCommand("styleWithCSS", true, null);
 		}
+
+		/*
+		 * Do this last to give us time to load the head element
+		 */
+		this.invokeLast(function() {
+
+			// find the wysiwyg style sheet and append it to the
+			// inner iframe
+			var sheets = document.styleSheets;
+			for ( var i = 0; i < sheets.length; i++) {
+				var sheet = sheets[i];
+				if (sheet.href && sheet.href.match(/wysiwyg/)) {
+					var cssLink = doc.createElement("link");
+					cssLink.href = sheet.href;
+					cssLink.rel = "stylesheet";
+					cssLink.type = "text/css";
+
+					doc.head.appendChild(cssLink);
+					doc.body.className = "sc-wysiwyg";
+					break;
+				}
+			}
+		});
 
 		// load the intial value and select the first shild
 		var $body = this.$(doc.body);
@@ -381,6 +393,13 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		if (evt.keyCode === SC.Event.KEY_RETURN) {
 			if (this.queryCommandValue('formatBlock') === 'div') {
 				this.execCommand('formatBlock', null, 'p');
+			}
+		}
+
+		if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
+			first = this.get('$body').children().first()[0];
+			if (first && first.nodeName === "BR") {
+				this.execCommand('insertParagraph', false, null);
 			}
 		}
 

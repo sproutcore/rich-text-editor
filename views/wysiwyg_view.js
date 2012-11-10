@@ -93,6 +93,12 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			left: 0
 		},
 
+		mouseWheel: function(evt) {
+			console.log("Mouse Wheel");
+			return sc_super();
+		},
+		
+		
 		contentView: SC.WYSIWYGEditorView.extend({
 
 			wysiwygView: SC.outlet('parentView.parentView.parentView'),
@@ -110,14 +116,17 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 				var ret = sc_super();
 
 				// TODO: find an ie solution to this
-				var position = this.get('document').getSelection().getRangeAt(0).getClientRects()[0].top;
-				var scrollView = this.getPath('parentView.parentView');
+				var rect = this.get('document').getSelection().getRangeAt(0).getClientRects()[0];
+				if (rect) {
+					var position = this.get('document').getSelection().getRangeAt(0).getClientRects()[0].top;
+					var scrollView = this.getPath('parentView.parentView');
 
-				var verticalScrollOffset = scrollView.get('verticalScrollOffset');
+					var verticalScrollOffset = scrollView.get('verticalScrollOffset');
 
-				// scrolling up
-				if (position < verticalScrollOffset || position > verticalScrollOffset + scrollView.get('frame').height - 20) {
-					scrollView.scrollTo(0, position);
+					// scrolling up
+					if (position < verticalScrollOffset || position > verticalScrollOffset + scrollView.get('frame').height - 20) {
+						scrollView.scrollTo(0, position);
+					}
 				}
 				return ret;
 			},
@@ -141,11 +150,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 	}),
 
 	// Event handlers
-
-	mouseWheel: function(evt) {
-		return NO;
-	},
-
 	mouseDown: function(evt) {
 		evt.allowDefault();
 		this.controller.updateState();
