@@ -11,7 +11,7 @@ SproutCoreWysiwyg = SC.Object.create(
 {
 
 	NAMESPACE: 'SproutcoreWysiwyg',
-	VERSION: '1.0.0',
+	VERSION: '1.0.1',
 
 	styles: [ {
 		title: 'Paragraph',
