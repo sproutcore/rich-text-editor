@@ -27,9 +27,10 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 
 	pickerPane: SC.WYSIWYGImagePickerPane,
 
-	commitCommand: function(controller) {
+	commitCommand: function(original, controller) {
+		original(controller);
 		controller.execCommand('insertImage', false, this.get('url'));
-	}
+	}.enhance()
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGInsertImageCommand);

@@ -29,13 +29,10 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	pickerPane: SC.WYSIWYGLinkPickerPane,
 
-	execute: function(source, controller) {
-		this._popup(source, controller);
-	},
-
-	commitCommand: function(controller) {
+	commitCommand: function(original, controller) {
+		original(controller);
 		controller.execCommand('createLink', false, this.get('url'));
-	}
+	}.enhance()
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGCreateLinkCommand);

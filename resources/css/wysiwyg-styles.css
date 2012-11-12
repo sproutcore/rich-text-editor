@@ -4,8 +4,8 @@
  *	The CSS that is applied to the actual wysiwyg view
  *  and the output content.
  */
-$theme.sc-view.sc-label-view.sc-wysiwyg-text, $theme.sc-view.sc-wysiwyg-static-value-view, body.sc-wysiwyg {
-	word-wrap:break-word;
+$theme.sc-view.sc-label-view.sc-wysiwyg-text, $theme.sc-view.sc-wysiwyg-static-value-view, $theme.sc-wysiwyg-editor {
+	word-wrap: break-word;
 	font-family: Helvetica, Arial, sans-serif;
 	color: #404040;
 	-webkit-font-smoothing: antialiased;

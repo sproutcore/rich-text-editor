@@ -75,13 +75,21 @@ SC.WYSIWYGController = SC.Object.extend({
 		this.get('editor').insertHtmlHtmlAtCaret(html);
 	},
 
-	// commands
 	invokeCommand: function(source) {
 		var command = source.get('command');
 		if (command) {
 			command.execute(source, this);
 		}
 		this.notifyPropertyChange('recomputeEditorState');
+	},
+
+	saveSelection: function() {
+		this._savedSelection = rangy.saveSelection();
+		return this._savedSelection;
+	},
+
+	restoreSavedSelection: function(sel) {
+		rangy.restoreSelection(sel || this._savedSelection, true);
 	}
 
 });

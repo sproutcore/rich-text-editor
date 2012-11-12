@@ -34,17 +34,19 @@ SC.WYSIWYGPickerCommandSupport = {
 	 *            {SC.WYSIWYGController}
 	 */
 	execute: function(source, controller) {
+		controller.saveSelection();
 		this._popup(source, controller);
 	},
 
 	/**
-	 * Executed by dismissing the pane
+	 * Executed by dismissing the pane, should be enhanced to restore the text
+	 * selection before executing.
 	 * 
 	 * @param controller
 	 *            {SC.WYSIWYGController}
 	 */
 	commitCommand: function(controller) {
-		SC.info("Override me for custom behavior");
+		controller.restoreSavedSelection();
 	},
 
 	/**

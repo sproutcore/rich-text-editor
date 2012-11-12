@@ -97,8 +97,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			console.log("Mouse Wheel");
 			return sc_super();
 		},
-		
-		
+
 		contentView: SC.WYSIWYGEditorView.extend({
 
 			wysiwygView: SC.outlet('parentView.parentView.parentView'),
@@ -114,36 +113,39 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			 */
 			keyUp: function(evt) {
 				var ret = sc_super();
-
-				// TODO: find an ie solution to this
-				var rect = this.get('document').getSelection().getRangeAt(0).getClientRects()[0];
-				if (rect) {
-					var position = this.get('document').getSelection().getRangeAt(0).getClientRects()[0].top;
-					var scrollView = this.getPath('parentView.parentView');
-
-					var verticalScrollOffset = scrollView.get('verticalScrollOffset');
-
-					// scrolling up
-					if (position < verticalScrollOffset || position > verticalScrollOffset + scrollView.get('frame').height - 20) {
-						scrollView.scrollTo(0, position);
-					}
-				}
+				this.invokeLast(function() {
+					this._updateScrollPosition();
+				});
 				return ret;
 			},
 
-			/**
-			 * Override the default behavior of the editor grabbing focus and
-			 * let the wysiwyg view manage it.
-			 */
-			focus: function(evt) {
-				this.get('wysiwygView').focus(evt);
+			_updateScrollPosition: function() {
+				var sel = document.getSelection();
+				if (sel && sel.rangeCount > 0) {
+					var range = sel.getRangeAt(0);
+					var rect = range.getClientRects()[0];
+					if (rect) {
+						var position = range.getClientRects()[0].top;
+						var scrollView = this.getPath('parentView.parentView');
+
+						var verticalScrollOffset = scrollView.get('verticalScrollOffset');
+
+						// scrolling up
+						if (position < verticalScrollOffset) {
+							scrollView.scrollTo(0, position);
+						} else if (position + this.get('documentPadding') > verticalScrollOffset + scrollView.get('frame').height) {
+							scrollView.scrollTo(0, position + this.get('documentPadding'));
+						}
+					}
+				}
 			},
 
-			/**
-			 * Override the default behavior of the editor grabbing focus
-			 */
-			blur: function(evt) {
-				this.get('wysiwygView').blur(evt);
+			mouseUp: function(evt) {
+				return this.get('wysiwygView').mouseUp(evt);
+			},
+
+			mouseDown: function(evt) {
+				return this.get('wysiwygView').mouseDown(evt);
 			}
 
 		})
@@ -158,6 +160,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 
 	mouseUp: function(evt) {
 		evt.allowDefault();
+		this.becomeFirstResponder();
 		this.controller.updateState();
 		return YES;
 	},
@@ -173,15 +176,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 		evt.allowDefault();
 		this.controller.updateState();
 		return evt.keyCode === SC.Event.KEY_RETURN;
-	},
-
-	focus: function(evt) {
-		this.becomeFirstResponder();
-		this.controller.updateState();
-	},
-
-	blur: function(evt) {
-		this.controller.updateState();
 	}
 
 });

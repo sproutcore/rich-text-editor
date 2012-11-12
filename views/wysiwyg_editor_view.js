@@ -24,73 +24,26 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 /** @scope SC.WYSIWYGEditorView.prototype */
 {
 
+	isTextSelectable: YES,
+
 	classNames: 'sc-wysiwyg-editor',
 
-	tagName: 'iframe',
-
-	/**
-	 * bind the tag attributes to the the following properties
-	 */
-	attributeBindings: [ 'frameborder', 'width', 'height', 'scrolling' ],
-
-	/**
-	 * Cause it's ugly.
-	 */
-	frameborder: 0,
-
-	/**
-	 * @property {Number} used to map the width of the frame to the width of the
-	 *           iframe keeping them consistent
-	 */
-	width: function() {
-		return this.get('frame').width;
-	}.property('frame').cacheable(),
-
-	/**
-	 * @property {Number} used to map the height of the frame to the width of
-	 *           the iframe keeping them consistent
-	 */
-	height: function() {
-		return this.get('frame').height;
-	}.property('frame').cacheable(),
-
-	scrolling: 'no',
+	render: function(context) {
+		context.attr('contentEditable', true);
+		context.addStyle('padding', this.get('documentPadding'));
+	},
 
 	/**
 	 * Min height of the frame
 	 */
 	minHeight: 200,
 
+	documentPadding: 20,
+
 	/**
 	 * Text to be entered on a carraige return
 	 */
 	carriageReturnText: '<p><br /></p>',
-
-	/**
-	 * Pointer to the window inside of the iFrame
-	 */
-	window: function() {
-		if (!this._window) this._window = this.$()[0].contentWindow;
-		return this._window;
-	}.property(),
-
-	/**
-	 * Pointer to the document inside of the iFrame
-	 */
-	document: function() {
-		if (!this._document) this._document = this.$()[0].contentDocument;
-		return this._document;
-	}.property(),
-
-	$document: function() {
-		if (!this._$document) this._$document = SC.$(this.get('document'));
-	}.property(),
-
-	$body: function() {
-		var doc = this.get('document');
-		if (!this._$body) this._$body = doc ? SC.$(doc.body) : null;
-		return this._$body;
-	}.property(),
 
 	/**
 	 * Executes a command against the iFrame:
@@ -104,7 +57,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @param value
 	 */
 	execCommand: function(commandName, showDefaultUI, value) {
-		var ret = this.get('document').execCommand(commandName, showDefaultUI, value);
+		var ret = document.execCommand(commandName, showDefaultUI, value);
 		this._domValueDidChange();
 		return ret;
 	},
@@ -117,8 +70,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @returns {Boolean}
 	 */
 	queryCommandState: function(commandName) {
-		var document = this.get('document');
-		return document && document.queryCommandState(commandName);
+		return document.queryCommandState(commandName);
 	},
 	/**
 	 * Determines whether or not a commandHasBeen executed at the current
@@ -128,8 +80,10 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @returns {Boolean}
 	 */
 	queryCommandValue: function(commandName) {
-		var document = this.get('document');
-		return document && document.queryCommandValue(commandName);
+		// var document = this.get('document');
+		// return this._iframeIsLoaded && document ?
+		// document.queryCommandValue(commandName) : '';
+		// return document.queryCommandValue(commandName);
 	},
 
 	/**
@@ -223,7 +177,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			var document = this.get('document');
 			if (document) this.$(document.body).html(value);
 		}
-		console.log(value);
 		this._updateFrameHeight();
 		this._changeByEditor = false;
 	}.observes('value'),
@@ -234,17 +187,17 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	_domValueDidChange: function() {
 		// get the value from the inner document
 		this._changeByEditor = true;
-		this.set('value', this.get('$body').html());
+		this.set('value', this.$().html());
 	},
 
 	/**
 	 * Recompute frame height based on the size of the content inside of the
-	 * iFrame.
+	 * editor
 	 */
 	_updateFrameHeight: function() {
-		if (!this._iframeIsLoaded) return;
-		var $body = this.get('$body');
+		var $body = this.$();
 		var lastNode = $body.children().last();
+
 		// if we've deleted all of those nodes. lets put the empty one
 		// in
 		if (lastNode.length === 0) {
@@ -252,7 +205,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			lastNode = $body.children().last();
 			this._domValueDidChange();
 		}
-		var calcHeight = lastNode.offset().top + lastNode.height();
+
+		var calcHeight = lastNode.position().top + lastNode.height() + this.get('documentPadding');
 		this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
 	},
 
@@ -261,129 +215,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * our editor
 	 */
 	didCreateLayer: function() {
-		SC.Event.add(this.$(), 'load', this, this._iframeDidLoad);
+		this.$().append(this.get('value') || this.get('carriageReturnText'));
 	},
 
-	/**
-	 * Clean up the load events
-	 */
-	willDestroyLayer: function() {
-		SC.Event.remove(this.$(), 'load', this, this._iframeDidLoad);
-		this._teardownEvents();
-	},
+	saveSelection: function() {
 
-	/**
-	 * We need to attach the iFrame to the RootResponder for maximum SC
-	 * compatibility sexiness
-	 * 
-	 * @private
-	 */
-	_setupEvents: function() {
-		// handle basic events
-		var window = this.get('window');
-
-		var responder = SC.RootResponder.responder;
-
-		// TODO: remove these to prevent memory leaks
-		responder.listenFor([ 'keydown', 'keyup', 'beforedeactivate', 'mousedown', 'mouseup', 'click', 'dblclick', 'mousemove', 'selectstart', 'contextmenu' ], window);
-
-		SC.Event.add(window, 'mousedown', this, this.mouseDown);
-
-		// focus wire up the focus
-		if (SC.browser.isIE8OrLower) {
-			SC.Event.add(window, 'focusin', this, this.focus);
-			SC.Event.add(window, 'focusin', this, this.blur);
-		} else {
-			SC.Event.add(window, 'focus', this, this.focus);
-			SC.Event.add(window, 'blur', this, this.blur);
-		}
-	},
-
-	/**
-	 * Tear down the events that we added at init
-	 * 
-	 * @private
-	 */
-	_teardownEvents: function() {
-		var window = this.get('window');
-
-		SC.Event.add(window, 'remove', this, this.mouseDown);
-
-		// focus wire up the focus
-		if (SC.browser.isIE8OrLower) {
-			SC.Event.remove(window, 'focusin', this, this.focus);
-			SC.Event.remove(window, 'focusin', this, this.blur);
-		} else {
-			SC.Event.remove(window, 'focus', this, this.focus);
-			SC.Event.remove(window, 'blur', this, this.blur);
-		}
-	},
-
-	/**
-	 * Called once the internal iframe has loaded, sets the document to editor
-	 * mode.
-	 * 
-	 * @private
-	 * @param evt
-	 */
-	_iframeDidLoad: function(evt) {
-		var doc = this.get('document');
-		if (!doc) return;
-		doc.designMode = "on";
-		docu = doc;
-
-		if (SC.browser.isIE) {
-//			doc.execCommand("styleWithCSS", 1, true);
-		} else {
-			doc.execCommand("styleWithCSS", true, null);
-		}
-
-		/*
-		 * Do this last to give us time to load the head element
-		 */
-		this.invokeLast(function() {
-
-			// find the wysiwyg style sheet and append it to the
-			// inner iframe
-			var sheets = document.styleSheets;
-			for ( var i = 0; i < sheets.length; i++) {
-				var sheet = sheets[i];
-				if (sheet.href && sheet.href.match(/wysiwyg/)) {
-					var cssLink = doc.createElement("link");
-					cssLink.href = sheet.href;
-					cssLink.rel = "stylesheet";
-					cssLink.type = "text/css";
-
-					doc.head.appendChild(cssLink);
-					doc.body.className = "sc-wysiwyg";
-					break;
-				}
-			}
-		});
-
-		// load the intial value and select the first shild
-		var $body = this.$(doc.body);
-		$body.append(this.get('value') || this.get('carriageReturnText'));
-		// this._selectElement($body.children().first());
-
-		this._setupEvents();
-
-		this._iframeIsLoaded = true;
-	},
-
-	/**
-	 * We still need to listen to the mouseDown event and focus this window in
-	 * the case that editor is clicked before the window has first responder.
-	 * 
-	 * @param evt
-	 * @returns
-	 */
-	mouseDown: function(evt) {
-		if (!this.get('document').hasFocus()) {
-			$(this.$(this.get('document').body)).focus();
-			this._updateFrameHeight();
-		}
-		return YES;
 	},
 
 	keyUp: function(evt) {
@@ -397,7 +233,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		}
 
 		if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
-			first = this.get('$body').children().first()[0];
+			first = this.$().children().first()[0];
 			if (first && first.nodeName === "BR") {
 				this.execCommand('insertParagraph', false, null);
 			}
@@ -405,11 +241,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 
 		this._domValueDidChange();
 
-		return YES;
-	},
-
-	keyDown: function(evt) {
-		evt.allowDefault();
 		return YES;
 	}
 

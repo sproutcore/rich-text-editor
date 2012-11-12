@@ -35,11 +35,8 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	pickerPane: SC.WYSIWYGVideoPickerPane,
 
-	execute: function(source, controller) {
-		this._popup(source, controller);
-	},
-
-	commitCommand: function(controller) {
+	commitCommand: function(original, controller) {
+		original(controller);
 		var url = this.get('url');
 		if (this.get('type') === 'youtube') {
 			var youtubeId = /v=([A-z0-9]+)/.exec(url);
@@ -53,7 +50,7 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 				controller.insertHtmlHtmlAtCaret(this._vimeoString.fmt(vimeoId[1]));
 			}
 		}
-	}
+	}.enhance()
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGEmbedVideoCommand);

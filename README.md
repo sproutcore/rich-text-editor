@@ -87,3 +87,4 @@ To insert arbitrary html at the current location:
 - full screen support ?
 - image / file uploading (probably with the sproutcore-fileupload framework)
 - clean up the way the styles are enumerated / displayed (kindof brittle with the css + js views)
+- remove rangy dependency - since it's HUGE.
