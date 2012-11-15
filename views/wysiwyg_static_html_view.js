@@ -13,8 +13,8 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	//
 
 	value: "<p><br /></p>",
-	
-	calculatedHeight: function(){
+
+	calculatedHeight: function() {
 		return this.$()[0].scrollHeight;
 	}.property('value'),
 
@@ -31,12 +31,12 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	 * automatically.
 	 */
 	valueLayoutDidChange: function() {
-		
+
 		this.adjust('height', this.get('frame').height / 2);
-		
+
 		this._viewFrameDidChange();
-		
-		this.invokeLast(function(){
+
+		this.invokeLast(function() {
 			this.notifyPropertyChange('calculatedHeight');
 		});
 	},

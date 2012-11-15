@@ -32,6 +32,10 @@ $theme.sc-wysiwyg-editor {
 	@include box-shadow(0 1px 5px rgba(black, 0.2) inset);
 	border: none;
 	background: none;
+	
+	&.repaint {
+		color: #414141 !important;
+	}
 }
 
 /*
@@ -59,7 +63,7 @@ $theme.sc-view.select-button.menu {
 	}
 }
 
-$theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item {
+$theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wysiwyg-menu-item {
 	h1 {
 		@extend .smoothed;
 		font-weight: bold;

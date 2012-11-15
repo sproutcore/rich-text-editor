@@ -16,8 +16,6 @@ SC.WYSIWYGToolbarViewDelegate = {
 
 	isWYSIWYGToolbarViewDelegate: YES,
 
-	controlHeight: 24,
-
 	controller: null,
 
 	toolbarViewCreateControlForCommandNamed: function(toolbarView, commandName) {
@@ -25,7 +23,6 @@ SC.WYSIWYGToolbarViewDelegate = {
 		var controlView = command ? this.toolbarViewButtonForCommand(toolbarView, commandName, command) : this[commandName];
 		if (controlView) {
 			controlView = this[commandName] = toolbarView.createChildView(controlView);
-			controlView.adjust('height', this.get('controlHeight'));
 		} else {
 			SC.error('WYSIWYGToolbarViewDelegate: Could not createView: ' + commandName + ' no class was found.');
 		}
@@ -41,7 +38,8 @@ SC.WYSIWYGToolbarViewDelegate = {
 		} else {
 			buttonClass = this.get('exampleView').extend({
 				layout: {
-					width: 30
+					width: 30,
+					height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
 				},
 				icon: command.get('icon'),
 				command: command,

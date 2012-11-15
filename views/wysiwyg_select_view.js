@@ -15,7 +15,8 @@ SC.WYSIWYGSelectView = SC.SelectView.extend({
 	isDefaultPosition: YES,
 
 	layout: {
-		width: 120
+		width: 120,
+		height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
 	},
 
 	itemTitleKey: 'title',

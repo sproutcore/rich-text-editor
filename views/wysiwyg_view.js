@@ -38,6 +38,8 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 
 	value: '',
 
+	shouldRepaint: NO,
+
 	commands: [ 'styles', 'insertImage', 'embedVideo', 'link', 'bold', 'italic', 'underline', 'insertOrderedList', 'insertUnorderedList', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'indent', 'outdent' ],
 
 	init: function() {
@@ -48,8 +50,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 		});
 
 		// TODO: fix this up
-		this.getPath('toolbar.viewDelegate').set('controlHeight', this.get('controlHeight'));
-
 		var toolbarHeight = this.get('toolbarHeight');
 		this.get('toolbar').adjust('height', toolbarHeight);
 		this.get('scrollView').adjust('top', toolbarHeight);
@@ -91,11 +91,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			right: 0,
 			bottom: 0,
 			left: 0
-		},
-
-		mouseWheel: function(evt) {
-			console.log("Mouse Wheel");
-			return sc_super();
 		},
 
 		contentView: SC.WYSIWYGEditorView.extend({
@@ -146,19 +141,38 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 
 			mouseDown: function(evt) {
 				return this.get('wysiwygView').mouseDown(evt);
-			}
+			},
 
-		})
+			focus: function(evt) {
+				this.get('wysiwygView').becomeFirstResponder();
+				this._updateFrameHeight();
+			},
+
+			didCreateLayer: function() {
+				SC.Event.add(this.$(), 'focus', this, this.focus);
+			},
+
+			willDestroyLayer: function() {
+				SC.Event.remove(this.$(), 'focus', this, this.focus);
+			}
+		}),
+
+		mouseWheel: function(evt) {
+			sc_super();
+			return YES;
+		},
 	}),
 
 	// Event handlers
 	mouseDown: function(evt) {
+		this.rePaint();
 		evt.allowDefault();
 		this.controller.updateState();
 		return YES;
 	},
 
 	mouseUp: function(evt) {
+		this.rePaint();
 		evt.allowDefault();
 		this.becomeFirstResponder();
 		this.controller.updateState();
@@ -166,6 +180,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 	},
 
 	keyUp: function(evt) {
+		this.rePaint();
 		var ret = this.get('editor').keyUp(evt);
 		this.controller.updateState();
 		return ret;
@@ -173,9 +188,30 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 
 	// TODO: Fix this up to be a bit more sane.
 	keyDown: function(evt) {
-		evt.allowDefault();
+		this.rePaint();
 		this.controller.updateState();
-		return evt.keyCode === SC.Event.KEY_RETURN;
-	}
+		return this.interpretKeyEvents(evt) || NO;
+	},
 
+	insertNewline: function(evt) {
+		return this.insertText(null, evt);
+	},
+
+	insertText: function(chr, evt) {
+		evt.allowDefault();
+		return YES;
+	},
+
+	insertTab: function(evt) {
+		evt.preventDefault();
+		this.get('editor').insertHtmlHtmlAtCaret('<span class="tab"></span>');
+		return YES;
+	},
+
+	rePaint: function() {
+		this.get('editor').toggleProperty('shouldRepaint');
+		this.invokeLater(function() {
+			this.get('editor').toggleProperty('shouldRepaint');
+		});
+	}
 });

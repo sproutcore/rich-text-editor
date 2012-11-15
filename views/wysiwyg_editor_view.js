@@ -26,11 +26,14 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 
 	isTextSelectable: YES,
 
+	classNameBindings: [ 'shouldRepaint:repaint' ],
+
 	classNames: 'sc-wysiwyg-editor',
 
 	render: function(context) {
 		context.attr('contentEditable', true);
 		context.addStyle('padding', this.get('documentPadding'));
+		context.push(this.get('carriageReturnText'));
 	},
 
 	/**
@@ -57,9 +60,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @param value
 	 */
 	execCommand: function(commandName, showDefaultUI, value) {
-		var ret = document.execCommand(commandName, showDefaultUI, value);
-		this._domValueDidChange();
-		return ret;
+		this.invokeLast(function() {
+			this._domValueDidChange();
+			this._updateFrameHeight();
+		});
+		return document.execCommand(commandName, showDefaultUI, value);
 	},
 
 	/**
@@ -93,9 +98,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 *            {String} html to be inserted
 	 */
 	insertHtmlHtmlAtCaret: function(html) {
-		var document = this.get('document'), window = this.get('window'), sel, range;
 		if (document.getSelection) {
-			sel = window.getSelection();
+			var sel = window.getSelection(), range;
 			if (sel.getRangeAt && sel.rangeCount) {
 				range = sel.getRangeAt(0);
 				range.deleteContents();
@@ -115,12 +119,13 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 					sel.addRange(range);
 				}
 
-				this._domValueDidChange();
 			}
 		} else if (document.selection && document.selection.type != "Control") {
 			document.selection.createRange().pasteHTML(html);
-			this._domValueDidChange();
 		}
+
+		this._domValueDidChange();
+		this._updateFrameHeight();
 	},
 
 	/**
@@ -174,11 +179,12 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	_valueDidChange: function() {
 		var value = this.get('value');
 		if (value && !this._changeByEditor) {
-			var document = this.get('document');
-			if (document) this.$(document.body).html(value);
+			this.$().html(value);
 		}
-		this._updateFrameHeight();
 		this._changeByEditor = false;
+		this.invokeLast(function() {
+			this._updateFrameHeight();
+		});
 	}.observes('value'),
 
 	/**
@@ -195,19 +201,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * editor
 	 */
 	_updateFrameHeight: function() {
-		var $body = this.$();
-		var lastNode = $body.children().last();
-
-		// if we've deleted all of those nodes. lets put the empty one
-		// in
-		if (lastNode.length === 0) {
-			$body.html(this.get('carriageReturnText'));
-			lastNode = $body.children().last();
-			this._domValueDidChange();
+		var lastNode = this.$().children().last();
+		if (lastNode.length > 0) {
+			var calcHeight = lastNode.position().top + lastNode.height() + this.get('documentPadding');
+			this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
 		}
-
-		var calcHeight = lastNode.position().top + lastNode.height() + this.get('documentPadding');
-		this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
 	},
 
 	/**
@@ -218,12 +216,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		this.$().append(this.get('value') || this.get('carriageReturnText'));
 	},
 
-	saveSelection: function() {
-
-	},
-
 	keyUp: function(evt) {
-
 		// we don't allow regular returns because they are
 		// divs we want paragraphs
 		if (evt.keyCode === SC.Event.KEY_RETURN) {
@@ -233,12 +226,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		}
 
 		if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
-			first = this.$().children().first()[0];
-			if (first && first.nodeName === "BR") {
-				this.execCommand('insertParagraph', false, null);
+			first = this.$().children()[0];
+			if (!first || first && first.nodeName === "BR") {
+				this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
 			}
 		}
-
 		this._domValueDidChange();
 
 		return YES;

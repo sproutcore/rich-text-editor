@@ -10,7 +10,7 @@ SC.WYSIWYGVideoPickerPane = SC.WYSIWYGPickerPane.extend({
 
 	layout: {
 		height: 40,
-		width: 350
+		width: 390
 	},
 
 	contentView: SC.View.extend({
@@ -23,7 +23,7 @@ SC.WYSIWYGVideoPickerPane = SC.WYSIWYGPickerPane.extend({
 
 			layout: {
 				top: 5,
-				right: 90,
+				right: 120,
 				bottom: 5,
 				left: 5
 			},
@@ -34,9 +34,9 @@ SC.WYSIWYGVideoPickerPane = SC.WYSIWYGPickerPane.extend({
 
 		types: SC.SegmentedView.extend({
 			layout: {
-				height: 24,
+				height: 28,
 				centerY: 0,
-				width: 80,
+				width: 110,
 				right: 5
 			},
 			classNames: [ 'sc-wysiwyg-segmented' ],
