@@ -28,7 +28,10 @@ SC.WYSIWYGImagePickerPane = SC.WYSIWYGPickerPane.extend({
 				left: 5
 			},
 			insertNewline: function() {
-				this.get('pane').remove();
+				var pane = this.get('pane');
+				pane.get('command').sizeImageFromURL(function() {
+					pane.remove();
+				});
 			}
 		})
 	})

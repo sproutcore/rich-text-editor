@@ -148,19 +148,28 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @param $element
 	 * @private
 	 */
-	_selectElement: function($element) {
-		var contentWindow = this.get('window');
-		if (contentWindow.getSelection) {
-			var sel = contentWindow.getSelection();
+	_selectElement: function($element, collapse) {
+		if (document.getSelection) {
+			var sel = document.getSelection();
 			sel.removeAllRanges();
 			var range = document.createRange();
 			range.selectNodeContents($element[0]);
+			if (collapse != undefined) {
+				range.collapse(collapse);
+			}
 			sel.addRange(range);
-		} else if (contentWindow.document.selection) {
-			var textRange = contentWindow.document.body.createTextRange();
+		} else if (document.selection) {
+			var textRange = document.body.createTextRange();
 			textRange.moveToElementText($element[0]);
 			textRange.select();
+			if (collapse != undefined) {
+				textRange.collapse(collapse);
+			}
 		}
+	},
+
+	selectFirstChild: function(collapse) {
+		this._selectElement(this.$().children().first(), collapse);
 	},
 
 	_value: '',

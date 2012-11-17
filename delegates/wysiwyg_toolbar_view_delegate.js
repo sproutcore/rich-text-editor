@@ -23,6 +23,9 @@ SC.WYSIWYGToolbarViewDelegate = {
 		var controlView = command ? this.toolbarViewButtonForCommand(toolbarView, commandName, command) : this[commandName];
 		if (controlView) {
 			controlView = this[commandName] = toolbarView.createChildView(controlView);
+			if (SC.ButtonView.hasSubclass(controlView.constructor)) {
+				controlView.adjust('height', SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height);
+			}
 		} else {
 			SC.error('WYSIWYGToolbarViewDelegate: Could not createView: ' + commandName + ' no class was found.');
 		}

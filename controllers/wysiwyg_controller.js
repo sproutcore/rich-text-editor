@@ -76,6 +76,7 @@ SC.WYSIWYGController = SC.Object.extend({
 	},
 
 	invokeCommand: function(source) {
+		this.get('editor').focus();
 		var command = source.get('command');
 		if (command) {
 			command.execute(source, this);

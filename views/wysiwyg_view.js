@@ -45,6 +45,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 	init: function() {
 		sc_super();
 		this.controller = this.controllerClass.create({
+			wysiwygView: this,
 			commands: this.get('commands'),
 			editor: this.get('editor')
 		});
@@ -93,6 +94,25 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			left: 0
 		},
 
+		containerView: SC.ContainerView.extend({
+
+			didCreateLayer: function() {
+				SC.Event.add(this.$(), 'scroll', this, this.scroll);
+			},
+
+			willDestroyLayer: function() {
+				SC.Event.remove(this.$(), 'scroll', this, this.scroll);
+			},
+
+			// syncronizing scrolling
+			scroll: function(evt) {
+				var $this = this.$();
+				this.get('parentView').scrollTo($this.scrollLeft(), $this.scrollTop());
+				return YES;
+			}
+
+		}),
+
 		contentView: SC.WYSIWYGEditorView.extend({
 
 			wysiwygView: SC.outlet('parentView.parentView.parentView'),
@@ -108,31 +128,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			 */
 			keyUp: function(evt) {
 				var ret = sc_super();
-				this.invokeLast(function() {
-					this._updateScrollPosition();
-				});
 				return ret;
-			},
-
-			_updateScrollPosition: function() {
-				var sel = document.getSelection();
-				if (sel && sel.rangeCount > 0) {
-					var range = sel.getRangeAt(0);
-					var rect = range.getClientRects()[0];
-					if (rect) {
-						var position = range.getClientRects()[0].top;
-						var scrollView = this.getPath('parentView.parentView');
-
-						var verticalScrollOffset = scrollView.get('verticalScrollOffset');
-
-						// scrolling up
-						if (position < verticalScrollOffset) {
-							scrollView.scrollTo(0, position);
-						} else if (position + this.get('documentPadding') > verticalScrollOffset + scrollView.get('frame').height) {
-							scrollView.scrollTo(0, position + this.get('documentPadding'));
-						}
-					}
-				}
 			},
 
 			mouseUp: function(evt) {
@@ -184,6 +180,10 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 		var ret = this.get('editor').keyUp(evt);
 		this.controller.updateState();
 		return ret;
+	},
+
+	didBecomeKeyResponderFrom: function() {
+		this.get('editor').selectFirstChild(true);
 	},
 
 	// TODO: Fix this up to be a bit more sane.

@@ -25,20 +25,37 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 	 */
 	url: '',
 
+	width: 0,
+
+	height: 0,
+
 	pickerPane: SC.WYSIWYGImagePickerPane,
+
+	callback: null,
+
+	sizeImageFromURL: function(callback) {
+		this.callback = callback;
+		var url = this.get('url');
+		if (url) {
+			SC.imageQueue.loadImage(url, this, 'imageDidLoad');
+		}
+	},
 
 	commitCommand: function(original, controller) {
 		original(controller);
 		var url = this.get('url');
 		if (url) {
-			this._controller = controller;
-			SC.imageQueue.loadImage(url, this, 'imageDidLoad', controller);
+			controller.insertHtmlHtmlAtCaret('<img src="%@" style="width: %@px; height: %@px" />'.fmt(url, this.width, this.height));
 		}
 		this.set('url', '');
 	}.enhance(),
 
 	imageDidLoad: function(imageUrl, image) {
-		this._controller.insertHtmlHtmlAtCaret('<img src="%@" style="width: %@; height: %@" />'.fmt(imageUrl, image.width, image.height));
+		this.width = image.width;
+		this.height = image.height;
+		if (this.callback) {
+			this.callback();
+		}
 	}
 
 });
