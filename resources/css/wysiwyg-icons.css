@@ -1,21 +1,41 @@
 @import "compass/css3";
 
+$theme.sc-button-view.sc-wysiwyg-button {
+
+	.hover {
+		display: none;
+	}
+
+    label {
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		
+		img {
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			margin: 0 auto 0 auto;
+		}
+    }
+}
 
 /*
  *	Command toolbar icons, retina ready. Need some polishing.
  */
 $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 
+
 	.bold {
-		width: 12px;
-		height: 15px;
-		@include slice("../images/icons/bold.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/bold.png");
 	}
 	
 	.italic {
-		width: 9px;
-		height: 15px;
-		@include slice("../images/icons/italic.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/italic.png");
 	}
 	
 	.underline {
@@ -25,16 +45,16 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	}
 	
 	.insert-ordered-list {
-		width: 15px;
-		height: 14px;
-		@include slice("../images/icons/list.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/ordered-list.png");
 
 	}
 
 	.insert-unordered-list {
-		width: 15px;
-		height: 14px;
-		@include slice("../images/icons/list.png");		
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/unordered-list.png");		
 	}
 
 	.justify-left {
@@ -62,21 +82,21 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	}
 	
 	.indent {
-		width: 15px;
-		height: 14px;
-		@include slice("../images/icons/left_indent.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/left_indent.png");
 	}
 	
-	.outdent{
-		width: 15px;
-		height: 14px;
-		@include slice("../images/icons/right_indent.png");
+	.outdent {
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/right_indent.png");
 	}
 	
 	.insert-image {
-		width: 15px;
-		height: 13px;
-		@include slice("../images/icons/picture.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/picture.png");
 	}
 	
 	.embed {
@@ -86,27 +106,20 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	}
 	
 	.link {
-		width: 14px;
-		height: 14px;
-		@include slice("../images/icons/link.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/link.png");
 	}
 	
 	.embed-video {
-		width: 14px;
-		height: 17px;
-		@include slice("../images/icons/film.png");
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/film.png");
 	}
 	
-	.vimeo {
-		width: 15px;
-		height: 15px;
-		@include slice("../images/icons/vimeo.png");
+	.fullscreen {
+		width: 25px;
+		height: 25px;
+		@include slice("../images/icons2/fullscreen.png");
 	}
-	
-	.youtube {
-		width: 15px;
-		height: 15px;
-		@include slice("../images/icons/youtube.png");
-	}
-
 }

@@ -107,3 +107,16 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 		line-height: 20px;
 	}
 }
+
+$theme.sc-view.sc-wysiwyg-video-preview {
+	@include border-radius(5px);
+	border: 5px dashed #ccc;
+	text-align: center;
+	background: #fefefe;
+	font-weight: bold;
+	font-size: 16px;
+	
+	p {
+		margin-top: 30px;
+	}
+}

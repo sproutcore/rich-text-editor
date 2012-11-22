@@ -25,32 +25,88 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	 */
 	url: '',
 
-	type: 'youtube',
-
-	types: [ 'youtube', 'vimeo' ],
-
-	_vimeoString: '<iframe src="http://player.vimeo.com/video/%@" width="440" height="360" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>',
-
-	_youtubeString: '<iframe class="youtube-player" type="text/html" width="440" height="360" src="http://www.youtube.com/embed/%@" frameborder="0"></iframe>',
-
 	pickerPane: SC.WYSIWYGVideoPickerPane,
 
 	commitCommand: function(original, controller) {
 		original(controller);
-		var url = this.get('url');
-		if (this.get('type') === 'youtube') {
-			var youtubeId = /v=([A-z0-9]+)/.exec(url);
-
-			if (youtubeId && youtubeId[1]) {
-				controller.insertHtmlHtmlAtCaret(this._youtubeString.fmt(youtubeId[1]));
-			}
-		} else {
-			var vimeoId = /vimeo.com\/(\d+)/.exec(url);
-			if (vimeoId && vimeoId[1]) {
-				controller.insertHtmlHtmlAtCaret(this._vimeoString.fmt(vimeoId[1]));
-			}
+		var insert = this.preview(400);
+		if (insert) {
+			controller.insertHtmlHtmlAtCaret(insert);
 		}
-	}.enhance()
+		this.set('url', '');
+	}.enhance(),
+
+	cancelCommand: function(original) {
+		this.set('url', '');
+	}.enhance(),
+
+	preview: function(width, height) {
+		if (!width) width = 400;
+		if (!height) height = Math.round(width / 1.778);
+		return this._extractEmbedCode(width, height);
+	},
+
+	_extractEmbedCode: function(width, height) {
+		var url = this.get('url'), ret = '', id = '';
+
+		id = this._extractYoutubeId(url);
+		if (id) ret = this._youtubeString;
+
+		if (!ret) {
+			id = this._extractVimeoId(url);
+			if (id) ret = this._vimeoString;
+		}
+
+		if (!ret) {
+			id = this._extractWistiaId(url);
+			if (id) ret = this._wystiaString;
+		}
+
+		if (ret && id) {
+			ret = ret.fmt({
+				id: id,
+				width: width,
+				height: height
+			});
+		};
+		return ret;
+	},
+
+	_vimeoString: '<iframe class="vimeo-player" src="http://player.vimeo.com/video/%{id}" width="%{width}px" height="%{height}px" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>',
+
+	_youtubeString: '<iframe class="youtube-player" type="text/html" width="%{width}px" height="%{height}px" src="http://www.youtube.com/embed/%{id}" frameborder="0"></iframe>',
+
+	_wystiaString: '<iframe class="wistia-player" width="%{width}px" height="%{height}px" src="http://app.wistia.com/embed/medias/%{id}" frameborder="0"></iframe>',
+
+	_youtubeRegex: /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i,
+
+	_vimeoRegex: /vimeo.com\/(\d+)/i,
+
+	_wistiaRegex: /https?:\/\/(.+)?(wistia\.com|wi\.st)\/((medias|embed|ifrane)\/)+(.*)/,
+
+	_extractYoutubeId: function(url) {
+		var id = '', youtubeId = url.match(this._youtubeRegex);
+		if (youtubeId && youtubeId[1]) {
+			id = youtubeId[1];
+		}
+		return id;
+	},
+
+	_extractVimeoId: function(url) {
+		var vimeoId = this._vimeoRegex.exec(url), id = '';
+		if (vimeoId && vimeoId[1]) {
+			id = vimeoId[1];
+		}
+		return id;
+	},
+
+	_extractWistiaId: function(url) {
+		var wistiaId = this._wistiaRegex.exec(url), id = '';
+		if (wistiaId) {
+			id = wistiaId[wistiaId.length - 1];
+		}
+		return id;
+	}
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGEmbedVideoCommand);

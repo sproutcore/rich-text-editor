@@ -22,6 +22,8 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	commandName: 'link',
 
 	url: '',
+	
+	linkText: '',
 
 	toolTip: 'Insert a link',
 
@@ -32,7 +34,13 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	commitCommand: function(original, controller) {
 		original(controller);
 		controller.execCommand('createLink', false, this.get('url'));
-	}.enhance()
+	}.enhance(),
+	
+	cancelCommand: function(original, controller) {
+		original(controller);
+		this.set('url', '');
+		this.set('linkText', '');
+	}.enhance(),
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGCreateLinkCommand);

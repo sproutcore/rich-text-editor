@@ -15,8 +15,27 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	value: "<p><br /></p>",
 
 	calculatedHeight: function() {
-		return this.$()[0].scrollHeight;
+		var last = this.$().children().last();
+		var ret = 0;
+		if (last) {
+			var position = last.position();
+			if (position) {
+				ret = position.top + last.height();
+			}
+		}
+		return ret;
 	}.property('value'),
+
+	didCreateLayer: function() {
+		var self = this;
+		this.$('img').load(function() {
+			self.notifyPropertyChange('calculatedHeight');
+		});
+	},
+
+	willDestroyLayer: function() {
+
+	},
 
 	// ..........................................................
 	// METHODS
@@ -31,15 +50,43 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	 * automatically.
 	 */
 	valueLayoutDidChange: function() {
-
-		this.adjust('height', this.get('frame').height / 2);
-
 		this._viewFrameDidChange();
 
 		this.invokeLast(function() {
 			this.notifyPropertyChange('calculatedHeight');
 		});
 	},
+
+	valueDidChange: function() {
+		var width = this.get('frame').width;
+		var $vimeoPlayer = this.$('.vimeo-player');
+		$vimeoPlayer.attr('width', '100%');
+		$vimeoPlayer.attr('height', Math.round($vimeoPlayer.width() * 0.56));
+
+		var $youtubePlayer = this.$('.youtube-player');
+		$youtubePlayer.attr('width', '100%');
+		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
+
+		var $youtubePlayer = this.$('.wistia-player');
+		$youtubePlayer.attr('width', '100%');
+		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
+
+		var $images = this.$('img');
+		$images.forEach(function(image) {
+			var $image = SC.$(image);
+			if (parseInt($image.attr('width').replace("px", '')) > (width * 0.90)) {
+				$image.css({
+					width: "90%",
+					height: 'auto'
+				});
+			} else {
+				$image.css({
+					width: "auto",
+					height: 'auto'
+				});
+			}
+		});
+	}.observes('value', 'frame'),
 
 	// ..........................................................
 	// INTERNAL SUPPORT

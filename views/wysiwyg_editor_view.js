@@ -48,6 +48,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 */
 	carriageReturnText: '<p><br /></p>',
 
+	didCreateLayer: function() {
+		SC.Event.add(this.$(), 'focus', this, this.focus);
+		SC.Event.add(this.$(), 'paste', this, this.paste);
+	},
+
+	willDestroyLayer: function() {
+		SC.Event.remove(this.$(), 'focus', this, this.focus);
+		SC.Event.remove(this.$(), 'paste', this, this.paste);
+	},
+
 	/**
 	 * Executes a command against the iFrame:
 	 * 
@@ -85,10 +95,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @returns {Boolean}
 	 */
 	queryCommandValue: function(commandName) {
-		// var document = this.get('document');
-		// return this._iframeIsLoaded && document ?
-		// document.queryCommandValue(commandName) : '';
-		// return document.queryCommandValue(commandName);
+		return document.queryCommandValue(commandName);
 	},
 
 	/**
@@ -126,6 +133,15 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 
 		this._domValueDidChange();
 		this._updateFrameHeight();
+	},
+
+	paste: function(evt) {
+		if (!SC.browser.isIE) {
+			evt.preventDefault();
+			var data = SC.browser.isIE ? window.clipboardData.getData('HTML') : event.clipboardData.getData('text/html');
+			data = data.replace(/(font-family|font-size|line-height|background-color|color):[^;]+;/gi, '');
+			this.insertHtmlHtmlAtCaret(data);
+		}
 	},
 
 	/**
@@ -212,17 +228,9 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	_updateFrameHeight: function() {
 		var lastNode = this.$().children().last();
 		if (lastNode.length > 0) {
-			var calcHeight = lastNode.position().top + lastNode.height() + this.get('documentPadding');
+			var calcHeight = this.$().scrollTop() + lastNode.position().top + lastNode.height() + this.get('documentPadding');
 			this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
 		}
-	},
-
-	/**
-	 * On create of the layer we bind to the iframe load event so we can set up
-	 * our editor
-	 */
-	didCreateLayer: function() {
-		this.$().append(this.get('value') || this.get('carriageReturnText'));
 	},
 
 	keyUp: function(evt) {
@@ -243,6 +251,10 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		this._domValueDidChange();
 
 		return YES;
+	},
+
+	focus: function() {
+
 	}
 
 });

@@ -5,7 +5,6 @@
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*globals SC */
-sc_require('wysiwyg_command');
 SproutCoreWysiwyg = SC.Object.create(
 /** @scope SproutcoreWysiwyg.prototype */
 {

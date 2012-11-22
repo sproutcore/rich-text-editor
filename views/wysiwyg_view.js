@@ -142,15 +142,8 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 			focus: function(evt) {
 				this.get('wysiwygView').becomeFirstResponder();
 				this._updateFrameHeight();
-			},
-
-			didCreateLayer: function() {
-				SC.Event.add(this.$(), 'focus', this, this.focus);
-			},
-
-			willDestroyLayer: function() {
-				SC.Event.remove(this.$(), 'focus', this, this.focus);
 			}
+
 		}),
 
 		mouseWheel: function(evt) {

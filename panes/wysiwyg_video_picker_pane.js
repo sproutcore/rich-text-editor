@@ -9,49 +9,70 @@ sc_require('panes/wysiwyg_command_picker_pane');
 SC.WYSIWYGVideoPickerPane = SC.WYSIWYGPickerPane.extend({
 
 	layout: {
-		height: 40,
-		width: 390
+		height: 328,
+		width: 440,
 	},
 
 	contentView: SC.View.extend({
-		childViews: [ 'textArea', 'types' ],
+		childViews: [ 'textArea', 'preview', 'ok', 'cancel' ],
 
 		textArea: SC.TextFieldView.extend({
 			hint: 'Video Url',
 
-			valueBinding: '.parentView.parentView.command.url',
+			valueBinding: '.pane.command.url',
 
 			layout: {
 				top: 5,
-				right: 120,
-				bottom: 5,
+				right: 5,
+				height: 28,
 				left: 5
-			},
-			insertNewline: function() {
-				this.get('pane').remove();
 			}
 		}),
 
-		types: SC.SegmentedView.extend({
+		preview: SC.View.extend({
 			layout: {
-				height: 28,
-				centerY: 0,
-				width: 110,
-				right: 5
+				top: 38,
+				left: 5,
+				right: 5,
+				height: Math.round(430 / 1.778)
 			},
-			classNames: [ 'sc-wysiwyg-segmented' ],
-			itemIconKey: 'icon',
-			itemValueKey: 'value',
-			itemsBinding: SC.Binding.transform(function(types) {
-				return types.map(function(type) {
-					return {
-						title: type,
-						value: type,
-						icon: type
-					};
-				});
-			}).oneWay('.parentView.parentView.command.types'),
-			valueBinding: '.parentView.parentView.command.type'
+			classNames: [ 'sc-wysiwyg-video-preview' ],
+			urlBinding: SC.Binding.oneWay('.pane.command.url'),
+			displayProperties: [ 'url' ],
+
+			_previewText: '<p>Enter a URL from a supported provider and it will be embedded.</p><p>Supported Providers: </p><ul><li>Youtube</li><li>Vimeo</li><li>Wistia</li></ul>',
+
+			update: function() {
+				var preview = this.getPath('pane.command').preview(430);
+				if (preview) {
+					this.$().html(preview);
+				} else {
+					this.$().html(this._previewText);
+				}
+			}
+		}),
+
+		ok: SC.ButtonView.extend(SC.AutoResize, {
+			layout: {
+				bottom: 5,
+				left: 5,
+				height: 28
+			},
+			title: 'Ok',
+			isDefault: YES,
+			action: 'ok',
+			target: SC.outlet('pane')
+		}),
+
+		cancel: SC.ButtonView.extend(SC.AutoResize, {
+			layout: {
+				bottom: 5,
+				right: 5,
+				height: 28
+			},
+			title: 'Cancel',
+			action: 'cancel',
+			target: SC.outlet('pane')
 		})
 	})
 });

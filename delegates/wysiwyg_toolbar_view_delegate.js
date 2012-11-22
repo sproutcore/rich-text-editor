@@ -69,5 +69,7 @@ SC.WYSIWYGToolbarViewDelegate = {
 	/**
 	 * @property {SC.ButtonView) default control for handling commands.
 	 */
-	exampleView: SC.ButtonView
+	exampleView: SC.ButtonView.extend({
+		classNames: 'sc-wysiwyg-button'
+	})
 };

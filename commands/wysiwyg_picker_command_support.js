@@ -48,6 +48,10 @@ SC.WYSIWYGPickerCommandSupport = {
 	commitCommand: function(controller) {
 		controller.restoreSavedSelection();
 	},
+	
+	cancelCommand: function(controller) {
+		controller.restoreSavedSelection();
+	},
 
 	/**
 	 * Pop up the panel

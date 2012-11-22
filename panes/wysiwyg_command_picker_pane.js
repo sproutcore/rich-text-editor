@@ -12,8 +12,20 @@ SC.WYSIWYGPickerPane = SC.PickerPane.extend({
 
 	command: null,
 
-	remove: function() {
+	append: function() {
 		sc_super();
+		this.invokeLast(function() {
+			this.get('contentView').becomeFirstResponder();
+		});
+	},
+
+	cancel: function() {
+		this.get('command').cancelCommand(this.get('controller'));
+		this.remove();
+	},
+
+	ok: function() {
 		this.get('command').commitCommand(this.get('controller'));
+		this.remove();
 	}
 });
