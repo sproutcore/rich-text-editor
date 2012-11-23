@@ -17,7 +17,12 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 		childViews: [ 'linkText', 'url', 'ok', 'cancel' ],
 
 		becomeFirstResponder: function() {
-			this.get('linkText').becomeFirstResponder();
+			if(this.getPath('pane.command.linkText')){
+				this.get('linkText').becomeFirstResponder();
+			}
+			else {
+				this.get('url').becomeFirstResponder();
+			}
 		},
 
 		linkText: SC.TextFieldView.extend({
@@ -41,6 +46,7 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 				height: 28,
 			}
 		}),
+		
 
 		ok: SC.ButtonView.extend(SC.AutoResize, {
 			layout: {

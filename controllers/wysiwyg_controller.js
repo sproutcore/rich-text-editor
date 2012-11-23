@@ -91,6 +91,14 @@ SC.WYSIWYGController = SC.Object.extend({
 
 	restoreSavedSelection: function(sel) {
 		rangy.restoreSelection(sel || this._savedSelection, true);
+	},
+	
+	deleteSelection: function(){
+		rangy.getSelection().deleteFromDocument();
+	},
+	
+	getSelection: function(){
+		return rangy.getSelection();
 	}
 
 });

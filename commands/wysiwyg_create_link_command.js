@@ -22,7 +22,7 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	commandName: 'link',
 
 	url: '',
-	
+
 	linkText: '',
 
 	toolTip: 'Insert a link',
@@ -31,16 +31,56 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	pickerPane: SC.WYSIWYGLinkPickerPane,
 
+	execute: function(original, source, controller) {
+		original(source, controller);
+		var sel = controller.getSelection();
+		var parentElement = sel.anchorNode.parentElement;
+
+		// if we are dealing with an existing anchor
+		// we need to replace it
+		if (parentElement.tagName === 'A') {
+			this.set('url', parentElement.href);
+			this.set('linkText', parentElement.text);
+		}
+
+		// this is selected text or nothing
+		else {
+			this.set('linkText', sel.toString());
+		}
+	}.enhance(),
+
 	commitCommand: function(original, controller) {
 		original(controller);
-		controller.execCommand('createLink', false, this.get('url'));
+		var sel = controller.getSelection(), parentElement = sel.anchorNode.parentElement, linkText = this.get('linkText'), url = this.get('url');
+
+		if (!url.match(/\s+:\/\//)) {
+			url = "http://" + url;
+		}
+
+		// if we are dealing with an existing anchor
+		// we need to replace it
+		if (parentElement.tagName === 'A') {
+			parentElement.innerHTML = linkText;
+			parentElement.href = url;
+		}
+
+		// this is selected text or nothing
+		else {
+			controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
+		}
+
+		this._reset();
 	}.enhance(),
-	
+
 	cancelCommand: function(original, controller) {
 		original(controller);
+		this._reset();
+	}.enhance(),
+
+	_reset: function() {
 		this.set('url', '');
 		this.set('linkText', '');
-	}.enhance(),
+	}
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGCreateLinkCommand);
