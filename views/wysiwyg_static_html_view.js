@@ -26,15 +26,8 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 		return ret;
 	}.property('value'),
 
-	didCreateLayer: function() {
-		var self = this;
-		this.$('img').load(function() {
-			self.notifyPropertyChange('calculatedHeight');
-		});
-	},
-
-	willDestroyLayer: function() {
-
+	imageDidLoad: function() {
+		this.notifyPropertyChange('calculatedHeight');
 	},
 
 	// ..........................................................
@@ -51,7 +44,6 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	 */
 	valueLayoutDidChange: function() {
 		this._viewFrameDidChange();
-
 		this.invokeLast(function() {
 			this.notifyPropertyChange('calculatedHeight');
 		});
@@ -74,7 +66,8 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 		var $images = this.$('img');
 		$images.forEach(function(image) {
 			var $image = SC.$(image);
-			if (parseInt($image.attr('width').replace("px", '')) > (width * 0.90)) {
+			var widthAttr = $image.attr('width');
+			if (widthAttr && parseInt(widthAttr.replace("px", '')) > (width * 0.90)) {
 				$image.css({
 					width: "90%",
 					height: 'auto'
@@ -86,6 +79,12 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 				});
 			}
 		});
+
+		var self = this;
+		this.$('img').forEach(function(image) {
+			SC.Event.add(image, 'load', self, self.imageDidLoad);
+		});
+
 	}.observes('value', 'frame'),
 
 	// ..........................................................
