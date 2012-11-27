@@ -51,44 +51,54 @@ $theme.sc-view.sc-label-view.sc-wysiwyg-text, $theme.sc-view.sc-wysiwyg-static-v
 		@extend .smoothed;
 		font-weight: bold !important;
 		font-size: 32px;
-		line-height: 48px;
+		line-height: 1.5;
 	}
 
 	h2 {
 		@extend .smoothed;
 		font-weight: bold !important;
 		font-size: 28px;
+		line-height: 1.5;
 	}
 
 	h3 {
 		@extend .smoothed;
 		font-weight: bold !important;
 		font-size: 24px;
+		line-height: 1.5;
 	}
 
 	h4 {
 		@extend .smoothed;
 		font-weight: bold !important;
 		font-size: 20px;
+		line-height: 1.5;
 	}
 
 	h5 {
 		@extend .smoothed;
 		font-weight: bold !important;
 		font-size: 18px;
+		line-height: 1.5;
 	}
 
 	h6 {
 		@extend .smoothed;
 		font-weight: bold !important;
 		font-size: 14px;
+		line-height: 1.5;
 	}
 	
 	// div is included because they are momentarily 
 	// inserted before we reformat them as p
 	p, div {
 		margin-bottom: 15px;
+		line-height: 1.5;
 		overflow: visible;
+		
+		&:last-child {
+			margin-bottom: 0;
+		}
 	}
 
 	pre {
