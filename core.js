@@ -60,9 +60,6 @@ SproutCoreWysiwyg = SC.Object.create(
 		$images.forEach(function(image) {
 			var $image = SC.$(image);
 			var widthAttr = $image.attr('width');
-			
-			if($image.attr('class') !== '') return;
-			
 			if (widthAttr && parseInt(widthAttr.replace("px", '')) > (width * 0.90)) {
 				$image.css({
 					width: "90%",
