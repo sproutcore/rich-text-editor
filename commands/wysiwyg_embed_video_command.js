@@ -72,11 +72,11 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 		return ret;
 	},
 
-	_vimeoString: '<iframe class="vimeo-player" src="http://player.vimeo.com/video/%{id}" width="%{width}px" height="%{height}px" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>',
+	_vimeoString: '<iframe class="vimeo-player" src="https://player.vimeo.com/video/%{id}" width="%{width}px" height="%{height}px" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>',
 
-	_youtubeString: '<iframe class="youtube-player" type="text/html" width="%{width}px" height="%{height}px" src="http://www.youtube.com/embed/%{id}" frameborder="0"></iframe>',
+	_youtubeString: '<iframe class="youtube-player" type="text/html" width="%{width}px" height="%{height}px" src="https://www.youtube.com/embed/%{id}" frameborder="0"></iframe>',
 
-	_wystiaString: '<iframe class="wistia-player" width="%{width}px" height="%{height}px" src="http://app.wistia.com/embed/medias/%{id}" frameborder="0"></iframe>',
+	_wystiaString: '<iframe class="wistia-player" width="%{width}px" height="%{height}px" src="https://app.wistia.com/embed/medias/%{id}" frameborder="0"></iframe>',
 
 	_youtubeRegex: /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i,
 
