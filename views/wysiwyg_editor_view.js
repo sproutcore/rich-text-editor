@@ -58,6 +58,10 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		SC.Event.remove(this.$(), 'paste', this, this.paste);
 	},
 
+	didAppendToDocument: function() {
+		this.doIt = true;
+	},
+
 	/**
 	 * Executes a command against the iFrame:
 	 * 
@@ -79,21 +83,82 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * Determines whether or not a commandHasBeen executed at the current
 	 * selection.
 	 * 
+	 * TODO: refactor this mess
+	 * 
 	 * @param commandName
 	 * @returns {Boolean}
 	 */
 	queryCommandState: function(commandName) {
-		return document.queryCommandState(commandName);
+		if (SC.browser.isMozilla) {
+			var sel = rangy.getSelection();
+			if (!sel || !sel.anchorNode) return;
+
+			var aNode = sel.anchorNode;
+
+			switch (commandName.toLowerCase()) {
+
+			case 'bold':
+				return this._searchForParentNamed(aNode, 'B');
+				break;
+
+			case 'italic':
+				return this._searchForParentNamed(aNode, 'I');
+				break;
+
+			default:
+				return '';
+				break;
+			}
+
+		} else {
+			return document.queryCommandState(commandName);
+		}
 	},
+
 	/**
 	 * Determines whether or not a commandHasBeen executed at the current
 	 * selection.
+	 * 
+	 * TODO: refactor this mess
 	 * 
 	 * @param commandName
 	 * @returns {Boolean}
 	 */
 	queryCommandValue: function(commandName) {
-		return document.queryCommandValue(commandName);
+		if (SC.browser.isMozilla) {
+			var sel = rangy.getSelection();
+			if (!sel || !sel.anchorNode) return;
+
+			var node = sel.anchorNode;
+			switch (commandName.toLowerCase()) {
+
+			case 'formatblock':
+				while (node && node.nodeName !== "DIV") {
+					if (node.nodeName.match(/(P|H[1-6])/)) {
+						return node.nodeName.toLowerCase();
+					}
+					node = node.parentNode;
+				}
+				return '';
+				break;
+
+			default:
+				return '';
+				break;
+			}
+		} else {
+			return document.queryCommandValue(commandName);
+		}
+	},
+
+	_searchForParentNamed: function(node, name) {
+		while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
+			if (node.nodeName === name) {
+				return true;
+			}
+			node = node.parentNode;
+		}
+		return false;
 	},
 
 	/**
@@ -245,12 +310,10 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			first = this.$().children()[0];
 			if (!first || first && first.nodeName === "BR") {
 				this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
-			}
-			else {
+			} else {
 				console.log(rangy.getSelection().anchorNode.parentElement);
 			}
-			
-			
+
 		}
 		this._domValueDidChange();
 
