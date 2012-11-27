@@ -70,11 +70,9 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @param value
 	 */
 	execCommand: function(commandName, showDefaultUI, value) {
-		this.invokeLast(function() {
-			this._domValueDidChange();
-			this._updateFrameHeight();
-		});
-		return document.execCommand(commandName, showDefaultUI, value);
+		var ret = document.execCommand(commandName, showDefaultUI, value);
+		this._domValueDidChange();
+		return ret;
 	},
 
 	/**
@@ -132,7 +130,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		}
 
 		this._domValueDidChange();
-		this._updateFrameHeight();
 	},
 
 	paste: function(evt) {
@@ -208,7 +205,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		}
 		this._changeByEditor = false;
 		this.invokeLast(function() {
-			this._updateFrameHeight();
+			this.updateFrameHeight();
 		});
 	}.observes('value'),
 
@@ -219,13 +216,15 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		// get the value from the inner document
 		this._changeByEditor = true;
 		this.set('value', this.$().html());
+		SproutCoreWysiwyg.adjustContentSizes(this);
+		this.updateFrameHeight();
 	},
 
 	/**
 	 * Recompute frame height based on the size of the content inside of the
 	 * editor
 	 */
-	_updateFrameHeight: function() {
+	updateFrameHeight: function() {
 		var lastNode = this.$().children().last();
 		if (lastNode.length > 0) {
 			var calcHeight = this.$().scrollTop() + lastNode.position().top + lastNode.height() + this.get('documentPadding');
@@ -247,6 +246,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			if (!first || first && first.nodeName === "BR") {
 				this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
 			}
+			else {
+				console.log(rangy.getSelection().anchorNode.parentElement);
+			}
+			
+			
 		}
 		this._domValueDidChange();
 

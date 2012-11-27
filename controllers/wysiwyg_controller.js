@@ -83,6 +83,10 @@ SC.WYSIWYGController = SC.Object.extend({
 		}
 		this.notifyPropertyChange('recomputeEditorState');
 	},
+	
+	recomputeDocumentHeight: function(){
+		this.get('editor').updateFrameHeight();
+	},
 
 	saveSelection: function() {
 		this._savedSelection = rangy.saveSelection();

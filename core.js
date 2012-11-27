@@ -40,5 +40,40 @@ SproutCoreWysiwyg = SC.Object.create(
 		title: '<h6>Heading 6</h6>',
 		value: 'h6',
 		height: 20
-	} ]
+	} ],
+
+	adjustContentSizes: function(view) {
+		var width = view.get('frame').width;
+		var $vimeoPlayer = view.$('.vimeo-player');
+		$vimeoPlayer.attr('width', '100%');
+		$vimeoPlayer.attr('height', Math.round($vimeoPlayer.width() * 0.56));
+
+		var $youtubePlayer = view.$('.youtube-player');
+		$youtubePlayer.attr('width', '100%');
+		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
+
+		var $youtubePlayer = view.$('.wistia-player');
+		$youtubePlayer.attr('width', '100%');
+		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
+
+		var $images = view.$('img');
+		$images.forEach(function(image) {
+			var $image = SC.$(image);
+			var widthAttr = $image.attr('width');
+			
+			if($image.attr('class') !== '') return;
+			
+			if (widthAttr && parseInt(widthAttr.replace("px", '')) > (width * 0.90)) {
+				$image.css({
+					width: "90%",
+					height: 'auto'
+				});
+			} else {
+				$image.css({
+					width: "auto",
+					height: 'auto'
+				});
+			}
+		});
+	}
 });

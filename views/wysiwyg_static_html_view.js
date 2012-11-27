@@ -17,11 +17,13 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	calculatedHeight: function() {
 		var last = this.$().children().last();
 		var ret = 0;
-		if (last) {
+		if (last.length > 0) {
 			var position = last.position();
 			if (position) {
 				ret = position.top + last.height();
 			}
+		} else {
+			ret = this.$()[0].scrollHeight;
 		}
 		return ret;
 	}.property('value'),
@@ -50,41 +52,11 @@ SC.WYSIWYGStaticValueView = SC.View.extend(SC.StaticLayout, SC.ContentValueSuppo
 	},
 
 	valueDidChange: function() {
-		var width = this.get('frame').width;
-		var $vimeoPlayer = this.$('.vimeo-player');
-		$vimeoPlayer.attr('width', '100%');
-		$vimeoPlayer.attr('height', Math.round($vimeoPlayer.width() * 0.56));
-
-		var $youtubePlayer = this.$('.youtube-player');
-		$youtubePlayer.attr('width', '100%');
-		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
-
-		var $youtubePlayer = this.$('.wistia-player');
-		$youtubePlayer.attr('width', '100%');
-		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
-
-		var $images = this.$('img');
-		$images.forEach(function(image) {
-			var $image = SC.$(image);
-			var widthAttr = $image.attr('width');
-			if (widthAttr && parseInt(widthAttr.replace("px", '')) > (width * 0.90)) {
-				$image.css({
-					width: "90%",
-					height: 'auto'
-				});
-			} else {
-				$image.css({
-					width: "auto",
-					height: 'auto'
-				});
-			}
-		});
-
+		SproutCoreWysiwyg.adjustContentSizes(this);
 		var self = this;
 		this.$('img').forEach(function(image) {
 			SC.Event.add(image, 'load', self, self.imageDidLoad);
 		});
-
 	}.observes('value', 'frame'),
 
 	// ..........................................................

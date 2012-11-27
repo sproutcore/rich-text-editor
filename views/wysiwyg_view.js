@@ -54,7 +54,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 		var toolbarHeight = this.get('toolbarHeight');
 		this.get('toolbar').adjust('height', toolbarHeight);
 		this.get('scrollView').adjust('top', toolbarHeight);
-
 	},
 
 	controllerClass: SC.WYSIWYGController,
@@ -141,7 +140,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 
 			focus: function(evt) {
 				this.get('wysiwygView').becomeFirstResponder();
-				this._updateFrameHeight();
+				this.updateFrameHeight();
 			}
 
 		}),
