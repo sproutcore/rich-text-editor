@@ -180,7 +180,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 					lastNode = frag.appendChild(node);
 				}
 				range.insertNode(frag);
-
 				if (lastNode) {
 					range = range.cloneRange();
 					range.setStartAfter(lastNode);
@@ -188,7 +187,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 					sel.removeAllRanges();
 					sel.addRange(range);
 				}
-
 			}
 		} else if (document.selection && document.selection.type != "Control") {
 			document.selection.createRange().pasteHTML(html);
@@ -311,7 +309,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			if (!first || first && first.nodeName === "BR") {
 				this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
 			} else {
-				console.log(rangy.getSelection().anchorNode.parentElement);
 			}
 
 		}

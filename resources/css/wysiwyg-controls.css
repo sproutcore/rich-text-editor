@@ -108,6 +108,18 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 	}
 }
 
+$theme.sc-wysiwyg-view.repaint {
+	color: #000001 !important;	
+	
+	textarea {
+		color: #000001;	
+	}
+		
+	input {
+		color: #000001;		
+	}
+}
+
 $theme.sc-view.sc-wysiwyg-video-preview {
 	@include border-radius(5px);
 	border: 5px dashed #ccc;

@@ -52,23 +52,29 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	commitCommand: function(original, controller) {
 		original(controller);
 		var sel = controller.getSelection(), parentElement = sel.anchorNode.parentElement, linkText = this.get('linkText'), url = this.get('url');
+		if (url) {
+			if (!url.match(/[^:]+:\/\//)) {
+				url = "http://" + url;
+			}
 
-		if (!url.match(/\s+:\/\//)) {
-			url = "http://" + url;
+			// if we are dealing with an existing anchor
+			// we need to replace it
+			if (parentElement.tagName === 'A') {
+				parentElement.target = "_blank";
+				parentElement.textContent = linkText;
+				parentElement.href = url;
+			}
+
+			// this is selected text or nothing
+			else {
+				controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
+			}
+		} else {
+			// Was a link, removing it now
+			if (parentElement.tagName === 'A') {
+				
+			}
 		}
-
-		// if we are dealing with an existing anchor
-		// we need to replace it
-		if (parentElement.tagName === 'A') {
-			parentElement.innerHTML = linkText;
-			parentElement.href = url;
-		}
-
-		// this is selected text or nothing
-		else {
-			controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
-		}
-
 		this._reset();
 	}.enhance(),
 

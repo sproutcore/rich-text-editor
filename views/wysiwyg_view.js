@@ -44,6 +44,9 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 
 	init: function() {
 		sc_super();
+
+		editor = this;
+
 		this.controller = this.controllerClass.create({
 			wysiwygView: this,
 			commands: this.get('commands'),
@@ -175,7 +178,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 	},
 
 	didBecomeKeyResponderFrom: function() {
-		this.get('editor').selectFirstChild(true);
+		this.get('editor').$().focus();
 	},
 
 	// TODO: Fix this up to be a bit more sane.
