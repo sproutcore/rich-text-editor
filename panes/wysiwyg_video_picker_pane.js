@@ -9,12 +9,16 @@ sc_require('panes/wysiwyg_command_picker_pane');
 SC.WYSIWYGVideoPickerPane = SC.WYSIWYGPickerPane.extend({
 
 	layout: {
-		height: 328,
+		height: 340,
 		width: 440,
 	},
 
 	contentView: SC.View.extend({
 		childViews: [ 'textArea', 'preview', 'ok', 'cancel' ],
+
+		becomeFirstResponder: function() {
+			this.get('textArea').becomeFirstResponder();
+		},
 
 		textArea: SC.TextFieldView.extend({
 			hint: 'Video Url',
@@ -24,14 +28,14 @@ SC.WYSIWYGVideoPickerPane = SC.WYSIWYGPickerPane.extend({
 			layout: {
 				top: 5,
 				right: 5,
-				height: 28,
+				height: 40,
 				left: 5
 			}
 		}),
 
 		preview: SC.View.extend({
 			layout: {
-				top: 38,
+				top: 50,
 				left: 5,
 				right: 5,
 				height: Math.round(430 / 1.778)

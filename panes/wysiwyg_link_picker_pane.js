@@ -9,7 +9,7 @@ sc_require('panes/wysiwyg_command_picker_pane');
 SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 
 	layout: {
-		height: 104,
+		height: 128,
 		width: 260
 	},
 
@@ -32,7 +32,7 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 				top: 5,
 				left: 5,
 				right: 5,
-				height: 28,
+				height: 40,
 			}
 		}),
 
@@ -40,10 +40,10 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 			hint: 'Link Url',
 			valueBinding: '.pane.command.url',
 			layout: {
-				top: 38,
+				top: 50,
 				left: 5,
 				right: 5,
-				height: 28,
+				height: 40,
 			}
 		}),
 		
