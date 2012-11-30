@@ -184,7 +184,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 	// TODO: Fix this up to be a bit more sane.
 	keyDown: function(evt) {
 		this.rePaint();
-		this.controller.updateState();
 		return this.interpretKeyEvents(evt) || NO;
 	},
 

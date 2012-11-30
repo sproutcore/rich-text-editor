@@ -125,29 +125,25 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @returns {Boolean}
 	 */
 	queryCommandValue: function(commandName) {
-		if (SC.browser.isMozilla) {
-			var sel = rangy.getSelection();
-			if (!sel || !sel.anchorNode) return;
+		var sel = rangy.getSelection();
+		if (!sel || !sel.anchorNode) return;
 
-			var node = sel.anchorNode;
-			switch (commandName.toLowerCase()) {
+		var node = sel.anchorNode;
+		switch (commandName.toLowerCase()) {
 
-			case 'formatblock':
-				while (node && node.nodeName !== "DIV") {
-					if (node.nodeName.match(/(P|H[1-6])/)) {
-						return node.nodeName.toLowerCase();
-					}
-					node = node.parentNode;
+		case 'formatblock':
+			while (node && node.nodeName !== "DIV") {
+				if (node.nodeName.match(/(P|H[1-6])/)) {
+					return node.nodeName.toLowerCase();
 				}
-				return '';
-				break;
-
-			default:
-				return '';
-				break;
+				node = node.parentNode;
 			}
-		} else {
-			return document.queryCommandValue(commandName);
+			return '';
+			break;
+
+		default:
+			return '';
+			break;
 		}
 	},
 

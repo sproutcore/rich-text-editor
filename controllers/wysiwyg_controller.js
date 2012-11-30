@@ -83,8 +83,8 @@ SC.WYSIWYGController = SC.Object.extend({
 		}
 		this.notifyPropertyChange('recomputeEditorState');
 	},
-	
-	recomputeDocumentHeight: function(){
+
+	recomputeDocumentHeight: function() {
 		this.get('editor').updateFrameHeight();
 	},
 
@@ -96,12 +96,12 @@ SC.WYSIWYGController = SC.Object.extend({
 	restoreSavedSelection: function(sel) {
 		rangy.restoreSelection(sel || this._savedSelection, true);
 	},
-	
-	deleteSelection: function(){
+
+	deleteSelection: function() {
 		rangy.getSelection().deleteFromDocument();
 	},
-	
-	getSelection: function(){
+
+	getSelection: function() {
 		return rangy.getSelection();
 	}
 
