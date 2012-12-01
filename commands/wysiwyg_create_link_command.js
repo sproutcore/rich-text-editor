@@ -70,9 +70,12 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 				controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
 			}
 		} else {
+			
 			// Was a link, removing it now
 			if (parentElement.tagName === 'A') {
-				
+				$(parentElement).before(parentElement.textContent);
+				var parent = parentElement.parentElement;
+				parent.removeChild(parentElement);
 			}
 		}
 		this._reset();
