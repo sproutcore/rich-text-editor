@@ -64,8 +64,12 @@ SC.WYSIWYGCommand = {
 	execute: function(source, controller) {
 		SC.info('Override me for action');
 	},
-	
+
 	cancelCommand: function(controller) {
-		
+
+	},
+
+	toString: function() {
+		return 'command: %@'.fmt(this.commandName);
 	}
 };

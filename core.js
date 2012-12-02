@@ -15,7 +15,7 @@ SproutCoreWysiwyg = SC.Object.create(
 	styles: [ {
 		title: 'Paragraph',
 		value: 'p',
-		height: 20
+		height: 28,
 	}, {
 		title: '<h1>Heading 1</h1>',
 		value: 'h1',

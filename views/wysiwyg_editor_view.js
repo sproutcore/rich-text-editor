@@ -214,6 +214,12 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		return newElement;
 	},
 
+	formatNode: function($element, tagName) {
+		var newElement = $(tagName).append($element.clone().get(0).childNodes);
+		$element.replaceWith(newElement);
+		return newElement;
+	},
+
 	/**
 	 * Selects the provided element in the views iFrame
 	 * 

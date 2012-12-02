@@ -32,5 +32,9 @@ SC.WYSIWYGBaseCommand = SC.Object.extend(SC.WYSIWYGCommand, {
 	 */
 	execute: function(source, controller) {
 		controller.execCommand(this.get('commandName'), false, this.get('argument'));
+	},
+
+	toString: function() {
+		return 'command: %@(%@)'.fmt(this.commandName, this.argument);
 	}
 });

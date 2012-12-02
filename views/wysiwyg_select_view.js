@@ -30,18 +30,16 @@ SC.WYSIWYGSelectView = SC.SelectView.extend({
 
 	currentStyleBinding: SC.Binding.oneWay('.parentView.controller.currentStyle'),
 	currenStyleDidChange: function() {
-		this._ignoreChange = true;
 		this.set('value', this.get('currentStyle'));
 	}.observes('currentStyle'),
 
 	valueDidChange: function() {
 		var value = this.get('value');
-		if (value && !this._ignoreChange) {
+		if (value !== this.get('currentStyle')) {
 			this.command.set('argument', '<%@>'.fmt(value.toUpperCase()));
 			var controller = this.getPath('parentView.controller');
 			if (controller) controller.invokeCommand(this);
 		}
-		this._ignoreChange = false;
 	}.observes('value'),
 
 	exampleView: SC.MenuItemView.extend({

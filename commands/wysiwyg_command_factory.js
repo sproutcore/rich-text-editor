@@ -83,7 +83,7 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 	}),
 
 	styles: SC.WYSIWYGBaseCommand.extend({
-		commandName: 'formatBlock',
-		toolTile: 'Format text'
-	})
+		commandName: 'formatBlock'
+	}),
+
 });
