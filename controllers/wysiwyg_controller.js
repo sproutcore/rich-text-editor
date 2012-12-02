@@ -71,6 +71,10 @@ SC.WYSIWYGController = SC.Object.extend({
 		this.get('editor').execCommand(commandName, showDefaultUI, value);
 	},
 
+	notifyDomValueChange: function() {
+		this.get('editor')._domValueDidChange();
+	},
+
 	insertHtmlHtmlAtCaret: function(html) {
 		this.get('editor').insertHtmlHtmlAtCaret(html);
 	},
@@ -79,7 +83,6 @@ SC.WYSIWYGController = SC.Object.extend({
 		this.get('editor').focus();
 		var command = source.get('command');
 		if (command) {
-			SC.info("Executing: " + command);
 			command.execute(source, this);
 		}
 		this.notifyPropertyChange('recomputeEditorState');

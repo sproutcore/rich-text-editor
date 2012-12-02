@@ -63,6 +63,7 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 				parentElement.target = "_blank";
 				parentElement.textContent = linkText;
 				parentElement.href = url;
+				controller.notifyDomValueChange();
 			}
 
 			// this is selected text or nothing
@@ -70,7 +71,7 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 				controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
 			}
 		} else {
-			
+
 			// Was a link, removing it now
 			if (parentElement.tagName === 'A') {
 				$(parentElement).before(parentElement.textContent);
