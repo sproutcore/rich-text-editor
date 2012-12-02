@@ -58,10 +58,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		SC.Event.remove(this.$(), 'paste', this, this.paste);
 	},
 
-	didAppendToDocument: function() {
-		this.doIt = true;
-	},
-
 	/**
 	 * Executes a command against the iFrame:
 	 * 

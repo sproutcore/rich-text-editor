@@ -154,7 +154,13 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
 		},
 	}),
 
-	// Event handlers
+	mouseEntered: function() {
+		this.invokeLast(function() {
+			this.controller.recomputeDocumentHeight();
+			this.controller.updateState();
+		});
+	},
+
 	mouseDown: function(evt) {
 		this.rePaint();
 		evt.allowDefault();
