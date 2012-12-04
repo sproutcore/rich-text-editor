@@ -24,8 +24,6 @@ $theme.sc-button-view.sc-wysiwyg-button {
  *	Command toolbar icons, retina ready. Need some polishing.
  */
 $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
-
-
 	.bold {
 		width: 25px;
 		height: 25px;

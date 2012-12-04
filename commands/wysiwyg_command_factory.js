@@ -44,36 +44,37 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 	insertOrderedList: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'insertOrderedList',
 		title: 'Insert an ordered list',
-		keyEquivalent: 'ctrl_shift_o'
+		keyEquivalent: 'ctrl_shift_7'
 	}),
 
 	insertUnorderedList: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'insertUnorderedList',
 		title: 'Insert an unordered list',
-		keyEquivalent: 'ctrl_shift_u'
+		keyEquivalent: 'ctrl_shift_8'
 	}),
 
 	justifyLeft: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyLeft',
 		title: 'Left justify text',
-		keyEquivalent: 'ctrl_['
+		keyEquivalent: 'ctrl_shift_l'
 	}),
 
 	justifyCenter: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyCenter',
 		title: 'Center justify text',
-		keyEquivalent: 'ctrl_\\'
+		keyEquivalent: 'ctrl_shift_e'
 	}),
 
 	justifyRight: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyRight',
 		title: 'Right justify text',
-		keyEquivalent: 'ctrl_]'
+		keyEquivalent: 'ctrl_shift_r'
 	}),
 
 	justifyFull: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyFull',
-		title: 'Justify text'
+		title: 'Justify text',
+		keyEquivalent: 'ctrl_shift_j'
 	}),
 
 	indent: SC.WYSIWYGBaseCommand.extend({

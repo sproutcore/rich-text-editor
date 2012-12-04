@@ -13,33 +13,47 @@ SproutCoreWysiwyg = SC.Object.create(
 	VERSION: '1.0.2',
 
 	styles: [ {
-		title: 'Paragraph',
 		value: 'p',
-		height: 28
+		title: 'Paragraph',
+		keyEquivalent: 'alt_ctrl_0',
+		height: 28,
+		action: 'formatBlock'
 	}, {
-		title: '<h1>Heading 1</h1>',
 		value: 'h1',
-		height: 40
+		title: '<h1>Heading 1</h1>',
+		keyEquivalent: 'alt_ctrl_1',
+		height: 40,
+		action: 'formatBlock'
 	}, {
-		title: '<h2>Heading 2</h2>',
 		value: 'h2',
-		height: 35
+		title: '<h2>Heading 2</h2>',
+		keyEquivalent: 'alt_ctrl_2',
+		height: 36,
+		action: 'formatBlock'
 	}, {
-		title: '<h3>Heading 3</h3>',
 		value: 'h3',
-		height: 35
+		title: '<h3>Heading 3</h3>',
+		keyEquivalent: 'alt_ctrl_3',
+		height: 34,
+		action: 'formatBlock'
 	}, {
-		title: '<h4>Heading 4</h4>',
 		value: 'h4',
-		height: 30
+		title: '<h4>Heading 4</h4>',
+		keyEquivalent: 'alt_ctrl_4',
+		height: 30,
+		action: 'formatBlock'
 	}, {
-		title: '<h5>Heading 5</h5>',
 		value: 'h5',
-		height: 24
+		title: '<h5>Heading 5</h5>',
+		keyEquivalent: 'alt_ctrl_5',
+		height: 25,
+		action: 'formatBlock'
 	}, {
-		title: '<h6>Heading 6</h6>',
 		value: 'h6',
-		height: 20
+		title: '<h6>Heading 6</h6>',
+		keyEquivalent: 'alt_ctrl_6',
+		height: 24,
+		action: 'formatBlock'
 	} ],
 
 	adjustContentSizes: function(view) {

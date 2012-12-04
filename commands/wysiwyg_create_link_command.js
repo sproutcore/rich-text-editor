@@ -27,7 +27,7 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	title: 'Insert a link',
 
-	keyEquivalent: 'ctrl_l',
+	keyEquivalent: 'ctrl_k',
 
 	pickerPane: SC.WYSIWYGLinkPickerPane,
 

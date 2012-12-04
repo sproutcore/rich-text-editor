@@ -5,50 +5,72 @@
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*globals SproutCoreWysiwyg */
-SC.WYSIWYGSelectView = SC.SelectView.extend({
 
-	/**
-	 * Prevent this field from stealing focus from the toolber
-	 */
-	acceptsFirstResponder: NO,
-
-	isDefaultPosition: YES,
+SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
+	titleBinding: SC.Binding.transform(function(value) {
+		return SproutCoreWysiwyg.styles.findProperty('value', value).title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
+	}).oneWay('.parentView.controller.currentStyle'),
 
 	layout: {
 		width: 120,
 		height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
 	},
 
-	itemTitleKey: 'title',
-	itemValueKey: 'value',
+	_instantiateMenu: function() {
+		var menu = this.get('menu');
+		if (!menu || !menu.isClass) return;
+		this.menu = menu.create({
+			button: this
+		});
+		this._setupMenu();
+	},
 
-	items: SproutCoreWysiwyg.styles.map(function(values) {
-		return SC.Object.create(values);
-	}),
+	formatBlock: function(source) {
+		this.command.set('argument', '<%@>'.fmt(source.selectedItem.value.toUpperCase()));
+		var controller = this.getPath('parentView.controller');
+		if (controller) controller.invokeCommand(this);
+	},
 
-	escapeHTML: NO,
+	menu: SC.MenuPane.extend({
+		layout: {
+			width: 240
+		},
+		menuHeightPadding: 0,
+		items: function() {
+			var button = this.button;
+			return SproutCoreWysiwyg.styles.map(function(values) {
+				return SC.Object.create(values, {
+					target: button,
+					shortcut: function() {
+						var keyEquivalent = this.get('keyEquivalent');
+						if (keyEquivalent) {
+							if (SC.browser.isMac) {
+								keyEquivalent = keyEquivalent.replace('ctrl_', '⌘');
+								keyEquivalent = keyEquivalent.replace('shift_', '⇧');
+								keyEquivalent = keyEquivalent.replace('alt_', '⌥');
+							}
+							else {
+								keyEquivalent = keyEquivalent.replace('ctrl_', 'Ctrl+');
+								keyEquivalent = keyEquivalent.replace('shift_', 'Shift+');
+								keyEquivalent = keyEquivalent.replace('alt_', 'Alt+');
+							}
+						}
+						return keyEquivalent;
+					}.property()
+				});
+			});
+		}.property().cacheable(),
 
-	currentStyleBinding: SC.Binding.oneWay('.parentView.controller.currentStyle'),
-	currenStyleDidChange: function() {
-		this.set('value', this.get('currentStyle'));
-	}.observes('currentStyle'),
+		exampleView: SC.MenuItemView.extend({
+			classNames: 'sc-wysiwyg-menu-item',
+			escapeHTML: NO,
+			render: function(context) {
+				sc_super();
+				context.addStyle({
+					lineHeight: this.get('layout').height
+				});
+			}
 
-	valueDidChange: function() {
-		var value = this.get('value');
-		if (value !== this.get('currentStyle')) {
-			this.command.set('argument', '<%@>'.fmt(value.toUpperCase()));
-			var controller = this.getPath('parentView.controller');
-			if (controller) controller.invokeCommand(this);
-		}
-	}.observes('value'),
-
-	exampleView: SC.MenuItemView.extend({
-		escapeHTML: NO,
-		classNames: 'sc-wysiwyg-menu-item'
-	}),
-
-	_action: function() {
-		sc_super();
-		this.menu.adjust('width', 190);
-	}
+		})
+	})
 });

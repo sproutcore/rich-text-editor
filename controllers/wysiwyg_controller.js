@@ -76,6 +76,10 @@ SC.WYSIWYGController = SC.Object.extend({
 		this.get('editor').execCommand(commandName, showDefaultUI, value);
 	},
 
+	formatBlock: function(format) {
+		this.execCommand('formatBlock', null, format.value);
+	},
+
 	notifyDomValueChange: function() {
 		this.get('editor')._domValueDidChange();
 	},

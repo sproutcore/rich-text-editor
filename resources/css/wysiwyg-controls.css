@@ -65,46 +65,44 @@ $theme.sc-view.select-button.menu {
 }
 
 $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wysiwyg-menu-item {
+	h1, h2, h3, h4, h5, h6, a, span {
+		line-height: inherit !important;
+	}
+	
 	h1 {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 32px;
-		line-height: 40px;
 	}
 
 	h2 {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 28px;
-		line-height: 38px;
 	}
 
 	h3 {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 24px;
-		line-height: 35px;
 	}
 
 	h4 {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 20px;
-		line-height: 30px;
 	}
 
 	h5 {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 18px;
-		line-height: 24px;
 	}
 
 	h6 {
 		@extend .smoothed;
 		font-weight: bold;
 		font-size: 14px;
-		line-height: 20px;
 	}
 }
 
