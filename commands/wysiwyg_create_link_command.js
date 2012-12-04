@@ -32,25 +32,39 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	pickerPane: SC.WYSIWYGLinkPickerPane,
 
 	execute: function(original, source, controller) {
-		var sel = controller.getSelection(), node = sel.anchorNode;
+		var sel = controller.getSelection(), node = sel.anchorNode, range = null;
 
-		if (node.nodeType = Node.TEXT_NODE) {
-			node = sel.anchorNode.parentNode;
+		if (!node && sel.createRange) {
+			range = sel.createRange();
+			node = range.parentElement();
 		}
 
-		if (node.tagName === 'A') {
+		if (node && node.nodeType === Node.TEXT_NODE) {
+			node = node.parentNode;
+		}
+
+		if (node && node.tagName === 'A') {
 			this.set('url', node.href);
 			this.set('linkText', node.text);
 		}
 		else {
-			this.set('linkText', sel.toString());
+			this.set('linkText', range ? range.text : sel.toString());
 		}
 		original(source, controller);
 	}.enhance(),
 
 	commitCommand: function(original, controller) {
 		original(controller);
-		var sel = controller.getSelection(), parentNode = sel.anchorNode.parentNode, linkText = this.get('linkText'), url = this.get('url');
+		var sel = controller.getSelection(), anchorNode = sel.anchorNode, linkText = this.get('linkText'), url = this.get('url');
+
+		var parentNode;
+		if (!anchorNode) {
+			parentNode = sel.createRange().parentElement();
+		}
+		else {
+			parentNode = anchorNode.parentNode;
+		}
+
 		if (url) {
 			if (!url.match(/[^:]+:\/\//) && !url.match(/^mailto:/)) {
 				url = "http://" + url;

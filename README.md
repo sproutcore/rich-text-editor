@@ -83,8 +83,6 @@ To insert arbitrary html at the current location:
 - Add some tests boy howdy
 - refine the video embed command
 - refine the image embed command
-- refine the link command
 - full screen support ?
 - image / file uploading (probably with the sproutcore-fileupload framework)
 - clean up the way the styles are enumerated / displayed (kindof brittle with the css + js views)
-- remove rangy dependency - since it's HUGE.
