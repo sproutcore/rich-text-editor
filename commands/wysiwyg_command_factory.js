@@ -25,65 +25,70 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 
 	bold: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'bold',
-		toolTip: 'Bold text',
+		title: 'Bold text',
 		keyEquivalent: 'ctrl_b'
 	}),
 
 	italic: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'italic',
-		toolTip: 'Italicize text',
+		title: 'Italicize text',
 		keyEquivalent: 'ctrl_i'
 	}),
 
 	underline: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'underline',
-		toolTip: 'Underline text',
+		title: 'Underline text',
 		keyEquivalent: 'ctrl_u'
 	}),
 
 	insertOrderedList: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'insertOrderedList',
-		toolTip: 'Insert an ordered list'
+		title: 'Insert an ordered list',
+		keyEquivalent: 'ctrl_shift_o'
 	}),
 
 	insertUnorderedList: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'insertUnorderedList',
-		toolTip: 'Insert an unordered list'
+		title: 'Insert an unordered list',
+		keyEquivalent: 'ctrl_shift_u'
 	}),
 
 	justifyLeft: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyLeft',
-		toolTip: 'Left justify text',
+		title: 'Left justify text',
 		keyEquivalent: 'ctrl_['
 	}),
 
 	justifyCenter: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyCenter',
-		toolTip: 'Center justify text',
+		title: 'Center justify text',
 		keyEquivalent: 'ctrl_\\'
 	}),
 
 	justifyRight: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyRight',
-		toolTip: 'Right justify text',
+		title: 'Right justify text',
 		keyEquivalent: 'ctrl_]'
 	}),
 
 	justifyFull: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'justifyFull',
-		toolTip: 'Justify text'
+		title: 'Justify text'
 	}),
 
 	indent: SC.WYSIWYGBaseCommand.extend({
-		commandName: 'indent'
+		commandName: 'indent',
+		title: 'Indent text'
 	}),
 
 	outdent: SC.WYSIWYGBaseCommand.extend({
-		commandName: 'outdent'
+		commandName: 'outdent',
+		title: 'Outdent text'
 	}),
 
 	styles: SC.WYSIWYGBaseCommand.extend({
-		commandName: 'formatBlock'
+		commandName: 'formatBlock',
+		title: 'Format Text'
 	}),
 
 });

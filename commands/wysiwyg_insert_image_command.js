@@ -20,6 +20,8 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 
 	commandName: 'insertImage',
 
+	keyEquivalent: 'ctrl_shift_i',
+
 	/**
 	 * @property {String} URL the image to be inserted
 	 */

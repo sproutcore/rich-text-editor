@@ -6,6 +6,7 @@
 // ==========================================================================
 /*globals SproutCoreWysiwyg */
 sc_require('panes/wysiwyg_command_picker_pane');
+console.log('Yooo');
 SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 
 	layout: {
@@ -17,10 +18,9 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 		childViews: [ 'linkText', 'url', 'ok', 'cancel' ],
 
 		becomeFirstResponder: function() {
-			if(this.getPath('pane.command.linkText')){
+			if (this.getPath('pane.command.linkText')) {
 				this.get('linkText').becomeFirstResponder();
-			}
-			else {
+			} else {
 				this.get('url').becomeFirstResponder();
 			}
 		},
@@ -33,7 +33,8 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 				left: 5,
 				right: 5,
 				height: 40,
-			}
+			},
+			nextResponder: SC.outlet('parentView')
 		}),
 
 		url: SC.TextFieldView.extend({
@@ -44,9 +45,9 @@ SC.WYSIWYGLinkPickerPane = SC.WYSIWYGPickerPane.extend({
 				left: 5,
 				right: 5,
 				height: 40,
-			}
+			},
+			nextResponder: SC.outlet('parentView')
 		}),
-		
 
 		ok: SC.ButtonView.extend(SC.AutoResize, {
 			layout: {

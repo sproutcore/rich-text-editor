@@ -20,6 +20,11 @@ SC.WYSIWYGController = SC.Object.extend({
 
 	recomputeEditorState: NO,
 
+	init: function() {
+		sc_super();
+		controller = this;
+	},
+
 	updateState: function() {
 		this.invokeLast(function() {
 			this.toggleProperty('recomputeEditorState');
@@ -93,20 +98,15 @@ SC.WYSIWYGController = SC.Object.extend({
 	},
 
 	saveSelection: function() {
-		this._savedSelection = rangy.saveSelection();
-		return this._savedSelection;
+		return this.get('editor').saveSelection();
 	},
 
-	restoreSavedSelection: function(sel) {
-		rangy.restoreSelection(sel || this._savedSelection, true);
-	},
-
-	deleteSelection: function() {
-		rangy.getSelection().deleteFromDocument();
+	restoreSavedSelection: function(range) {
+		this.get('editor').restoreSavedSelection(range);
 	},
 
 	getSelection: function() {
-		return rangy.getSelection();
+		return this.get('editor').getSelection();
 	}
 
 });

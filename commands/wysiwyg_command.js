@@ -45,6 +45,21 @@ SC.WYSIWYGCommand = {
 	 *           control that invokes this command
 	 */
 	toolTip: function() {
+		var keyEquivalent = this.get('keyEquivalent');
+		if (keyEquivalent) {
+			if (SC.browser.isMac) {
+				keyEquivalent = keyEquivalent.replace('ctrl_', '⌘');
+				keyEquivalent = keyEquivalent.replace('shift_', '⇧');
+			}
+			else {
+				keyEquivalent = keyEquivalent.replace('ctrl_', 'Ctrl+');
+				keyEquivalent = keyEquivalent.replace('shift_', 'Shift+');
+			}
+		}
+		return this.get('title') + (keyEquivalent ? ' (%@)'.fmt(keyEquivalent).toUpperCase() : '');
+	}.property().cacheable(),
+
+	title: function() {
 		return this.get('commandName').titleize();
 	}.property().cacheable(),
 

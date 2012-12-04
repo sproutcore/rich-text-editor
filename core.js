@@ -15,7 +15,7 @@ SproutCoreWysiwyg = SC.Object.create(
 	styles: [ {
 		title: 'Paragraph',
 		value: 'p',
-		height: 28,
+		height: 28
 	}, {
 		title: '<h1>Heading 1</h1>',
 		value: 'h1',
@@ -65,7 +65,8 @@ SproutCoreWysiwyg = SC.Object.create(
 					width: "90%",
 					height: 'auto'
 				});
-			} else {
+			}
+			else {
 				$image.css({
 					width: "auto",
 					height: 'auto'

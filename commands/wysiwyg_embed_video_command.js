@@ -27,6 +27,8 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	pickerPane: SC.WYSIWYGVideoPickerPane,
 
+	keyEquivalent: 'ctrl_shift_v',
+
 	commitCommand: function(original, controller) {
 		original(controller);
 		var insert = this.preview(400);

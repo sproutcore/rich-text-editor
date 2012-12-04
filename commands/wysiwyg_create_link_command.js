@@ -25,44 +25,43 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	linkText: '',
 
-	toolTip: 'Insert a link',
+	title: 'Insert a link',
 
 	keyEquivalent: 'ctrl_l',
 
 	pickerPane: SC.WYSIWYGLinkPickerPane,
 
 	execute: function(original, source, controller) {
-		original(source, controller);
-		var sel = controller.getSelection();
-		var parentElement = sel.anchorNode.parentElement;
+		var sel = controller.getSelection(), node = sel.anchorNode;
 
-		// if we are dealing with an existing anchor
-		// we need to replace it
-		if (parentElement.tagName === 'A') {
-			this.set('url', parentElement.href);
-			this.set('linkText', parentElement.text);
+		if (node.nodeType = Node.TEXT_NODE) {
+			node = sel.anchorNode.parentNode;
 		}
 
-		// this is selected text or nothing
+		if (node.tagName === 'A') {
+			this.set('url', node.href);
+			this.set('linkText', node.text);
+		}
 		else {
 			this.set('linkText', sel.toString());
 		}
+		original(source, controller);
 	}.enhance(),
 
 	commitCommand: function(original, controller) {
 		original(controller);
-		var sel = controller.getSelection(), parentElement = sel.anchorNode.parentElement, linkText = this.get('linkText'), url = this.get('url');
+		var sel = controller.getSelection(), parentNode = sel.anchorNode.parentNode, linkText = this.get('linkText'), url = this.get('url');
 		if (url) {
-			if (!url.match(/[^:]+:\/\//)) {
+			if (!url.match(/[^:]+:\/\//) && !url.match(/^mailto:/)) {
 				url = "http://" + url;
 			}
 
 			// if we are dealing with an existing anchor
 			// we need to replace it
-			if (parentElement.tagName === 'A') {
-				parentElement.target = "_blank";
-				parentElement.textContent = linkText;
-				parentElement.href = url;
+			if (parentNode.tagName === 'A') {
+				parentNode.target = "_blank";
+				parentNode.textContent = linkText;
+				parentNode.href = url;
 				controller.notifyDomValueChange();
 			}
 
@@ -70,13 +69,17 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 			else {
 				controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
 			}
-		} else {
+		}
+
+		// we don't have a url so we probably either
+		// canceled or need to unlink
+		else {
 
 			// Was a link, removing it now
-			if (parentElement.tagName === 'A') {
-				$(parentElement).before(parentElement.textContent);
-				var parent = parentElement.parentElement;
-				parent.removeChild(parentElement);
+			if (parentNode.tagName === 'A') {
+				$(parentNode).before(parentNode.textContent);
+				var parent = parentNode.parentNode;
+				parent.removeChild(parentNode);
 			}
 		}
 		this._reset();

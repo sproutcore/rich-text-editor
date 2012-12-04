@@ -86,7 +86,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 */
 	queryCommandState: function(commandName) {
 		if (SC.browser.isMozilla) {
-			var sel = rangy.getSelection();
+			var sel = this.getSelection();
 			if (!sel || !sel.anchorNode) return;
 
 			var aNode = sel.anchorNode;
@@ -121,7 +121,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @returns {Boolean}
 	 */
 	queryCommandValue: function(commandName) {
-		var sel = rangy.getSelection();
+		var sel = this.getSelection();
 		if (!sel || !sel.anchorNode) return;
 
 		var node = sel.anchorNode;
@@ -214,6 +214,35 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 		var newElement = $(tagName).append($element.clone().get(0).childNodes);
 		$element.replaceWith(newElement);
 		return newElement;
+	},
+
+	saveSelection: function() {
+		if (window.getSelection) {
+			sel = window.getSelection();
+			if (sel.getRangeAt && sel.rangeCount) {
+				this._savedSelection = sel.getRangeAt(0);
+			}
+		} else if (document.selection && document.selection.createRange) {
+			this._savedSelection = document.selection.createRange();
+		}
+		return this._savedSelection;
+	},
+
+	restoreSavedSelection: function(range) {
+		range = range || this._savedSelection;
+		if (range) {
+			if (window.getSelection) {
+				sel = window.getSelection();
+				sel.removeAllRanges();
+				sel.addRange(range);
+			} else if (document.selection && range.select) {
+				range.select();
+			}
+		}
+	},
+
+	getSelection: function() {
+		return document.selection || document.getSelection();
 	},
 
 	/**

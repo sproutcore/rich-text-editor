@@ -5,6 +5,7 @@
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 /*globals SproutCoreWysiwyg */
+
 SC.WYSIWYGPickerPane = SC.PickerPane.extend({
 	pointerPos: 'perfectTop',
 
