@@ -60,8 +60,15 @@ SC.WYSIWYGController = SC.Object.extend({
 	}.property('recomputeEditorState'),
 
 	currentStyle: function() {
-		var style = this.queryCommandValue('formatBlock');
-		return style ? style : 'p';
+		var style = this.queryCommandValue('formatBlock') || 'p';
+		// because IE is stupid;
+		if (style === 'Normal') {
+			style = "p";
+		}
+		else if (style.indexOf('Heading') != -1) {
+			style = style.replace('Heading ', 'h');
+		}
+		return style;
 	}.property('recomputeEditorState'),
 
 	queryCommandState: function(command) {

@@ -8,7 +8,13 @@
 
 SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
 	titleBinding: SC.Binding.transform(function(value) {
-		return SproutCoreWysiwyg.styles.findProperty('value', value).title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
+		value = SproutCoreWysiwyg.styles.findProperty('value', value);
+		if (!value) {
+			value = {
+				title: "Paragraph"
+			};
+		}
+		return value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
 	}).oneWay('.parentView.controller.currentStyle'),
 
 	layout: {
@@ -33,7 +39,7 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
 
 	menu: SC.MenuPane.extend({
 		layout: {
-			width: 240
+			width: SC.browser.isMac ? 240 : 260
 		},
 		menuHeightPadding: 0,
 		items: function() {

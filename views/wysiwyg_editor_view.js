@@ -106,7 +106,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 				break;
 			}
 
-		} else {
+		}
+		else {
 			return document.queryCommandState(commandName);
 		}
 	},
@@ -121,25 +122,30 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @returns {Boolean}
 	 */
 	queryCommandValue: function(commandName) {
-		var sel = this.getSelection();
-		if (!sel || !sel.anchorNode) return;
+		if (SC.browser.isMozilla) {
+			var sel = this.getSelection();
+			if (!sel || !sel.anchorNode) return;
 
-		var node = sel.anchorNode;
-		switch (commandName.toLowerCase()) {
+			var node = sel.anchorNode;
+			switch (commandName.toLowerCase()) {
 
-		case 'formatblock':
-			while (node && node.nodeName !== "DIV") {
-				if (node.nodeName.match(/(P|H[1-6])/)) {
-					return node.nodeName.toLowerCase();
+			case 'formatblock':
+				while (node && node.nodeName !== "DIV") {
+					if (node.nodeName.match(/(P|H[1-6])/)) {
+						return node.nodeName.toLowerCase();
+					}
+					node = node.parentNode;
 				}
-				node = node.parentNode;
-			}
-			return '';
-			break;
+				return '';
+				break;
 
-		default:
-			return '';
-			break;
+			default:
+				return '';
+				break;
+			}
+		}
+		else {
+			return document.queryCommandValue(commandName);
 		}
 	},
 
@@ -180,7 +186,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 					sel.addRange(range);
 				}
 			}
-		} else if (document.selection && document.selection.type != "Control") {
+		}
+		else if (document.selection && document.selection.type != "Control") {
 			document.selection.createRange().pasteHTML(html);
 		}
 
@@ -190,9 +197,18 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	paste: function(evt) {
 		if (!SC.browser.isIE) {
 			evt.preventDefault();
-			var data = SC.browser.isIE ? window.clipboardData.getData('HTML') : event.clipboardData.getData('text/html');
-			data = data.replace(/(font-family|font-size|line-height|background-color|color):[^;]+;/gi, '');
-			this.insertHtmlHtmlAtCaret(data);
+			var data = evt.originalEvent.clipboardData.getData('text/html');
+			this.insertHtmlHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
+		}
+		// IE uses actual font tags to format, so lets remove them as they are
+		// stupid
+		// that is all.
+		else {
+			evt.allowDefault();
+			this.invokeLast(function() {
+				this._domValueDidChange();
+				this.set('value', this.get('value').replace(/<\/?font[^>]*>/gim, ''));
+			});
 		}
 	},
 
@@ -222,7 +238,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			if (sel.getRangeAt && sel.rangeCount) {
 				this._savedSelection = sel.getRangeAt(0);
 			}
-		} else if (document.selection && document.selection.createRange) {
+		}
+		else if (document.selection && document.selection.createRange) {
 			this._savedSelection = document.selection.createRange();
 		}
 		return this._savedSelection;
@@ -235,7 +252,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 				sel = window.getSelection();
 				sel.removeAllRanges();
 				sel.addRange(range);
-			} else if (document.selection && range.select) {
+			}
+			else if (document.selection && range.select) {
 				range.select();
 			}
 		}
@@ -261,7 +279,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 				range.collapse(collapse);
 			}
 			sel.addRange(range);
-		} else if (document.selection) {
+		}
+		else if (document.selection) {
 			var textRange = document.body.createTextRange();
 			textRange.moveToElementText($element[0]);
 			textRange.select();
@@ -335,7 +354,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			first = this.$().children()[0];
 			if (!first || first && first.nodeName === "BR") {
 				this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
-			} else {
+			}
+			else {
 			}
 
 		}
