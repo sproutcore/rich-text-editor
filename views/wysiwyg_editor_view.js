@@ -195,7 +195,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	},
 
 	paste: function(evt) {
-		if (!SC.browser.isIE) {
+		if (evt.originalEvent.clipboardData) {
 			evt.preventDefault();
 			var data = evt.originalEvent.clipboardData.getData('text/html');
 			this.insertHtmlHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
