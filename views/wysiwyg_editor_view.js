@@ -195,21 +195,36 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	},
 
 	paste: function(evt) {
-		if (evt.originalEvent.clipboardData) {
+		if (evt.clipboardData) {
 			evt.preventDefault();
-			var data = evt.originalEvent.clipboardData.getData('text/html');
+			var data = evt.clipboardData.getData('text/html');
 			this.insertHtmlHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
 		}
-		// IE uses actual font tags to format, so lets remove them as they are
-		// stupid
-		// that is all.
+		// doesn't support clipbaordData so lets do this, and remove any
+		// horrible class and style information
 		else {
 			evt.allowDefault();
-			this.invokeLast(function() {
-				this._domValueDidChange();
-				this.set('value', this.get('value').replace(/<\/?font[^>]*>/gim, ''));
-			});
 		}
+
+		this.invokeLast(function() {
+			this._domValueDidChange();
+			var value = this.get('value');
+
+			// handle IE pastes, which could include font tags
+			value = value.replace(/<\/?font[^>]*>/gim, '');
+
+			// we don't allow spans, sorry. google docs uses
+			// them to do all manners of weird stuff.
+			value = value.replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '');
+
+			// also no ids
+			value = value.replace(/id="[^"]+"/, '');
+
+			// also no classes
+			value = value.replace(/class="[^"]+"/, '');
+
+			this.set('value', value);
+		});
 	},
 
 	/**
