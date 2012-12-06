@@ -227,6 +227,13 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 				}
 			}
 
+			var links = value.match(/<a[^>]+>/g);
+			if (links) {
+				for ( var i = 0; i < links.length; i++) {
+					value = value.replace(links[i], links[i].replace(/target="[^"]+"/, '').replace('>', ' target="_blank">'));
+				}
+			}
+
 			this.set('value', value);
 		});
 	},
