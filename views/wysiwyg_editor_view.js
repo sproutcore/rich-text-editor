@@ -220,10 +220,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			value = value.replace(/class="[^"]+"/, '');
 
 			var matches = value.match(/style="([^"]+)"/g);
-
-			for ( var i = 0; i < matches.length; i++) {
-				var subMatches = matches[i].match(/(text-align): [^;]+;/);
-				value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
+			if (matches) {
+				for ( var i = 0; i < matches.length; i++) {
+					var subMatches = matches[i].match(/(text-align): [^;]+;/);
+					value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
+				}
 			}
 
 			this.set('value', value);
