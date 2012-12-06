@@ -213,15 +213,18 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 			// handle IE pastes, which could include font tags
 			value = value.replace(/<\/?font[^>]*>/gim, '');
 
-			// we don't allow spans, sorry. google docs uses
-			// them to do all manners of weird stuff.
-			value = value.replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '');
-
 			// also no ids
 			value = value.replace(/id="[^"]+"/, '');
 
 			// also no classes
 			value = value.replace(/class="[^"]+"/, '');
+
+			var matches = value.match(/style="([^"]+)"/g);
+
+			for ( var i = 0; i < matches.length; i++) {
+				var subMatches = matches[i].match(/(text-align): [^;]+;/);
+				value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
+			}
 
 			this.set('value', value);
 		});
