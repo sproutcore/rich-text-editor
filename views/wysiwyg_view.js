@@ -18,7 +18,7 @@ sc_require('views/wysiwyg_toolbar_view');
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
+SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEditor, {
 
     contentKeys: {
         contentValueKey: 'value',
@@ -190,7 +190,8 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, {
     // TODO: Fix this up to be a bit more sane.
     keyDown: function (evt) {
         this.rePaint();
-        return this.interpretKeyEvents(evt) || this.performKeyEquivalent(evt.commandCodes()[0], evt);
+        var ret = this.interpretKeyEvents(evt) || this.performKeyEquivalent(evt.commandCodes()[0], evt);
+        return ret;
     },
 
     insertNewline: function (evt) {
