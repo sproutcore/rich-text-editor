@@ -244,7 +244,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	 * @param $element
 	 * @param tagName
 	 * @private
-	 * @returns
+	 * @return reformated element
 	 */
 	_formatElement: function($element, tagName) {
 		var newElement = $('<' + tagName + '/>').append($element.clone().get(0).childNodes);
