@@ -146,12 +146,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
                 this.updateFrameHeight();
             }
 
-        }),
-
-        mouseWheel: function (evt) {
-            sc_super();
-            return YES;
-        }
+        })
     }),
 
     mouseEntered: function () {
