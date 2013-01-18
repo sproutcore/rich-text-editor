@@ -26,7 +26,7 @@ $theme.sc-view.sc-label-view.sc-wysiwyg-text, $theme.sc-view.sc-wysiwyg-static-v
 	
 	img {
 		display: block;
-		margin: 0 auto 0 auto;
+		margin: 2px auto 2px auto;
 	}
 	
     a {
