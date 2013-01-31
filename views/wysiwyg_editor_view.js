@@ -31,7 +31,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 	classNames: 'sc-wysiwyg-editor',
 
 	render: function(context) {
-		context.attr('contentEditable', true);
+		context.setAttr('contentEditable', true);
 		context.addStyle('padding', this.get('documentPadding'));
 		context.push(this.get('carriageReturnText'));
 	},
