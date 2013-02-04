@@ -9,41 +9,47 @@ sc_require('delegates/wysiwyg_toolbar_view_delegate');
 
 SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {
 
-	acceptsFirstResponder: NO,
+    acceptsFirstResponder: NO,
 
-	classNames: 'sc-wysiwyg-toolbar',
+    classNames: 'sc-wysiwyg-toolbar',
 
-	controller: null,
+    controller: null,
 
-	flowPadding: {
-		top: 4,
-		left: 4,
-		right: 4
-	},
+    flowPadding: {
+        top: 0,
+        left: 0,
+        right: 4,
+        bottom: 4
+    },
 
-	defaultFlowSpacing: {
-		right: 4
-	},
+    defaultFlowSpacing: {
+        top: 4,
+        left: 4
+    },
 
-	anchorLocation: SC.ANCHOR_TOP,
+    calculatedHeightDidChange: function () {
+        this.adjust('height', this.get('calculatedHeight') + 4);
+    }.observes('calculatedHeight'),
 
-	commandsBinding: SC.Binding.oneWay('*controller.commands'),
+    anchorLocation: SC.ANCHOR_TOP,
 
-	commandsDidChange: function() {
-		var commands = this.get('commands');
-		for ( var i = 0; i < commands.length; i++) {
-			var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
-			if (view) {
-				this.childViews.push(view);
-				this.appendChild(view);
-			}
-		}
-	}.observes('commands'),
+    commandsBinding: SC.Binding.oneWay('*controller.commands'),
 
-	delegate: null,
+    commandsDidChange: function () {
+        var commands = this.get('commands');
+        for (var i = 0; i < commands.length; i++) {
+            var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
+            if (view) {
+                this.childViews.push(view);
+                this.appendChild(view);
+            }
+        }
+    }.observes('commands'),
 
-	viewDelegate: function() {
-		return this.delegateFor('isWYSIWYGToolbarViewDelegate', this.get('delegate'));
-	}.property('delegate')
+    delegate: null,
+
+    viewDelegate: function () {
+        return this.delegateFor('isWYSIWYGToolbarViewDelegate', this.get('delegate'));
+    }.property('delegate')
 
 });

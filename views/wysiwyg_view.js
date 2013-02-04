@@ -62,6 +62,13 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
     controllerClass: SC.WYSIWYGController,
     controller: null,
 
+    toolbarFrameDidChange: function () {
+        var tf = this.getPath('toolbar.frame');
+        if (tf) {
+            this.get('scrollView').adjust('top', tf.height);
+        }
+    }.observes('.toolbar.frame'),
+
     // -------- Views
 
     /**
