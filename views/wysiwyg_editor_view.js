@@ -50,11 +50,13 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
 
         didCreateLayer: function () {
             SC.Event.add(this.$(), 'focus', this, this.focus);
+            SC.Event.add(this.$(), 'blur', this, this.blur);
             SC.Event.add(this.$(), 'paste', this, this.paste);
         },
 
         willDestroyLayer: function () {
             SC.Event.remove(this.$(), 'focus', this, this.focus);
+            SC.Event.remove(this.$(), 'blur', this, this.blur);
             SC.Event.remove(this.$(), 'paste', this, this.paste);
         },
 
