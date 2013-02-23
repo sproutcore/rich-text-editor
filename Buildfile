@@ -3,5 +3,4 @@ config :'sproutcore-wysiwyg',
   'sproutcore/desktop',
   'sproutcore/core_foundation',
   'sproutcore-upload'
-],
-:css_theme => "matygo"
+]
