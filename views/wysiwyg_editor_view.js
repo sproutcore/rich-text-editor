@@ -208,6 +208,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
                 evt.allowDefault();
             }
 
+            // TODO: Rather then parse things lets actually traverse the dom.
+            // bone head move.
             this.invokeNext(function () {
                 this._domValueDidChange();
                 var value = this.get('value');
