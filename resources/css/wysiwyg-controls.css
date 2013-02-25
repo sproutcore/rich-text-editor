@@ -53,7 +53,7 @@ $theme.toolbar.sc-toolbar-view.sc-wysiwyg-toolbar {
 /*
  *	SC.WYSIWYGSelectView - menu items
  */
-$theme.sc-view.select-button.menu {
+$theme.sc-view.menu {
 	.sc-menu-item.sc-wysiwyg-menu-item {
 		&.focus, a:hover {
 			span { color: white; }
