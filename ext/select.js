@@ -22,7 +22,7 @@ SC.SelectView.reopen({
 	render: function(context, firstTime) {
 		sc_super();
 
-		var escapeHTML, layoutWidth, items, len, nameKey, iconKey, valueKey, separatorKey, showCheckbox, currentSelectedVal, shouldLocalize, isSeparator, itemList, isChecked, idx, name, icon, value, item, itemEnabled, isEnabledKey, emptyName, isSameRecord;
+		var escapeHTML, layoutWidth, items, len, nameKey, iconKey, valueKey, separatorKey, showCheckbox, currentSelectedVal, shouldLocalize, isSeparator, itemList, isChecked, idx, name, icon, value, item, itemEnabled, isEnabledKey, itemHeight, emptyName, isSameRecord;
 
 		items = this.get('items') || [];
 		items = this.sortObjects(items);
@@ -139,6 +139,9 @@ SC.SelectView.reopen({
 					itemEnabled = (object.get ? object.get(isEnabledKey) : object[isEnabledKey]);
 					if (NO !== itemEnabled) itemEnabled = YES;
 
+					// Get the item's height. (This should be given the fooKey treatment before heading back to SproutCore proper.)
+					var itemHeight = (object.get ? object.get('height') : object.height);
+
 					// Set the first non-separator selectable item from the list
 					// as the
 					// default selected item
@@ -158,7 +161,7 @@ SC.SelectView.reopen({
 					checkbox: isChecked,
 					target: this,
 					action: 'displaySelectedItem',
-					height: object.get('height')
+					height: itemHeight
 				});
 
 				// Set the items in the itemList array
