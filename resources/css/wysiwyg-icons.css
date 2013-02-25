@@ -1,23 +1,24 @@
 @import "compass/css3";
 
-$theme.sc-button-view.sc-wysiwyg-button {
+$theme.sc-view.button.sc-button-view.sc-wysiwyg-button {
 
 	.hover {
 		display: none;
 	}
 
-    label {
+  label {
 		margin: 0 0 0 0;
 		padding: 0 0 0 0;
+		line-height: 22px;
 		
 		img {
 			top: 0;
 			right: 0;
 			bottom: 0;
 			left: 0;
-			margin: 0 auto 0 auto;
+			margin: auto;
 		}
-    }
+  }
 }
 
 /*
@@ -25,14 +26,14 @@ $theme.sc-button-view.sc-wysiwyg-button {
  */
 $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	.bold {
-		width: 25px;
-		height: 25px;
+		width: 14px;
+		height: 19px;
 		@include slice("../images/icons2/bold.png");
 	}
 	
 	.italic {
-		width: 25px;
-		height: 25px;
+		width: 12px;
+		height: 19px;
 		@include slice("../images/icons2/italic.png");
 	}
 	
@@ -92,8 +93,8 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	}
 	
 	.insert-image {
-		width: 25px;
-		height: 25px;
+		width: 17px;
+		height: 15px;
 		@include slice("../images/icons2/picture.png");
 	}
 	
@@ -104,8 +105,8 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	}
 	
 	.link {
-		width: 25px;
-		height: 25px;
+		width: 17px;
+		height: 19px;
 		@include slice("../images/icons2/link.png");
 	}
 	
