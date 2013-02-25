@@ -42,14 +42,18 @@ $theme.sc-wysiwyg-editor {
 /*
  *	SC.WYSIWYGToolbarView
  */
-$theme.sc-toolbar-view.sc-wysiwyg-toolbar {
+$theme.toolbar.sc-toolbar-view.sc-wysiwyg-toolbar {
 	@include border-top-radius(5px);
+	background-color: #DDD;
+	@include background-image(linear-gradient(top, #EEEEEE, #C0C0C0));
+	background-position: top left;
+	background-repeat: repeat;
 }
 
 /*
  *	SC.WYSIWYGSelectView - menu items
  */
-$theme.sc-view.select-button.menu {
+$theme.sc-view.menu {
 	.sc-menu-item.sc-wysiwyg-menu-item {
 		&.focus, a:hover {
 			span { color: white; }
