@@ -44,15 +44,15 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	}
 	
 	.insert-ordered-list {
-		width: 25px;
-		height: 25px;
+		width: 17px;
+		height: 17px;
 		@include slice("../images/icons2/ordered-list.png");
 
 	}
 
 	.insert-unordered-list {
-		width: 25px;
-		height: 25px;
+		width: 17px;
+		height: 15px;
 		@include slice("../images/icons2/unordered-list.png");		
 	}
 
