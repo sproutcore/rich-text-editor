@@ -338,8 +338,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          * Syncronize the value with the dom.
          */
         _valueDidChange: function () {
-            var value = this.get('value');
-            if (value && !this._changeByEditor) {
+            var value = this.get('value') || '';
+            if (!this._changeByEditor) {
                 this.$().html(value);
             }
             this._changeByEditor = false;
