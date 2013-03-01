@@ -4,7 +4,6 @@
  - Author:    Joe Gaudet (joe@learndot.com) and contributors (see contributors.txt)               -
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
-/*globals SproutCoreWysiwyg */
 sc_require('delegates/wysiwyg_toolbar_view_delegate');
 
 SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {

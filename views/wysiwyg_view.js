@@ -55,6 +55,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         var toolbarHeight = this.get('toolbarHeight');
         this.get('toolbar').adjust('height', toolbarHeight);
         this.get('scrollView').adjust('top', toolbarHeight);
+
     },
 
     controllerClass: SC.WYSIWYGController,
@@ -84,7 +85,10 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
      * @property {SC.WYSIWYGToolbarView}
      */
     toolbar: SC.WYSIWYGToolbarView.extend({
-        controller: SC.outlet('parentView.controller')
+        controller: SC.outlet('parentView.controller'),
+        layout: {
+            top: 0, right: 0, left: 0
+        }
     }),
 
     /**
@@ -147,8 +151,20 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
             },
 
             focus: function (evt) {
-                this.get('wysiwygView').becomeFirstResponder();
+                // walk up the dom to find a scroll view that isn't the one containing
+                // this one.
+                var wysiwygView = this.get('wysiwygView'),
+                    scroller = wysiwygView.$().closest('.sc-container-view'),
+                    stored = scroller.scrollTop();
+
+                wysiwygView.becomeFirstResponder();
                 this.updateFrameHeight();
+
+                scroller.scrollTop(stored);
+
+                this.invokeNext(function () {
+                    wysiwygView.scrollToVisible();
+                });
             },
 
             blur: function (evt) {
