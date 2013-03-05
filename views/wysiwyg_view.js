@@ -45,6 +45,8 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
     init: function () {
         sc_super();
 
+        editor = this;
+
         this.controller = this.controllerClass.create({
             wysiwygView: this,
             commands: this.get('commands'),
@@ -134,14 +136,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
                 return frame ? frame.height : 0;
             }).oneWay('.parentView.parentView.frame'),
 
-            /**
-             * Extended to support scrolling of the resized frame
-             */
-            keyUp: function (evt) {
-                var ret = sc_super();
-                return ret;
-            },
-
             mouseUp: function (evt) {
                 return this.get('wysiwygView').mouseUp(evt);
             },
@@ -209,6 +203,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
 
     // TODO: Fix this up to be a bit more sane.
     keyDown: function (evt) {
+        evt.allowDefault();
         this.rePaint();
         var ret = this.interpretKeyEvents(evt) || this.performKeyEquivalent(evt.commandCodes()[0], evt);
         return ret;
