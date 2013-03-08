@@ -162,7 +162,13 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
             },
 
             blur: function (evt) {
-                this.get('wysiwygView').resignFirstResponder();
+                var nextKeyView = this.getPath('wysiwygView.nextValidKeyView');
+                if (nextKeyView) {
+                    nextKeyView.becomeFirstResponder();
+                }
+                else {
+                    this.get('wysiwygView').resignFirstResponder();
+                }
             }
 
         })
@@ -218,11 +224,11 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         return YES;
     },
 
-    insertTab: function (evt) {
-        evt.preventDefault();
-        this.get('editor').insertHtmlHtmlAtCaret('<span class="tab"></span>');
-        return YES;
-    },
+//    insertTab: function (evt) {
+//        evt.preventDefault();
+//        this.get('editor').insertHtmlHtmlAtCaret('<span class="tab"></span>');
+//        return YES;
+//    },
 
     rePaint: function () {
         this.get('editor').toggleProperty('shouldRepaint');
