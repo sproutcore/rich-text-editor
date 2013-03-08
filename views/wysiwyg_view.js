@@ -99,7 +99,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
      * @property {SC.ScrollView}
      */
     scrollView: SC.ScrollView.extend({
-
+        acceptsFirstResponder: NO,
         layout: {
             top: 32,
             right: 0,
@@ -154,21 +154,14 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
                 wysiwygView.becomeFirstResponder();
                 this.updateFrameHeight();
 
-                scroller.scrollTop(stored);
-
-                this.invokeNext(function () {
+                this.invokeLast(function () {
+                    scroller.scrollTop(stored);
                     wysiwygView.scrollToVisible();
                 });
             },
 
             blur: function (evt) {
-                var nextKeyView = this.getPath('wysiwygView.nextValidKeyView');
-                if (nextKeyView) {
-                    nextKeyView.becomeFirstResponder();
-                }
-                else {
-                    this.get('wysiwygView').resignFirstResponder();
-                }
+
             }
 
         })
@@ -207,6 +200,10 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         this.get('editor').$().focus();
     },
 
+    willLoseFirstResponder: function () {
+        this.get('editor').$().blur();
+    },
+
     // TODO: Fix this up to be a bit more sane.
     keyDown: function (evt) {
         evt.allowDefault();
@@ -224,11 +221,14 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         return YES;
     },
 
-//    insertTab: function (evt) {
-//        evt.preventDefault();
-//        this.get('editor').insertHtmlHtmlAtCaret('<span class="tab"></span>');
-//        return YES;
-//    },
+    insertTab: function (evt) {
+        evt.preventDefault();
+        var nextKeyView = this.get('nextValidKeyView');
+        if (nextKeyView) {
+            nextKeyView.becomeFirstResponder();
+        }
+        return YES;
+    },
 
     rePaint: function () {
         this.get('editor').toggleProperty('shouldRepaint');
