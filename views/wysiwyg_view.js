@@ -45,8 +45,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
     init: function () {
         sc_super();
 
-        editor = this;
-
         this.controller = this.controllerClass.create({
             wysiwygView: this,
             commands: this.get('commands'),
@@ -58,6 +56,12 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         this.get('toolbar').adjust('height', toolbarHeight);
         this.get('scrollView').adjust('top', toolbarHeight);
 
+    },
+
+    destroy: function() {
+        this.controller.destroy();
+
+        return sc_super();
     },
 
     controllerClass: SC.WYSIWYGController,
