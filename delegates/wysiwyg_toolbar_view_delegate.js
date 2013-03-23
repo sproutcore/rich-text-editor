@@ -5,7 +5,6 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('views/wysiwyg_select_view');
 
 /**
  * @class
@@ -24,42 +23,46 @@ SC.WYSIWYGToolbarViewDelegate = {
             return toolbarView.createChildView(separatorView);
         }
 
-        var command = SC.WYSIWYGCommandFactory.commandFor(commandName);
-        var controlView = command ? this.toolbarViewButtonForCommand(toolbarView, commandName, command) : this[commandName];
-        if (controlView) {
-            controlView = this[commandName] = toolbarView.createChildView(controlView);
-            if (SC.ButtonView.hasSubclass(controlView.constructor)) {
-                controlView.adjust('height', SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height);
+        var command = SC.WYSIWYGCommandFactory.commandFor(commandName),
+            controlView;
+
+        if (command) {
+            controlView = this.toolbarViewButtonForCommand(toolbarView, commandName, command);
+
+            if (controlView) {
+                controlView = this[commandName] = toolbarView.createChildView(controlView);
+                if (SC.ButtonView.hasSubclass(controlView.constructor)) {
+                    controlView.adjust('height', SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height);
+                }
+            }
+            else {
+                SC.error('WYSIWYGToolbarViewDelegate: Could not createView: ' + commandName + ' no class was found.');
             }
         }
         else {
-            SC.error('WYSIWYGToolbarViewDelegate: Could not createView: ' + commandName + ' no class was found.');
+            SC.error('WYSIWYGToolbarViewDelegate: Could not find command for the commandName: ' + commandName);
         }
+        
+        
         return controlView;
     },
 
     toolbarViewButtonForCommand: function (toolbarView, key, command) {
-        var buttonClass = this[key];
-        if (buttonClass) {
-            buttonClass = buttonClass.extend({
-                command: command
-            });
-        }
-        else {
-            buttonClass = this.get('exampleView').extend({
-                layout: {
-                    width: 30,
-                    height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
-                },
-                icon: command.get('icon'),
-                command: command,
-                toolTip: command.get('toolTip'),
-                action: 'invokeCommand',
-                target: this,
-                keyEquivalent: command.get('keyEquivalent'),
-                isSelectedBinding: SC.Binding.oneWay('.parentView.controller.is' + command.commandName.classify())
-            });
-        }
+        var exampleView = command.get('exampleView'),
+            width = exampleView.prototype.layout.width || 30,
+            buttonClass = exampleView.extend({
+            layout: {
+                width: width,
+                height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
+            },
+            icon: command.get('icon'),
+            command: command,
+            toolTip: command.get('toolTip'),
+            action: 'invokeCommand',
+            target: this,
+            keyEquivalent: command.get('keyEquivalent'),
+            isSelectedBinding: SC.Binding.oneWay('.parentView.controller.is' + command.commandName.classify())
+        });
         return buttonClass;
     },
 
@@ -78,17 +81,4 @@ SC.WYSIWYGToolbarViewDelegate = {
     invokeCommand: function (source) {
         this.get('controller').invokeCommand(source);
     },
-
-    /**
-     * @property {SC.WYSIWYGSelectView} default control for handling paragraph
-     *           styles (p, h1, h2 etc)
-     */
-    styles: SC.WYSIWYGSelectView,
-
-    /**
-     * @property {SC.ButtonView) default control for handling commands.
-	 */
-    exampleView: SC.ButtonView.extend({
-        classNames: 'sc-wysiwyg-button'
-    })
 };

@@ -69,6 +69,13 @@ SC.WYSIWYGCommand = {
 	keyEquivalent: '',
 
 	/**
+	 * @property {SC.View} - view to display in the toolbar
+	 */
+	exampleView: SC.ButtonView.extend({
+    classNames: 'sc-wysiwyg-button'
+  }),
+
+	/**
 	 * The expected interface through which commands are called.
 	 * 
 	 * @param {SC.Control}

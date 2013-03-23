@@ -21,11 +21,6 @@ SC.WYSIWYGPickerCommandSupport = {
 	isWYSIWYGPickerCommandSupport: YES,
 
 	/**
-	 * @property {SC.WYSIWYGPickerPane} - the pane that is displayed.
-	 */
-	pickerPane: null,
-
-	/**
 	 * Wired up.
 	 * 
 	 * @param source
@@ -61,7 +56,7 @@ SC.WYSIWYGPickerCommandSupport = {
 	 * @param controller{SC.WYSIWYGController}
 	 */
 	_popup: function(anchor, controller) {
-		if (this.pickerPane) this.pickerPane.create({
+		if (this.exempleView) this.exempleView.create({
 			controller: controller,
 			command: this
 		}).popup(anchor, SC.PICKER_POINTER, [ 2, 3, 0, 1, 2 ]);

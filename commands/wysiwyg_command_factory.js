@@ -6,6 +6,7 @@
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
 sc_require('commands/wysiwyg_base_command');
+sc_require('views/wysiwyg_select_view');
 
 SC.WYSIWYGCommandFactory = SC.Object.create({
 
@@ -89,7 +90,8 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 
 	styles: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'formatBlock',
-		title: 'Format Text'
+		title: 'Format Text',
+		exampleView: SC.WYSIWYGSelectView,
 	}),
 
 });

@@ -31,7 +31,7 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 
 	height: 0,
 
-	pickerPane: SC.WYSIWYGImagePickerPane,
+	exempleView: SC.WYSIWYGImagePickerPane,
 
 	callback: null,
 

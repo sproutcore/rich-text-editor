@@ -18,8 +18,7 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
     }).oneWay('.parentView.controller.currentStyle'),
 
     layout: {
-        width: 120,
-        height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
+        width: 120
     },
 
     _instantiateMenu: function () {
