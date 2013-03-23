@@ -19,6 +19,11 @@ SC.WYSIWYGToolbarViewDelegate = {
     controller: null,
 
     toolbarViewCreateControlForCommandNamed: function (toolbarView, commandName) {
+        if (commandName === 'separator') {
+            var separatorView = this.toolbarViewSeparator();
+            return toolbarView.createChildView(separatorView);
+        }
+
         var command = SC.WYSIWYGCommandFactory.commandFor(commandName);
         var controlView = command ? this.toolbarViewButtonForCommand(toolbarView, commandName, command) : this[commandName];
         if (controlView) {
@@ -56,6 +61,18 @@ SC.WYSIWYGToolbarViewDelegate = {
             });
         }
         return buttonClass;
+    },
+
+    toolbarViewSeparator: function () {
+        var separator = SC.SeparatorView.extend({
+            layout: { 
+                top: 0, 
+                bottom: 0, 
+                height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height, 
+                width: 3 }, 
+            layoutDirection: SC.LAYOUT_VERTICAL, 
+        });
+        return separator;
     },
 
     invokeCommand: function (source) {
