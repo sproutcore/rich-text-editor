@@ -26,11 +26,11 @@ SC.WYSIWYGBaseCommand = SC.Object.extend(SC.WYSIWYGCommand, {
 	 * 
 	 * @param {SC.Control}
 	 *            source - control that invoked this command
-	 * @param {SC.WYSIWYGController}
-	 *            controller - instance of the wysiwyg controller
+	 * @param {SC.WYSIWYGEditorView}
+	 *            editor - instance of the wysiwyg editor
 	 */
-	execute: function(source, controller) {
-		controller.execCommand(this.get('commandName'), false, this.get('argument'));
+	execute: function(source, editor) {
+		editor.execCommand(this.get('commandName'), false, this.get('argument'));
 	},
 
 	toString: function() {

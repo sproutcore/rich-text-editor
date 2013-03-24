@@ -7,15 +7,31 @@
 /*globals SproutCoreWysiwyg */
 
 SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
-    titleBinding: SC.Binding.transform(function (value) {
-        value = SproutCoreWysiwyg.styles.findProperty('value', value);
-        if (!value) {
-            value = {
-                title: "Paragraph"
-            };
+    title: null,
+
+    editorStateDidChange: function() {
+        var currentStyle = this.currentEditorStyle(),
+            value = SproutCoreWysiwyg.styles.findProperty('value', currentStyle);
+
+        if (!value) value = { title: "Paragraph" };
+            
+        var title = value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
+
+        this.set('title', title);
+    },
+
+    currentEditorStyle: function () {
+        var editor = this.get('editor'),
+            style = editor.queryCommandValue('formatBlock') || 'p';
+        // because IE is stupid;
+        if (style === 'Normal') {
+            style = "p";
         }
-        return value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
-    }).oneWay('.parentView.controller.currentStyle'),
+        else if (style.indexOf('Heading') !== -1) {
+            style = style.replace('Heading ', 'h');
+        }
+        return style;
+    },
 
     layout: {
         width: 120
@@ -32,8 +48,8 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
 
     formatBlock: function (source) {
         this.command.set('argument', '<%@>'.fmt(source.selectedItem.value.toUpperCase()));
-        var controller = this.getPath('parentView.controller');
-        if (controller) controller.invokeCommand(this);
+        var toolbar = this.get('parentView');
+        if (toolbar) toolbar.invokeCommand(this);
     },
 
     menu: SC.MenuPane.extend({

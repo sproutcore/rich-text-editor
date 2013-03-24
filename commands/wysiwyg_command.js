@@ -5,6 +5,7 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
+sc_require('views/wysiwyg_button_view');
 /**
  * @class
  * 
@@ -61,9 +62,7 @@ SC.WYSIWYGCommand = {
 	/**
 	 * @property {SC.View} - view to display in the toolbar
 	 */
-	exampleView: SC.ButtonView.extend({
-    classNames: 'sc-wysiwyg-button'
-  }),
+	exampleView: SC.WYSIWYGButtonView,
 
 	/**
 	 * The expected interface through which commands are called.

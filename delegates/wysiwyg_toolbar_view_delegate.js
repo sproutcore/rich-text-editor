@@ -47,7 +47,8 @@ SC.WYSIWYGToolbarViewDelegate = {
     },
 
     toolbarViewButtonForCommand: function (toolbarView, key, command) {
-        var exampleView = command.get('exampleView'),
+        var editor = this.get('editor'),   
+            exampleView = command.get('exampleView'),
             width = exampleView.prototype.layout.width || 30,
             buttonClass = exampleView.extend({
             layout: {
@@ -57,10 +58,24 @@ SC.WYSIWYGToolbarViewDelegate = {
             icon: command.get('icon'),
             command: command,
             toolTip: command.get('toolTip'),
-            action: 'invokeCommand',
             target: this,
+            action: 'invokeCommand',
+            editor: editor,
             keyEquivalent: command.get('keyEquivalent'),
-            isSelectedBinding: SC.Binding.oneWay('.parentView.editor.is' + command.commandName.classify())
+
+            init: function() {
+                sc_super();
+                if (this.editorStateDidChange) {
+                    this.editor.addObserver('recomputeEditorState', this, 'editorStateDidChange');
+                }
+                
+            },
+            destroy: function() {
+                if (this.editorStateDidChange) {
+                    this.editor.removeObserver('recomputeEditorState', this, 'editorStateDidChange');
+                }
+                sc_super();
+            },
         });
         return buttonClass;
     },
@@ -77,7 +92,5 @@ SC.WYSIWYGToolbarViewDelegate = {
         return separator;
     },
 
-    invokeCommand: function (source) {
-        this.get('editor').invokeCommand(source);
-    },
+
 };

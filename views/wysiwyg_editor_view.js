@@ -5,7 +5,6 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('delegate/wysiwyg_state_delegate');
 // Framework:   SproutcoreWysiwyg
 /**
  * @class
@@ -21,7 +20,7 @@ sc_require('delegate/wysiwyg_state_delegate');
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGEditorView = SC.View.extend(SC.Control, SC.WYSIWYGStateDelegate,
+SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
     /** @scope SC.WYSIWYGEditorView.prototype */
     {   
 
@@ -45,6 +44,12 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control, SC.WYSIWYGStateDelegate,
         minHeight: 200,
 
         documentPadding: 20,
+
+        recomputeEditorState: NO,
+
+        updateState: function() {
+            this.notifyPropertyChange('recomputeEditorState');
+        },
 
         /**
          * Text to be entered on a carraige return
