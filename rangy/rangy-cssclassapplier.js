@@ -12,6 +12,7 @@
  * Version: 1.2.3
  * Build date: 26 February 2012
  */
+$(window).load(function() {
 rangy.createModule("CssClassApplier", function(api, module) {
     api.requireModules( ["WrappedSelection", "WrappedRange"] );
 
@@ -710,4 +711,5 @@ rangy.createModule("CssClassApplier", function(api, module) {
 
     api.CssClassApplier = CssClassApplier;
     api.createCssClassApplier = createCssClassApplier;
+});
 });

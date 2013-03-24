@@ -12,6 +12,7 @@
  * Version: 1.2.3
  * Build date: 26 February 2012
  */
+$(window).load(function() {
 rangy.createModule("SaveRestore", function(api, module) {
     api.requireModules( ["DomUtil", "DomRange", "WrappedRange"] );
 
@@ -192,4 +193,5 @@ rangy.createModule("SaveRestore", function(api, module) {
     api.restoreSelection = restoreSelection;
     api.removeMarkerElement = removeMarkerElement;
     api.removeMarkers = removeMarkers;
+});
 });
