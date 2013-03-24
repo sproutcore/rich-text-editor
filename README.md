@@ -75,7 +75,7 @@ To execute and arbitrary command against the editor:
 
 To insert arbitrary html at the current location:
 
-	insertHtmlHtmlAtCaret: function(html)
+	insertHtmlAtCaret: function(html)
 	
 
 ## TODOs

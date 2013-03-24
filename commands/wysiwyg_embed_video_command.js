@@ -33,7 +33,7 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 		original(controller);
 		var insert = this.preview(400);
 		if (insert) {
-			controller.insertHtmlHtmlAtCaret(insert);
+			controller.insertHtmlAtCaret(insert);
 		}
 		this.set('url', '');
 	}.enhance(),

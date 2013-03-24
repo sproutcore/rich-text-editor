@@ -91,8 +91,8 @@ SC.WYSIWYGController = SC.Object.extend({
         this.get('editor')._domValueDidChange();
     },
 
-    insertHtmlHtmlAtCaret: function (html) {
-        this.get('editor').insertHtmlHtmlAtCaret(html);
+    insertHtmlAtCaret: function (html) {
+        this.get('editor').insertHtmlAtCaret(html);
     },
 
     invokeCommand: function (source) {

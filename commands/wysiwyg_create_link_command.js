@@ -80,7 +80,7 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 			// this is selected text or nothing
 			else {
-				controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
+				controller.insertHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
 			}
 		}
 

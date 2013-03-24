@@ -112,7 +112,7 @@ describe('SC.WYSIWYGCreateLinkCommand', function() {
 		command.set('linkText', 'Test123');
 
 		spyOn(controller, 'restoreSavedSelection');
-		spyOn(controller, 'insertHtmlHtmlAtCaret');
+		spyOn(controller, 'insertHtmlAtCaret');
 
 		// setup a mock return
 		spyOn(controller, 'getSelection').andReturn({
@@ -127,7 +127,7 @@ describe('SC.WYSIWYGCreateLinkCommand', function() {
 		// exercise
 		command.commitCommand(controller);
 
-		expect(controller.insertHtmlHtmlAtCaret).toHaveBeenCalledWith('<a href="http://myLink.com" target="_blank" />Test123</a>');
+		expect(controller.insertHtmlAtCaret).toHaveBeenCalledWith('<a href="http://myLink.com" target="_blank" />Test123</a>');
 		expect(command.get('url')).toEqual('');
 		expect(command.get('linkText')).toEqual('');
 	});
@@ -137,7 +137,7 @@ describe('SC.WYSIWYGCreateLinkCommand', function() {
 		command.set('linkText', 'Test123');
 
 		spyOn(controller, 'restoreSavedSelection');
-		spyOn(controller, 'insertHtmlHtmlAtCaret');
+		spyOn(controller, 'insertHtmlAtCaret');
 
 		// setup a mock return
 		spyOn(controller, 'getSelection').andReturn({
@@ -152,7 +152,7 @@ describe('SC.WYSIWYGCreateLinkCommand', function() {
 		// exercise
 		command.commitCommand(controller);
 
-		expect(controller.insertHtmlHtmlAtCaret).toHaveBeenCalledWith('<a href="mailto:joe@learndot.com" target="_blank" />Test123</a>');
+		expect(controller.insertHtmlAtCaret).toHaveBeenCalledWith('<a href="mailto:joe@learndot.com" target="_blank" />Test123</a>');
 		expect(command.get('url')).toEqual('');
 		expect(command.get('linkText')).toEqual('');
 	});

@@ -81,37 +81,11 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          * Determines whether or not a commandHasBeen executed at the current
          * selection.
          *
-         * TODO: refactor this mess
-         *
          * @param commandName
          * @returns {Boolean}
          */
         queryCommandState: function (commandName) {
-            if (SC.browser.isMozilla) {
-                var sel = this.getSelection();
-                if (!sel || !sel.anchorNode) return;
-
-                var aNode = sel.anchorNode;
-
-                switch (commandName.toLowerCase()) {
-
-                    case 'bold':
-                        return this._searchForParentNamed(aNode, 'B');
-                        break;
-
-                    case 'italic':
-                        return this._searchForParentNamed(aNode, 'I');
-                        break;
-
-                    default:
-                        return '';
-                        break;
-                }
-
-            }
-            else {
-                return document.queryCommandState(commandName);
-            }
+            return document.queryCommandState(commandName);
         },
 
         /**
@@ -151,48 +125,58 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             }
         },
 
-        _searchForParentNamed: function (node, name) {
-            while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
-                if (node.nodeName === name) {
-                    return true;
-                }
-                node = node.parentNode;
-            }
-            return false;
-        },
-
         /**
          * Insert some html at the current caret position
          *
          * @param html
          *            {String} html to be inserted
          */
-        insertHtmlHtmlAtCaret: function (html) {
-            if (document.getSelection) {
-                var sel = window.getSelection(), range;
-                if (sel.getRangeAt && sel.rangeCount) {
-                    range = sel.getRangeAt(0);
-                    range.deleteContents();
-                    var el = document.createElement("div");
-                    el.innerHTML = html;
-                    var frag = document.createDocumentFragment(), node = null, lastNode = null;
-                    while (node = el.firstChild) {
-                        lastNode = frag.appendChild(node);
-                    }
-                    range.insertNode(frag);
-                    if (lastNode) {
-                        range = range.cloneRange();
-                        range.setStartAfter(lastNode);
-                        range.collapse(true);
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    }
-                }
-            }
-            else if (document.selection && document.selection.type != "Control") {
-                document.selection.createRange().pasteHTML(html);
+        insertHtmlAtCaret: function (html) {
+            var range = this.getFirstRange(),
+                el = document.createElement("div"),
+                frag = document.createDocumentFragment(), 
+                node = null, lastNode = null;
+
+            el.innerHTML = html;
+
+            while (node = el.firstChild) {
+                lastNode = frag.appendChild(node);
             }
 
+            range.insertNode(frag);
+            
+            if (lastNode) {
+                range = range.cloneRange();
+                range.setStartAfter(lastNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+
+            this._domValueDidChange();
+        },
+
+        /**
+         * Add the className to the current selection
+         *
+         * @param className
+         * {String} className to be inserted
+         */
+        applyClassNameToSelection: function(className) {
+            var cssApplier = this.createClassNameApplier(className);
+            cssApplier.applyToSelection();
+            this._domValueDidChange();
+        },
+
+        /**
+         * Remove the className from the current selection
+         *
+         * @param className
+         * {String} className to be removed
+         */
+        removeClassNameToSelection: function(className) {
+            var cssApplier = this.createClassNameApplier(className);
+            cssApplier.undoToSelection();
             this._domValueDidChange();
         },
 
@@ -200,7 +184,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             if (evt.clipboardData) {
                 evt.preventDefault();
                 var data = evt.clipboardData.getData('text/html');
-                this.insertHtmlHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
+                this.insertHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
             }
             // doesn't support clipbaordData so lets do this, and remove any
             // horrible class and style information
@@ -263,68 +247,27 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         saveSelection: function () {
-            if (window.getSelection) {
-                sel = window.getSelection();
-                if (sel.getRangeAt && sel.rangeCount) {
-                    this._savedSelection = sel.getRangeAt(0);
-                }
-            }
-            else if (document.selection && document.selection.createRange) {
-                this._savedSelection = document.selection.createRange();
-            }
+            this._savedSelection = rangy.saveSelection();
             return this._savedSelection;
         },
 
         restoreSavedSelection: function (range) {
-            range = range || this._savedSelection;
-            if (range) {
-                if (window.getSelection) {
-                    sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-                else if (document.selection && range.select) {
-                    range.select();
-                }
-            }
+            rangy.restoreSelection(this._savedSelection);
         },
 
         getSelection: function () {
-            return document.selection || document.getSelection();
+            return rangy.getSelection();
         },
 
-        /**
-         * Selects the provided element in the views iFrame
-         *
-         * @param $element
-         * @private
-         */
-        _selectElement: function ($element, collapse) {
-            if (document.getSelection) {
-                var sel = document.getSelection();
-                sel.removeAllRanges();
-                var range = document.createRange();
-                range.selectNodeContents($element[0]);
-                if (collapse != undefined) {
-                    range.collapse(collapse);
-                }
-                sel.addRange(range);
-            }
-            else if (document.selection) {
-                var textRange = document.body.createTextRange();
-                textRange.moveToElementText($element[0]);
-                textRange.select();
-                if (collapse != undefined) {
-                    textRange.collapse(collapse);
-                }
-            }
+        getFirstRange: function() {
+            var sel = this.getSelection();
+
+            return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
         },
 
-        selectFirstChild: function (collapse) {
-            this._selectElement(this.$().children().first(), collapse);
+        createClassNameApplier: function(className) {
+            return rangy.createCssClassApplier(className, { normalize: true });
         },
-
-        _value: '',
 
         /**
          * Whether or not the value has been changed by the editor
@@ -383,7 +326,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
                 first = this.$().children()[0];
                 if (!first || first && first.nodeName === "BR") {
-                    this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
+                    this.insertHtmlAtCaret(this.get('carriageReturnText'));
                 }
                 else {
                 }
