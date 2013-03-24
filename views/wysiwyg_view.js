@@ -41,11 +41,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
 
     commands: [ 'styles', 'separator', 'insertImage', 'embedVideo', 'link', 'separator', 'bold', 'italic', 'underline', 'separator', 'insertOrderedList', 'insertUnorderedList', 'separator', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'separator', 'indent', 'outdent' ],
 
-    init: function () {
-        sc_super();
-
-        rangy.init();
-    },
 
     // -------- Views
 

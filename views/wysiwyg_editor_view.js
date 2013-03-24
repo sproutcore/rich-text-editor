@@ -93,7 +93,41 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          * @returns {Boolean}
          */
         queryCommandState: function (commandName) {
-            return document.queryCommandState(commandName);
+            if (SC.browser.isMozilla) {
+                var sel = this.getSelection();
+                if (!sel || !sel.anchorNode) return;
+
+                var aNode = sel.anchorNode;
+
+                switch (commandName.toLowerCase()) {
+
+                    case 'bold':
+                        return this._searchForParentNamed(aNode, 'B');
+                        break;
+
+                    case 'italic':
+                        return this._searchForParentNamed(aNode, 'I');
+                        break;
+
+                    default:
+                        return '';
+                        break;
+                }
+
+            }
+            else {
+                return document.queryCommandState(commandName);
+            }
+        },
+
+        _searchForParentNamed: function (node, name) {
+            while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
+                if (node.nodeName === name) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
         },
 
         /**
@@ -164,30 +198,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             this.notifyDomValueChange();
         },
 
-        /**
-         * Add the className to the current selection
-         *
-         * @param className
-         * {String} className to be inserted
-         */
-        applyClassNameToSelection: function(className) {
-            var cssApplier = this.createClassNameApplier(className);
-            cssApplier.applyToSelection();
-            this.notifyDomValueChange();
-        },
-
-        /**
-         * Remove the className from the current selection
-         *
-         * @param className
-         * {String} className to be removed
-         */
-        removeClassNameToSelection: function(className) {
-            var cssApplier = this.createClassNameApplier(className);
-            cssApplier.undoToSelection();
-            this.notifyDomValueChange();
-        },
-
         paste: function (evt) {
             if (evt.clipboardData) {
                 evt.preventDefault();
@@ -255,26 +265,40 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         saveSelection: function () {
-            this._savedSelection = rangy.saveSelection();
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.getRangeAt && sel.rangeCount) {
+                    this._savedSelection = sel.getRangeAt(0);
+                }
+            }
+            else if (document.selection && document.selection.createRange) {
+                this._savedSelection = document.selection.createRange();
+            }
             return this._savedSelection;
         },
 
         restoreSavedSelection: function (range) {
-            rangy.restoreSelection(this._savedSelection);
+            range = range || this._savedSelection;
+            if (range) {
+                if (window.getSelection) {
+                    sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+                else if (document.selection && range.select) {
+                    range.select();
+                }
+            }
         },
 
         getSelection: function () {
-            return rangy.getSelection();
+            return document.selection || document.getSelection();
         },
 
         getFirstRange: function() {
             var sel = this.getSelection();
 
             return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
-        },
-
-        createClassNameApplier: function(className) {
-            return rangy.createCssClassApplier(className, { normalize: true });
         },
 
         /**
