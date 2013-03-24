@@ -24,27 +24,27 @@ SC.WYSIWYGPickerCommandSupport = {
 	 * 
 	 * @param source
 	 *            {SC.View}
-	 * @param controller
-	 *            {SC.WYSIWYGController}
+	 * @param editor
+	 *            {SC.WYSIWYGEditorView}
 	 */
-	execute: function(source, controller) {
-		controller.saveSelection();
-		this._popup(source, controller);
+	execute: function(source, editor) {
+		editor.saveSelection();
+		this._popup(source, editor);
 	},
 
 	/**
 	 * Executed by dismissing the pane, should be enhanced to restore the text
 	 * selection before executing.
 	 * 
-	 * @param controller
-	 *            {SC.WYSIWYGController}
+	 * @param editor
+	 *            {SC.WYSIWYGEditorView}
 	 */
-	commitCommand: function(controller) {
-		controller.restoreSavedSelection();
+	commitCommand: function(editor) {
+		editor.restoreSavedSelection();
 	},
 	
-	cancelCommand: function(controller) {
-		controller.restoreSavedSelection();
+	cancelCommand: function(editor) {
+		editor.restoreSavedSelection();
 	},
 
 	/**
@@ -52,11 +52,11 @@ SC.WYSIWYGPickerCommandSupport = {
 	 * 
 	 * @param anchor
 	 *            {SC.View}
-	 * @param controller{SC.WYSIWYGController}
+	 * @param editor{SC.WYSIWYGEditorView}
 	 */
-	_popup: function(anchor, controller) {
+	_popup: function(anchor, editor) {
 		if (this.exempleView) this.exempleView.create({
-			controller: controller,
+			editor: editor,
 			command: this
 		}).popup(anchor, SC.PICKER_POINTER, [ 2, 3, 0, 1, 2 ]);
 	}

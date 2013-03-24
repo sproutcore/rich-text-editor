@@ -12,7 +12,7 @@ sc_require('views/wysiwyg_button_view');
  * A command object contains all of the information about a command including
  * how it is executed.
  * 
- * Required to implement execute: function(source, controller);
+ * Required to implement execute: function(source, editor);
  * 
  * If you implement a class you are required to add it to the command factory
  * after your definition.
@@ -69,14 +69,14 @@ SC.WYSIWYGCommand = {
 	 * 
 	 * @param {SC.Control}
 	 *            source - control that invoked this command
-	 * @param {SC.WYSIWYGController}
-	 *            controller - instance of the wysiwyg controller
+	 * @param {SC.WYSIWYGEditorView}
+	 *            editor - instance of the wysiwyg editor
 	 */
-	execute: function(source, controller) {
+	execute: function(source, editor) {
 		SC.info('Override me for action');
 	},
 
-	cancelCommand: function(controller) {
+	cancelCommand: function(editor) {
 
 	},
 
