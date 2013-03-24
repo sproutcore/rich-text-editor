@@ -47,20 +47,7 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
                 return SC.Object.create(values, {
                     target: button,
                     shortcut: function () {
-                        var keyEquivalent = this.get('keyEquivalent');
-                        if (keyEquivalent) {
-                            if (SC.browser.isMac) {
-                                keyEquivalent = keyEquivalent.replace('ctrl_', '⌘');
-                                keyEquivalent = keyEquivalent.replace('shift_', '⇧');
-                                keyEquivalent = keyEquivalent.replace('alt_', '⌥');
-                            }
-                            else {
-                                keyEquivalent = keyEquivalent.replace('ctrl_', 'Ctrl+');
-                                keyEquivalent = keyEquivalent.replace('shift_', 'Shift+');
-                                keyEquivalent = keyEquivalent.replace('alt_', 'Alt+');
-                            }
-                        }
-                        return keyEquivalent;
+                        return SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
                     }.property()
                 });
             });
