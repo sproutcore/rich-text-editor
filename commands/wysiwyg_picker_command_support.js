@@ -5,7 +5,6 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('controllers/wysiwyg_controller');
 sc_require('panes/wysiwyg_command_picker_pane');
 
 /**

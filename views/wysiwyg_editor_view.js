@@ -5,6 +5,7 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
+sc_require('delegate/wysiwyg_state_delegate');
 // Framework:   SproutcoreWysiwyg
 /**
  * @class
@@ -20,15 +21,17 @@
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
+SC.WYSIWYGEditorView = SC.View.extend(SC.Control, SC.WYSIWYGStateDelegate,
     /** @scope SC.WYSIWYGEditorView.prototype */
-    {
+    {   
 
         isTextSelectable: YES,
 
         classNameBindings: [ 'shouldRepaint:repaint' ],
 
         classNames: 'sc-wysiwyg-editor',
+
+        wysiwygView: null,
 
         render: function (context) {
             context.setAttr('contentEditable', true);
@@ -73,7 +76,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          */
         execCommand: function (commandName, showDefaultUI, value) {
             var ret = document.execCommand(commandName, showDefaultUI, value);
-            this._domValueDidChange();
+            this.notifyDomValueChange();
             return ret;
         },
 
@@ -153,7 +156,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
                 sel.addRange(range);
             }
 
-            this._domValueDidChange();
+            this.notifyDomValueChange();
         },
 
         /**
@@ -165,7 +168,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         applyClassNameToSelection: function(className) {
             var cssApplier = this.createClassNameApplier(className);
             cssApplier.applyToSelection();
-            this._domValueDidChange();
+            this.notifyDomValueChange();
         },
 
         /**
@@ -177,7 +180,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         removeClassNameToSelection: function(className) {
             var cssApplier = this.createClassNameApplier(className);
             cssApplier.undoToSelection();
-            this._domValueDidChange();
+            this.notifyDomValueChange();
         },
 
         paste: function (evt) {
@@ -195,7 +198,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             // TODO: Rather then parse things lets actually traverse the dom.
             // bone head move.
             this.invokeNext(function () {
-                this._domValueDidChange();
+                this.notifyDomValueChange();
                 var value = this.get('value');
 
                 // handle IE pastes, which could include font tags
@@ -294,7 +297,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         /**
          * @private notify the dom that values have been updated.
          */
-        _domValueDidChange: function () {
+        notifyDomValueChange: function () {
             // get the value from the inner document
             this._changeByEditor = true;
             this.set('value', this.$().html());
@@ -332,7 +335,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
                 }
 
             }
-            this._domValueDidChange();
+            this.notifyDomValueChange();
 
             return YES;
         },

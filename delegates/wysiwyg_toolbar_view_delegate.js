@@ -15,7 +15,6 @@ SC.WYSIWYGToolbarViewDelegate = {
 
     isWYSIWYGToolbarViewDelegate: YES,
 
-    controller: null,
 
     toolbarViewCreateControlForCommandNamed: function (toolbarView, commandName) {
         if (commandName === 'separator') {
@@ -61,7 +60,7 @@ SC.WYSIWYGToolbarViewDelegate = {
             action: 'invokeCommand',
             target: this,
             keyEquivalent: command.get('keyEquivalent'),
-            isSelectedBinding: SC.Binding.oneWay('.parentView.controller.is' + command.commandName.classify())
+            isSelectedBinding: SC.Binding.oneWay('.parentView.editor.is' + command.commandName.classify())
         });
         return buttonClass;
     },
@@ -79,6 +78,6 @@ SC.WYSIWYGToolbarViewDelegate = {
     },
 
     invokeCommand: function (source) {
-        this.get('controller').invokeCommand(source);
+        this.get('editor').invokeCommand(source);
     },
 };

@@ -12,11 +12,7 @@
  * Provides a facade for binding to properties and interacting with the editor
  * window.
  */
-SC.WYSIWYGController = SC.Object.extend({
-
-    commands: [],
-
-    editor: null,
+SC.WYSIWYGStateDelegate = {
 
     recomputeEditorState: NO,
 
@@ -67,36 +63,18 @@ SC.WYSIWYGController = SC.Object.extend({
             style = style.replace('Heading ', 'h');
         }
         return style;
-    }
-        .
-        property('recomputeEditorState'),
+    }.property('recomputeEditorState'),
 
-    queryCommandState: function (command) {
-        return this.get('editor').queryCommandState(command);
-    },
 
-    queryCommandValue: function (command) {
-        return this.get('editor').queryCommandValue(command);
-    },
-
-    execCommand: function (commandName, showDefaultUI, value) {
-        this.get('editor').execCommand(commandName, showDefaultUI, value);
-    },
 
     formatBlock: function (format) {
         this.execCommand('formatBlock', null, format.value);
     },
 
-    notifyDomValueChange: function () {
-        this.get('editor')._domValueDidChange();
-    },
-
-    insertHtmlAtCaret: function (html) {
-        this.get('editor').insertHtmlAtCaret(html);
-    },
 
     invokeCommand: function (source) {
-        this.get('editor').focus();
+        this.focus();
+        
         var command = source.get('command');
         if (command) {
             command.execute(source, this);
@@ -104,21 +82,6 @@ SC.WYSIWYGController = SC.Object.extend({
         this.notifyPropertyChange('recomputeEditorState');
     },
 
-    recomputeDocumentHeight: function () {
-        this.get('editor').updateFrameHeight();
-    },
 
-    saveSelection: function () {
-        return this.get('editor').saveSelection();
-    },
 
-    restoreSavedSelection: function (range) {
-        this.get('editor').restoreSavedSelection(range);
-    },
-
-    getSelection: function () {
-        return this.get('editor').getSelection();
-    }
-
-})
-;
+}

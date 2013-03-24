@@ -12,7 +12,9 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
 
     classNames: 'sc-wysiwyg-toolbar',
 
-    controller: null,
+    editor: null,
+
+    commands: null,
 
     flowPadding: {
         top: 0,
@@ -27,12 +29,10 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
     },
 
     calculatedHeightDidChange: function () {
-        this.adjust('height', this.get('calculatedHeight') + 4);
+        this.adjust('height', this.get('calculatedHeight'));
     }.observes('calculatedHeight'),
 
     anchorLocation: SC.ANCHOR_TOP,
-
-    commandsBinding: SC.Binding.oneWay('*controller.commands'),
 
     commandsDidChange: function () {
         var commands = this.get('commands');

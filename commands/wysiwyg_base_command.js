@@ -6,7 +6,6 @@
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
 sc_require('commands/wysiwyg_command');
-sc_require('controllers/wysiwyg_controller');
 
 SC.WYSIWYGBaseCommand = SC.Object.extend(SC.WYSIWYGCommand, {
 
