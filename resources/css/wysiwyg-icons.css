@@ -11,7 +11,7 @@ $theme.sc-view.button.sc-button-view.sc-wysiwyg-button {
 		padding: 0 0 0 0;
 		line-height: 22px;
 		
-		img {
+		.icon {
 			top: 0;
 			right: 0;
 			bottom: 0;
