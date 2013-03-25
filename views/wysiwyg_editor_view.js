@@ -89,6 +89,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          * Determines whether or not a commandHasBeen executed at the current
          * selection.
          *
+         * TODO: refactor this mess
+         *
          * @param commandName
          * @returns {Boolean}
          */
