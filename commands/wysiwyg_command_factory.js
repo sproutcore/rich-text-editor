@@ -12,12 +12,23 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 
 	commandFor: function(key) {
 		var klass = this[key];
-		return klass ? klass.create() : klass;
+
+		// If it's an uninstantiated view, then attempt to instantiate it.
+		if (SC.typeOf(klass) === SC.T_CLASS) {
+			klass = this[key] = klass.create();
+		}
+
+		return klass;
 	},
 
 	registerCommand: function(klass) {
-		if (!klass.prototype.isWYSIWYGCommand) throw new Error("You may only register classes that implement the SC.WYSIWYGCommand mixin");
-		this[klass.prototype.commandName] = klass;
+		var instance = klass;
+
+		// If the view isn't instantiated, we need to access the prototype
+		if (SC.typeOf(klass) === SC.T_CLASS) instance = klass.prototype;
+
+		if (!instance.isWYSIWYGCommand) throw new Error("You may only register classes that implement the SC.WYSIWYGCommand mixin");
+		this[instance.commandName] = klass;
 	},
 
 	/**
