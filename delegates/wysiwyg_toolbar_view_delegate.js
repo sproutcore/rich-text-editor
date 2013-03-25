@@ -48,8 +48,10 @@ SC.WYSIWYGToolbarViewDelegate = {
 
     toolbarViewButtonForCommand: function (toolbarView, key, command) {
         var editor = this.get('editor'),   
-            exampleView = command.get('exampleView'),
-            width = exampleView.prototype.layout.width || 30,
+            exampleView = command.get('exampleView');
+
+        
+        var width = exampleView.prototype.layout.width || 30,
             buttonClass = exampleView.extend({
             layout: {
                 width: width,
