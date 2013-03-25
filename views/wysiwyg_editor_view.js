@@ -176,25 +176,35 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          *            {String} html to be inserted
          */
         insertHtmlAtCaret: function (html) {
-            var range = this.getFirstRange(),
-                el = document.createElement("div"),
-                frag = document.createDocumentFragment(), 
-                node = null, lastNode = null;
+            if (document.getSelection) {
+                var sel = window.getSelection(), range;
+                if (sel.getRangeAt && sel.rangeCount) {
+                    range = sel.getRangeAt(0);
+                    range.deleteContents();
+                    var el = document.createElement("div"),
+                        frag = document.createDocumentFragment(), 
+                        node = null, lastNode = null;
+                        
 
-            el.innerHTML = html;
+                    el.innerHTML = html;
 
-            while (node = el.firstChild) {
-                lastNode = frag.appendChild(node);
+                    while (node = el.firstChild) {
+                        lastNode = frag.appendChild(node);
+                    }
+
+                    range.insertNode(frag);
+                    
+                    if (lastNode) {
+                        range = range.cloneRange();
+                        range.setStartAfter(lastNode);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }
+                }
             }
-
-            range.insertNode(frag);
-            
-            if (lastNode) {
-                range = range.cloneRange();
-                range.setStartAfter(lastNode);
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
+            else if (document.selection && document.selection.type != "Control") {
+                document.selection.createRange().pasteHTML(html);
             }
 
             this.notifyDomValueChange();
@@ -267,15 +277,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         saveSelection: function () {
-            if (window.getSelection) {
-                sel = window.getSelection();
-                if (sel.getRangeAt && sel.rangeCount) {
-                    this._savedSelection = sel.getRangeAt(0);
-                }
-            }
-            else if (document.selection && document.selection.createRange) {
-                this._savedSelection = document.selection.createRange();
-            }
+            this._savedSelection = this.getFirstRange();
             return this._savedSelection;
         },
 
@@ -283,7 +285,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             range = range || this._savedSelection;
             if (range) {
                 if (window.getSelection) {
-                    sel = window.getSelection();
+                    var sel = window.getSelection();
                     sel.removeAllRanges();
                     sel.addRange(range);
                 }
@@ -298,9 +300,14 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         getFirstRange: function() {
-            var sel = this.getSelection();
+            if (document.getSelection) {
+                var sel = document.getSelection();
 
-            return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+                return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+            }
+            else if (document.selection && document.selection.createRange) {
+                return document.selection.createRange();
+            }
         },
 
         /**
