@@ -47,7 +47,7 @@ SC.WYSIWYGCommand = {
 	toolTip: function() {
 		var keyEquivalent = SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
 
-		return this.get('title') + (keyEquivalent ? ' (%@)'.fmt(keyEquivalent).toUpperCase() : '');
+		return this.get('title').loc() + (keyEquivalent ? ' (%@)'.fmt(keyEquivalent).toUpperCase() : '');
 	}.property().cacheable(),
 
 	title: function() {

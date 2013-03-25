@@ -6,7 +6,7 @@
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
 
-SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
+SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
     title: null,
 
     editorStateDidChange: function() {
@@ -17,7 +17,7 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
             
         var title = value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
 
-        this.set('title', title);
+        this.set('title', title.loc());
     },
 
     currentEditorStyle: function () {
@@ -64,7 +64,8 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
                     target: button,
                     shortcut: function () {
                         return SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
-                    }.property()
+                    }.property(),
+                    title: values.title.loc()
                 });
             });
         }.property().cacheable(),
