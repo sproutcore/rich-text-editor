@@ -25,7 +25,7 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 	 */
 	url: '',
 
-	exempleView: SC.WYSIWYGVideoPickerPane,
+	pickerPane: SC.WYSIWYGVideoPickerPane,
 
 	keyEquivalent: 'ctrl_shift_v',
 

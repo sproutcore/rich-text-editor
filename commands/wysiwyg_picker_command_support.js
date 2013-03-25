@@ -55,9 +55,13 @@ SC.WYSIWYGPickerCommandSupport = {
 	 * @param editor{SC.WYSIWYGEditorView}
 	 */
 	_popup: function(anchor, editor) {
-		if (this.exempleView) this.exempleView.create({
-			editor: editor,
-			command: this
-		}).popup(anchor, SC.PICKER_POINTER, [ 2, 3, 0, 1, 2 ]);
+		if (!this._pickerPaneInstance) {
+			if (!this.pickerPane) throw new Error("Can't find pickerPane for the '%@' command.".fmt(this.commandName));
+			this._pickerPaneInstance = this.pickerPane.create({
+				editor: editor,
+				command: this
+			});
+		}
+		this._pickerPaneInstance.popup(anchor, SC.PICKER_POINTER, [ 2, 3, 0, 1, 2 ]);
 	}
 };

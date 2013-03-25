@@ -28,7 +28,7 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	keyEquivalent: 'ctrl_k',
 
-	exempleView: SC.WYSIWYGLinkPickerPane,
+	pickerPane: SC.WYSIWYGLinkPickerPane,
 
 	execute: function(original, source, editor) {
 		var sel = editor.getSelection(), node = sel.anchorNode, range = null;
