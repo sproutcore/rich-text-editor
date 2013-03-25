@@ -48,7 +48,9 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         recomputeEditorState: NO,
 
         updateState: function() {
-            this.notifyPropertyChange('recomputeEditorState');
+            if (this.getPath('wysiwygView.isFirstResponder')) {
+                this.notifyPropertyChange('recomputeEditorState');
+            }
         },
 
         /**
