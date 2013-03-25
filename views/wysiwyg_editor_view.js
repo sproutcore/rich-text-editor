@@ -289,7 +289,8 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         saveSelection: function () {
-            this._savedSelection = this.getFirstRange();
+            var range = this.getFirstRange();
+            if (range) this._savedSelection = range;
             return this._savedSelection;
         },
 
