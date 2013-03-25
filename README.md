@@ -40,7 +40,7 @@ To create a custom command, create an object which mixes in SC.WYSIWYGCommand an
 
 	MyApp.MyCommand = SC.Object.extend(SC.WYSIWYGCommand, {
 		commandName: 'myMagicCommand',
-		execute: function(source, controller) {
+		execute: function(source, editor) {
 			// do some stuff
 		}
 	});
@@ -57,9 +57,7 @@ Once it is registered with the command factory, you can simply add it to the com
 		})
 	})
 
-## Controller API
-
-The SC.WYSIWYGController controller provides a facade for interacting with the editor, which is a thin wrapper around an iframe with edit mode enabled.
+## Editor API
 
 To determine if a command has been executed against the current selection use the following command (detailed: https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html):
 
@@ -75,7 +73,7 @@ To execute and arbitrary command against the editor:
 
 To insert arbitrary html at the current location:
 
-	insertHtmlHtmlAtCaret: function(html)
+	insertHtmlAtCaret: function(html)
 	
 
 ## TODOs

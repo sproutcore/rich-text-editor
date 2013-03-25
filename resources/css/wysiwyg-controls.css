@@ -48,10 +48,16 @@ $theme.toolbar.sc-toolbar-view.sc-wysiwyg-toolbar {
 	@include background-image(linear-gradient(top, #EEEEEE, #C0C0C0));
 	background-position: top left;
 	background-repeat: repeat;
+
+	.sc-separator-view.sc-layout-vertical span {
+		left: 1px;
+		border-left: 1px #ADADAD solid;
+		background: none;
+	}
 }
 
 /*
- *	SC.WYSIWYGSelectView - menu items
+ *	SC.WYSIWYGStyleView - menu items
  */
 $theme.sc-view.menu {
 	.sc-menu-item.sc-wysiwyg-menu-item {

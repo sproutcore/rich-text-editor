@@ -5,7 +5,6 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('views/wysiwyg_select_view');
 
 /**
  * @class
@@ -16,62 +15,85 @@ SC.WYSIWYGToolbarViewDelegate = {
 
     isWYSIWYGToolbarViewDelegate: YES,
 
-    controller: null,
 
     toolbarViewCreateControlForCommandNamed: function (toolbarView, commandName) {
-        var command = SC.WYSIWYGCommandFactory.commandFor(commandName);
-        var controlView = command ? this.toolbarViewButtonForCommand(toolbarView, commandName, command) : this[commandName];
-        if (controlView) {
-            controlView = this[commandName] = toolbarView.createChildView(controlView);
-            if (SC.ButtonView.hasSubclass(controlView.constructor)) {
-                controlView.adjust('height', SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height);
+        if (commandName === 'separator') {
+            var separatorView = this.toolbarViewSeparator();
+            return toolbarView.createChildView(separatorView);
+        }
+
+        var command = SC.WYSIWYGCommandFactory.commandFor(commandName),
+            controlView;
+
+        if (command) {
+            controlView = this.toolbarViewButtonForCommand(toolbarView, commandName, command);
+
+            if (controlView) {
+                controlView = this[commandName] = toolbarView.createChildView(controlView);
+                if (SC.ButtonView.hasSubclass(controlView.constructor)) {
+                    controlView.adjust('height', SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height);
+                }
+            }
+            else {
+                SC.error('WYSIWYGToolbarViewDelegate: Could not createView: ' + commandName + ' no class was found.');
             }
         }
         else {
-            SC.error('WYSIWYGToolbarViewDelegate: Could not createView: ' + commandName + ' no class was found.');
+            SC.error('WYSIWYGToolbarViewDelegate: Could not find command for the commandName: ' + commandName);
         }
+        
+        
         return controlView;
     },
 
     toolbarViewButtonForCommand: function (toolbarView, key, command) {
-        var buttonClass = this[key];
-        if (buttonClass) {
-            buttonClass = buttonClass.extend({
-                command: command
-            });
-        }
-        else {
-            buttonClass = this.get('exampleView').extend({
-                layout: {
-                    width: 30,
-                    height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
-                },
-                icon: command.get('icon'),
-                command: command,
-                toolTip: command.get('toolTip'),
-                action: 'invokeCommand',
-                target: this,
-                keyEquivalent: command.get('keyEquivalent'),
-                isSelectedBinding: SC.Binding.oneWay('.parentView.controller.is' + command.commandName.classify())
-            });
-        }
+        var editor = this.get('editor'),   
+            exampleView = command.get('exampleView');
+
+        if (!exampleView) return null;
+        
+        var width = exampleView.prototype.layout.width || 30,
+            buttonClass = exampleView.extend({
+            layout: {
+                width: width,
+                height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
+            },
+            editor: editor,
+            command: command,
+            icon: command.get('icon'),
+            toolTip: command.get('toolTip'),
+            keyEquivalent: command.get('keyEquivalent'),
+            init: function() {
+                sc_super();
+                if (this.editorStateDidChange) {
+                    this.editor.addObserver('recomputeEditorState', this, 'editorStateDidChange');
+                }
+            },
+            destroy: function() {
+                if (this.editorStateDidChange) {
+                    this.editor.removeObserver('recomputeEditorState', this, 'editorStateDidChange');
+                }
+                sc_super();
+            },
+            invokeCommand: function() {
+                var editor = this.get('editor');
+                editor.invokeCommand(this);
+            },
+        });
         return buttonClass;
     },
 
-    invokeCommand: function (source) {
-        this.get('controller').invokeCommand(source);
+    toolbarViewSeparator: function () {
+        var separator = SC.SeparatorView.extend({
+            layout: { 
+                top: 0, 
+                bottom: 0, 
+                height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height, 
+                width: 3 }, 
+            layoutDirection: SC.LAYOUT_VERTICAL, 
+        });
+        return separator;
     },
 
-    /**
-     * @property {SC.WYSIWYGSelectView} default control for handling paragraph
-     *           styles (p, h1, h2 etc)
-     */
-    styles: SC.WYSIWYGSelectView,
 
-    /**
-     * @property {SC.ButtonView) default control for handling commands.
-	 */
-    exampleView: SC.ButtonView.extend({
-        classNames: 'sc-wysiwyg-button'
-    })
 };

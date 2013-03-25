@@ -4,25 +4,16 @@
  - Author:    Joe Gaudet (joe@learndot.com) and contributors (see contributors.txt)               -
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
+/*globals SproutCoreWysiwyg */
 
-SC.TextFieldView.reopen({
-	mouseDown: function(original, evt) {
-		this.$().addClass('repaint');
-		return original(evt);
-	}.enhance(),
+SC.WYSIWYGButtonView = SC.ButtonView.extend({
+  classNames: 'sc-wysiwyg-button',
 
-	mouseUp: function(original, evt) {
-		this.$().removeClass('repaint');
-		return original(evt);
-	}.enhance(),
+  editorStateDidChange: function() {
+    var command = this.command,
+        editor = this.get('editor');
 
-	keyUp: function(original, evt) {
-		this.$().addClass('repaint');
-		return original(evt);
-	}.enhance(),
-
-	keyDown: function(original, evt) {
-		this.$().removeClass('repaint');
-		return original(evt);
-	}.enhance()
+    this.set('isSelected', editor.queryCommandState(command.commandName));
+  },
+  action: 'invokeCommand',
 });

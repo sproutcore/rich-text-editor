@@ -30,8 +30,8 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	pickerPane: SC.WYSIWYGLinkPickerPane,
 
-	execute: function(original, source, controller) {
-		var sel = controller.getSelection(), node = sel.anchorNode, range = null;
+	execute: function(original, source, editor) {
+		var sel = editor.getSelection(), node = sel.anchorNode, range = null;
 
 		if (!node && sel.createRange) {
 			range = sel.createRange();
@@ -49,12 +49,12 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 		else {
 			this.set('linkText', range ? range.text : sel.toString());
 		}
-		original(source, controller);
+		original(source, editor);
 	}.enhance(),
 
-	commitCommand: function(original, controller) {
-		original(controller);
-		var sel = controller.getSelection(), anchorNode = sel.anchorNode, linkText = this.get('linkText'), url = this.get('url');
+	commitCommand: function(original, editor) {
+		original(editor);
+		var sel = editor.getSelection(), anchorNode = sel.anchorNode, linkText = this.get('linkText'), url = this.get('url');
 
 		var parentNode;
 		if (!anchorNode) {
@@ -75,12 +75,12 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 				parentNode.target = "_blank";
 				parentNode.textContent = linkText;
 				parentNode.href = url;
-				controller.notifyDomValueChange();
+				editor.notifyDomValueChange();
 			}
 
 			// this is selected text or nothing
 			else {
-				controller.insertHtmlHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
+				editor.insertHtmlAtCaret('<a href="%@" target="_blank" />%@</a>'.fmt(url, linkText));
 			}
 		}
 
@@ -98,8 +98,8 @@ SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 		this._reset();
 	}.enhance(),
 
-	cancelCommand: function(original, controller) {
-		original(controller);
+	cancelCommand: function(original, editor) {
+		original(editor);
 		this._reset();
 	}.enhance(),
 

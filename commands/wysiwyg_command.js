@@ -5,14 +5,14 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('controllers/wysiwyg_controller');
+sc_require('controls/wysiwyg_button_view');
 /**
  * @class
  * 
  * A command object contains all of the information about a command including
  * how it is executed.
  * 
- * Required to implement execute: function(source, controller);
+ * Required to implement execute: function(source, editor);
  * 
  * If you implement a class you are required to add it to the command factory
  * after your definition.
@@ -45,18 +45,9 @@ SC.WYSIWYGCommand = {
 	 *           control that invokes this command
 	 */
 	toolTip: function() {
-		var keyEquivalent = this.get('keyEquivalent');
-		if (keyEquivalent) {
-			if (SC.browser.isMac) {
-				keyEquivalent = keyEquivalent.replace('ctrl_', '⌘');
-				keyEquivalent = keyEquivalent.replace('shift_', '⇧');
-			}
-			else {
-				keyEquivalent = keyEquivalent.replace('ctrl_', 'Ctrl+');
-				keyEquivalent = keyEquivalent.replace('shift_', 'Shift+');
-			}
-		}
-		return this.get('title') + (keyEquivalent ? ' (%@)'.fmt(keyEquivalent).toUpperCase() : '');
+		var keyEquivalent = SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
+
+		return this.get('title').loc() + (keyEquivalent ? ' (%@)'.fmt(keyEquivalent).toUpperCase() : '');
 	}.property().cacheable(),
 
 	title: function() {
@@ -69,18 +60,23 @@ SC.WYSIWYGCommand = {
 	keyEquivalent: '',
 
 	/**
+	 * @property {SC.View} - view to display in the toolbar
+	 */
+	exampleView: SC.WYSIWYGButtonView,
+
+	/**
 	 * The expected interface through which commands are called.
 	 * 
 	 * @param {SC.Control}
 	 *            source - control that invoked this command
-	 * @param {SC.WYSIWYGController}
-	 *            controller - instance of the wysiwyg controller
+	 * @param {SC.WYSIWYGEditorView}
+	 *            editor - instance of the wysiwyg editor
 	 */
-	execute: function(source, controller) {
+	execute: function(source, editor) {
 		SC.info('Override me for action');
 	},
 
-	cancelCommand: function(controller) {
+	cancelCommand: function(editor) {
 
 	},
 

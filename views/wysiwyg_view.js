@@ -5,7 +5,6 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('controllers/wysiwyg_controller');
 sc_require('views/wysiwyg_editor_view');
 sc_require('views/wysiwyg_toolbar_view');
 // Framework: SproutcoreWysiwyg
@@ -40,35 +39,8 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
 
     shouldRepaint: NO,
 
-    commands: [ 'styles', 'insertImage', 'embedVideo', 'link', 'bold', 'italic', 'underline', 'insertOrderedList', 'insertUnorderedList', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'indent', 'outdent' ],
+    commands: [ 'styles', 'separator', 'insertImage', 'embedVideo', 'link', 'separator', 'bold', 'italic', 'underline', 'separator', 'insertOrderedList', 'insertUnorderedList', 'separator', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'separator', 'indent', 'outdent' ],
 
-    init: function () {
-        sc_super();
-
-        editor = this;
-
-        this.controller = this.controllerClass.create({
-            wysiwygView: this,
-            commands: this.get('commands'),
-            editor: this.get('editor')
-        });
-
-        // TODO: fix this up
-        var toolbarHeight = this.get('toolbarHeight');
-        this.get('toolbar').adjust('height', toolbarHeight);
-        this.get('scrollView').adjust('top', toolbarHeight);
-
-    },
-
-    controllerClass: SC.WYSIWYGController,
-    controller: null,
-
-    toolbarFrameDidChange: function () {
-        var tf = this.getPath('toolbar.frame');
-        if (tf) {
-            this.get('scrollView').adjust('top', tf.height);
-        }
-    }.observes('.toolbar.frame'),
 
     // -------- Views
 
@@ -87,10 +59,9 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
      * @property {SC.WYSIWYGToolbarView}
      */
     toolbar: SC.WYSIWYGToolbarView.extend({
-        controller: SC.outlet('parentView.controller'),
-        layout: {
-            top: 0, right: 0, left: 0
-        }
+        editor: SC.outlet('parentView.scrollView.contentView'),
+        commandsBinding: SC.Binding.oneWay('.parentView.commands'),
+        layout: { top: 0, right: 0, left: 0, height: 32, }
     }),
 
     /**
@@ -100,12 +71,9 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
      */
     scrollView: SC.ScrollView.extend({
         acceptsFirstResponder: NO,
-        layout: {
-            top: 32,
-            right: 0,
-            bottom: 0,
-            left: 0
-        },
+        layoutBinding: SC.Binding.oneWay('.parentView.toolbar.frame').transform(function(frame) {
+            return { top: frame.height, right: 0, bottom: 0, left: 0 };
+        }),
 
         containerView: SC.ContainerView.extend({
 
@@ -169,15 +137,15 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
 
     mouseEntered: function () {
         this.invokeLast(function () {
-            this.controller.recomputeDocumentHeight();
-            this.controller.updateState();
+            this.get('editor').updateFrameHeight();
+            this.get('editor').updateState();
         });
     },
 
     mouseDown: function (evt) {
         this.rePaint();
         evt.allowDefault();
-        this.controller.updateState();
+        this.get('editor').updateState();
         return YES;
     },
 
@@ -185,14 +153,14 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         this.rePaint();
         evt.allowDefault();
         this.becomeFirstResponder();
-        this.controller.updateState();
+        this.get('editor').updateState();
         return YES;
     },
 
     keyUp: function (evt) {
         this.rePaint();
         var ret = this.get('editor').keyUp(evt);
-        this.controller.updateState();
+        this.get('editor').updateState();
         return ret;
     },
 

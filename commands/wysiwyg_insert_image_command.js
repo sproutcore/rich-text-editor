@@ -43,11 +43,11 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 		}
 	},
 
-	commitCommand: function(original, controller) {
-		original(controller);
+	commitCommand: function(original, editor) {
+		original(editor);
 		var url = this.get('url');
 		if (url) {
-			controller.insertHtmlHtmlAtCaret('<img src="%@" style="width: %@px; height: %@px" />'.fmt(url, this.width, this.height));
+			editor.insertHtmlAtCaret('<img src="%@" style="width: %@px; height: %@px" />'.fmt(url, this.width, this.height));
 		}
 		this.set('url', '');
 	}.enhance(),

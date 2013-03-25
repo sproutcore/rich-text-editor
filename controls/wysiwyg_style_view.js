@@ -6,20 +6,35 @@
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
 
-SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
-    titleBinding: SC.Binding.transform(function (value) {
-        value = SproutCoreWysiwyg.styles.findProperty('value', value);
-        if (!value) {
-            value = {
-                title: "Paragraph"
-            };
+SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
+    title: 'Paragraph'.loc(),
+
+    editorStateDidChange: function() {
+        var currentStyle = this.currentEditorStyle(),
+            value = SproutCoreWysiwyg.styles.findProperty('value', currentStyle);
+
+        if (!value) value = { title: "Paragraph" };
+            
+        var title = value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
+
+        this.set('title', title.loc());
+    },
+
+    currentEditorStyle: function () {
+        var editor = this.get('editor'),
+            style = editor.queryCommandValue('formatBlock') || 'p';
+        // because IE is stupid;
+        if (style === 'Normal') {
+            style = "p";
         }
-        return value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
-    }).oneWay('.parentView.controller.currentStyle'),
+        else if (style.indexOf('Heading') !== -1) {
+            style = style.replace('Heading ', 'h');
+        }
+        return style;
+    },
 
     layout: {
-        width: 120,
-        height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
+        width: 120
     },
 
     _instantiateMenu: function () {
@@ -32,9 +47,9 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
     },
 
     formatBlock: function (source) {
-        this.command.set('argument', '<%@>'.fmt(source.selectedItem.value.toUpperCase()));
-        var controller = this.getPath('parentView.controller');
-        if (controller) controller.invokeCommand(this);
+        this.command.set('argument', '<%@>'.fmt(this.menu.selectedItem.value.toUpperCase()));
+        var toolbar = this.get('parentView');
+        if (toolbar) toolbar.invokeCommand(this);
     },
 
     menu: SC.MenuPane.extend({
@@ -48,21 +63,9 @@ SC.WYSIWYGSelectView = SC.PopupButtonView.extend({
                 return SC.Object.create(values, {
                     target: button,
                     shortcut: function () {
-                        var keyEquivalent = this.get('keyEquivalent');
-                        if (keyEquivalent) {
-                            if (SC.browser.isMac) {
-                                keyEquivalent = keyEquivalent.replace('ctrl_', '⌘');
-                                keyEquivalent = keyEquivalent.replace('shift_', '⇧');
-                                keyEquivalent = keyEquivalent.replace('alt_', '⌥');
-                            }
-                            else {
-                                keyEquivalent = keyEquivalent.replace('ctrl_', 'Ctrl+');
-                                keyEquivalent = keyEquivalent.replace('shift_', 'Shift+');
-                                keyEquivalent = keyEquivalent.replace('alt_', 'Alt+');
-                            }
-                        }
-                        return keyEquivalent;
-                    }.property()
+                        return SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
+                    }.property(),
+                    title: values.title.loc()
                 });
             });
         }.property().cacheable(),

@@ -9,7 +9,7 @@
 SC.WYSIWYGPickerPane = SC.PickerPane.extend({
 	pointerPos: 'perfectTop',
 
-	controller: null,
+	editor: null,
 
 	command: null,
 
@@ -21,12 +21,12 @@ SC.WYSIWYGPickerPane = SC.PickerPane.extend({
 	},
 
 	cancel: function() {
-		this.get('command').cancelCommand(this.get('controller'));
+		this.get('command').cancelCommand(this.get('editor'));
 		this.remove();
 	},
 
 	ok: function() {
-		this.get('command').commitCommand(this.get('controller'));
+		this.get('command').commitCommand(this.get('editor'));
 		this.remove();
 	}
 });

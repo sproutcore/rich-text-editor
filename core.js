@@ -87,5 +87,22 @@ SproutCoreWysiwyg = SC.Object.create(
 				});
 			}
 		});
-	}
+	},
+
+	beautifyShortcut: function (shortcut) {
+		if (shortcut) {
+			if (SC.browser.isMac) {
+			  shortcut = shortcut.replace('ctrl_', '⌘');
+			  shortcut = shortcut.replace('shift_', '⇧');
+			  shortcut = shortcut.replace('alt_', '⌥');
+			}
+			else {
+			  shortcut = shortcut.replace('ctrl_', 'Ctrl+');
+			  shortcut = shortcut.replace('shift_', 'Shift+');
+			  shortcut = shortcut.replace('alt_', 'Alt+');
+			}
+		}
+		return shortcut;
+	},
+
 });

@@ -29,11 +29,11 @@ SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPick
 
 	keyEquivalent: 'ctrl_shift_v',
 
-	commitCommand: function(original, controller) {
-		original(controller);
+	commitCommand: function(original, editor) {
+		original(editor);
 		var insert = this.preview(400);
 		if (insert) {
-			controller.insertHtmlHtmlAtCaret(insert);
+			editor.insertHtmlAtCaret(insert);
 		}
 		this.set('url', '');
 	}.enhance(),

@@ -22,13 +22,15 @@
  */
 SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
     /** @scope SC.WYSIWYGEditorView.prototype */
-    {
+    {   
 
         isTextSelectable: YES,
 
         classNameBindings: [ 'shouldRepaint:repaint' ],
 
         classNames: 'sc-wysiwyg-editor',
+
+        wysiwygView: null,
 
         render: function (context) {
             context.setAttr('contentEditable', true);
@@ -42,6 +44,14 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         minHeight: 200,
 
         documentPadding: 20,
+
+        recomputeEditorState: NO,
+
+        updateState: function() {
+            if (this.getPath('wysiwygView.isFirstResponder')) {
+                this.notifyPropertyChange('recomputeEditorState');
+            }
+        },
 
         /**
          * Text to be entered on a carraige return
@@ -60,6 +70,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             SC.Event.remove(this.$(), 'paste', this, this.paste);
         },
 
+        invokeCommand: function (commandView) {
+            this.focus();
+
+            var command = commandView.get('command');
+            if (command) {
+                command.execute(commandView, this);
+            }
+            this.updateState();
+        },
+
         /**
          * Executes a command against the iFrame:
          *
@@ -73,7 +93,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
          */
         execCommand: function (commandName, showDefaultUI, value) {
             var ret = document.execCommand(commandName, showDefaultUI, value);
-            this._domValueDidChange();
+            this.notifyDomValueChange();
             return ret;
         },
 
@@ -114,6 +134,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             }
         },
 
+        _searchForParentNamed: function (node, name) {
+            while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
+                if (node.nodeName === name) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        },
+
         /**
          * Determines whether or not a commandHasBeen executed at the current
          * selection.
@@ -151,35 +181,31 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             }
         },
 
-        _searchForParentNamed: function (node, name) {
-            while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
-                if (node.nodeName === name) {
-                    return true;
-                }
-                node = node.parentNode;
-            }
-            return false;
-        },
-
         /**
          * Insert some html at the current caret position
          *
          * @param html
          *            {String} html to be inserted
          */
-        insertHtmlHtmlAtCaret: function (html) {
+        insertHtmlAtCaret: function (html) {
             if (document.getSelection) {
                 var sel = window.getSelection(), range;
                 if (sel.getRangeAt && sel.rangeCount) {
                     range = sel.getRangeAt(0);
                     range.deleteContents();
-                    var el = document.createElement("div");
+                    var el = document.createElement("div"),
+                        frag = document.createDocumentFragment(), 
+                        node = null, lastNode = null;
+                        
+
                     el.innerHTML = html;
-                    var frag = document.createDocumentFragment(), node = null, lastNode = null;
+
                     while (node = el.firstChild) {
                         lastNode = frag.appendChild(node);
                     }
+
                     range.insertNode(frag);
+                    
                     if (lastNode) {
                         range = range.cloneRange();
                         range.setStartAfter(lastNode);
@@ -193,14 +219,14 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
                 document.selection.createRange().pasteHTML(html);
             }
 
-            this._domValueDidChange();
+            this.notifyDomValueChange();
         },
 
         paste: function (evt) {
             if (evt.clipboardData) {
                 evt.preventDefault();
                 var data = evt.clipboardData.getData('text/html');
-                this.insertHtmlHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
+                this.insertHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
             }
             // doesn't support clipbaordData so lets do this, and remove any
             // horrible class and style information
@@ -211,7 +237,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             // TODO: Rather then parse things lets actually traverse the dom.
             // bone head move.
             this.invokeNext(function () {
-                this._domValueDidChange();
+                this.notifyDomValueChange();
                 var value = this.get('value');
 
                 // handle IE pastes, which could include font tags
@@ -263,15 +289,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         saveSelection: function () {
-            if (window.getSelection) {
-                sel = window.getSelection();
-                if (sel.getRangeAt && sel.rangeCount) {
-                    this._savedSelection = sel.getRangeAt(0);
-                }
-            }
-            else if (document.selection && document.selection.createRange) {
-                this._savedSelection = document.selection.createRange();
-            }
+            this._savedSelection = this.getFirstRange();
             return this._savedSelection;
         },
 
@@ -279,7 +297,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             range = range || this._savedSelection;
             if (range) {
                 if (window.getSelection) {
-                    sel = window.getSelection();
+                    var sel = window.getSelection();
                     sel.removeAllRanges();
                     sel.addRange(range);
                 }
@@ -293,38 +311,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             return document.selection || document.getSelection();
         },
 
-        /**
-         * Selects the provided element in the views iFrame
-         *
-         * @param $element
-         * @private
-         */
-        _selectElement: function ($element, collapse) {
+        getFirstRange: function() {
             if (document.getSelection) {
                 var sel = document.getSelection();
-                sel.removeAllRanges();
-                var range = document.createRange();
-                range.selectNodeContents($element[0]);
-                if (collapse != undefined) {
-                    range.collapse(collapse);
-                }
-                sel.addRange(range);
+
+                return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
             }
-            else if (document.selection) {
-                var textRange = document.body.createTextRange();
-                textRange.moveToElementText($element[0]);
-                textRange.select();
-                if (collapse != undefined) {
-                    textRange.collapse(collapse);
-                }
+            else if (document.selection && document.selection.createRange) {
+                return document.selection.createRange();
             }
         },
-
-        selectFirstChild: function (collapse) {
-            this._selectElement(this.$().children().first(), collapse);
-        },
-
-        _value: '',
 
         /**
          * Whether or not the value has been changed by the editor
@@ -351,7 +347,7 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         /**
          * @private notify the dom that values have been updated.
          */
-        _domValueDidChange: function () {
+        notifyDomValueChange: function () {
             // get the value from the inner document
             this._changeByEditor = true;
             this.set('value', this.$().html());
@@ -383,13 +379,13 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
                 first = this.$().children()[0];
                 if (!first || first && first.nodeName === "BR") {
-                    this.insertHtmlHtmlAtCaret(this.get('carriageReturnText'));
+                    this.insertHtmlAtCaret(this.get('carriageReturnText'));
                 }
                 else {
                 }
 
             }
-            this._domValueDidChange();
+            this.notifyDomValueChange();
 
             return YES;
         },
