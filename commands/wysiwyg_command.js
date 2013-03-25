@@ -5,7 +5,7 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-sc_require('views/wysiwyg_button_view');
+sc_require('controls/wysiwyg_button_view');
 /**
  * @class
  * 
