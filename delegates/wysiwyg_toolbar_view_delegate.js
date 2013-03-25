@@ -50,6 +50,7 @@ SC.WYSIWYGToolbarViewDelegate = {
         var editor = this.get('editor'),   
             exampleView = command.get('exampleView');
 
+        if (!exampleView) return null;
         
         var width = exampleView.prototype.layout.width || 30,
             buttonClass = exampleView.extend({
