@@ -7,7 +7,7 @@
 /*globals SproutCoreWysiwyg */
 
 SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
-    title: null,
+    title: 'Paragraph',
 
     editorStateDidChange: function() {
         var currentStyle = this.currentEditorStyle(),
@@ -47,7 +47,7 @@ SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
     },
 
     formatBlock: function (source) {
-        this.command.set('argument', '<%@>'.fmt(source.selectedItem.value.toUpperCase()));
+        this.command.set('argument', '<%@>'.fmt(this.menu.selectedItem.value.toUpperCase()));
         var toolbar = this.get('parentView');
         if (toolbar) toolbar.invokeCommand(this);
     },

@@ -58,26 +58,26 @@ SC.WYSIWYGToolbarViewDelegate = {
                 width: width,
                 height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height
             },
-            icon: command.get('icon'),
-            command: command,
-            toolTip: command.get('toolTip'),
-            target: this,
-            action: 'invokeCommand',
             editor: editor,
+            command: command,
+            icon: command.get('icon'),
+            toolTip: command.get('toolTip'),
             keyEquivalent: command.get('keyEquivalent'),
-
             init: function() {
                 sc_super();
                 if (this.editorStateDidChange) {
                     this.editor.addObserver('recomputeEditorState', this, 'editorStateDidChange');
                 }
-                
             },
             destroy: function() {
                 if (this.editorStateDidChange) {
                     this.editor.removeObserver('recomputeEditorState', this, 'editorStateDidChange');
                 }
                 sc_super();
+            },
+            invokeCommand: function() {
+                var editor = this.get('editor');
+                editor.invokeCommand(this);
             },
         });
         return buttonClass;

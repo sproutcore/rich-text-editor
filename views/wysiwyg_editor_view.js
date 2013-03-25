@@ -70,6 +70,16 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             SC.Event.remove(this.$(), 'paste', this, this.paste);
         },
 
+        invokeCommand: function (commandView) {
+            this.focus();
+
+            var command = commandView.get('command');
+            if (command) {
+                command.execute(commandView, this);
+            }
+            this.updateState();
+        },
+
         /**
          * Executes a command against the iFrame:
          *

@@ -49,18 +49,6 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
 
     viewDelegate: function () {
         return this.delegateFor('isWYSIWYGToolbarViewDelegate', this.get('delegate'));
-    }.property('delegate'),
-
-    invokeCommand: function (source) {
-        var editor = this.get('editor');
-
-        editor.focus();
-
-        var command = source.get('command');
-        if (command) {
-            command.execute(source, editor);
-        }
-        editor.updateState();
-    }
+    }.property('delegate')
 
 });
