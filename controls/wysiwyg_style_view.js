@@ -7,7 +7,7 @@
 /*globals SproutCoreWysiwyg */
 
 SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
-    title: 'Paragraph',
+    title: 'Paragraph'.loc(),
 
     editorStateDidChange: function() {
         var currentStyle = this.currentEditorStyle(),
