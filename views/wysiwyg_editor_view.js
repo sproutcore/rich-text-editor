@@ -20,7 +20,7 @@
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
+SC.WYSIWYGEditorView = SC.View.extend(SC.Control, SC.WYSIWYGDragMixin,
     /** @scope SC.WYSIWYGEditorView.prototype */
     {   
 
@@ -294,12 +294,15 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
             return this._savedSelection;
         },
 
-        restoreSavedSelection: function (range) {
-            range = range || this._savedSelection;
+        restoreSavedSelection: function () {
+            this.setRange(this._savedSelection);
+        },
+
+        setRange: function(range) {
             if (range) {
                 if (window.getSelection) {
-                    var sel = window.getSelection();
-                    sel.removeAllRanges();
+                    var sel = this.getSelection();
+                    if(sel.rangeCount > 0) sel.removeAllRanges();
                     sel.addRange(range);
                 }
                 else if (document.selection && range.select) {
@@ -392,6 +395,10 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control,
         },
 
         focus: function () {
+
+        },
+
+        blur: function (evt) {
 
         }
 

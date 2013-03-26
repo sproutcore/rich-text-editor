@@ -95,7 +95,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
         }),
 
         contentView: SC.WYSIWYGEditorView.extend({
-
             wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
             valueBinding: '.wysiwygView.value',
@@ -103,14 +102,6 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
             minHeightBinding: SC.Binding.transform(function (frame) {
                 return frame ? frame.height : 0;
             }).oneWay('.parentView.parentView.frame'),
-
-            mouseUp: function (evt) {
-                return this.get('wysiwygView').mouseUp(evt);
-            },
-
-            mouseDown: function (evt) {
-                return this.get('wysiwygView').mouseDown(evt);
-            },
 
             focus: function (evt) {
                 // walk up the dom to find a scroll view that isn't the one containing
@@ -126,12 +117,7 @@ SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEdi
                     scroller.scrollTop(stored);
                     wysiwygView.scrollToVisible();
                 });
-            },
-
-            blur: function (evt) {
-
             }
-
         })
     }),
 

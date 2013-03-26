@@ -116,6 +116,10 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 	}
 }
 
+.sc-wysiwyg-drag-view {
+	cursor: copy;	
+}
+
 $theme.sc-wysiwyg-view.repaint {
 	color: #000001 !important;	
 	

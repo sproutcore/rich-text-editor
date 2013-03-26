@@ -106,3 +106,7 @@ SproutCoreWysiwyg = SC.Object.create(
 	},
 
 });
+
+// Firefox: Disable image resizing
+document.execCommand("enableObjectResizing", false, false);
+
