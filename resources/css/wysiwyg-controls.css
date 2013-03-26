@@ -32,8 +32,11 @@ $theme.sc-wysiwyg-editor {
 	@include box-shadow(0 1px 5px rgba(black, 0.2) inset);
 	border: none;
 	background: none;
-	overflow: auto !important;
-	height: auto !important;
+	overflow: hidden;
+	
+	&.repaint {
+		color: #414141 !important;
+	}
 }
 
 /*
@@ -115,6 +118,18 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 
 .sc-wysiwyg-drag-view {
 	cursor: copy;	
+}
+
+$theme.sc-wysiwyg-view.repaint {
+	color: #000001 !important;	
+	
+	textarea {
+		color: #000001;	
+	}
+		
+	input {
+		color: #000001;		
+	}
 }
 
 $theme.sc-view.sc-wysiwyg-video-preview {

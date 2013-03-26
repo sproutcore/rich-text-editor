@@ -20,360 +20,385 @@
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGEditorView = SC.View.extend(SC.WYSIWYGDragMixin, {   
+SC.WYSIWYGEditorView = SC.View.extend(SC.Control, SC.WYSIWYGDragMixin,
+    /** @scope SC.WYSIWYGEditorView.prototype */
+    {   
 
-    classNames: 'sc-wysiwyg-editor',
+        isTextSelectable: YES,
 
-    documentPadding: 20,
+        classNameBindings: [ 'shouldRepaint:repaint' ],
 
-    /**
-     * Text to be entered on a carraige return
-     */
-    carriageReturnText: '<p><br></p>',
+        classNames: 'sc-wysiwyg-editor',
 
-    wysiwygView: null,
+        wysiwygView: null,
 
-    isTextSelectable: YES,
+        render: function (context) {
+            context.setAttr('contentEditable', true);
+            context.addStyle('padding', this.get('documentPadding'));
+            context.push(this.get('carriageReturnText'));
+        },
 
-    render: function (context) {
-        context.setAttr('contentEditable', true);
-        context.addStyle('padding', this.get('documentPadding'));
-        context.push(this.get('carriageReturnText'));
-    },
+        /**
+         * Min height of the frame
+         */
+        minHeight: 200,
 
-    recomputeEditorState: NO,
+        documentPadding: 20,
 
-    updateState: function() {
-        this.notifyPropertyChange('recomputeEditorState');
-    },
+        recomputeEditorState: NO,
 
-    
-
-    didCreateLayer: function () {
-        SC.Event.add(this.$(), 'focus', this, 'focus');
-        SC.Event.add(this.$(), 'blur', this, 'blur');
-        SC.Event.add(this.$(), 'paste', this, 'paste');
-    },
-
-    willDestroyLayer: function () {
-        SC.Event.remove(this.$(), 'focus', this, 'focus');
-        SC.Event.remove(this.$(), 'blur', this, 'blur');
-        SC.Event.remove(this.$(), 'paste', this, 'paste');
-    },
-
-    invokeCommand: function (commandView) {
-        this.focus();
-
-        var command = commandView.get('command');
-        if (command) {
-            command.execute(commandView, this);
-        }
-        this.updateState();
-    },
-
-    /**
-     * Executes a command against the iFrame:
-     *
-     * https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
-     * http://msdn.microsoft.com/en-us/library/ms536419(v=vs.85).aspx
-     * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
-     *
-     * @param commandName
-     * @param showDefaultUI
-     * @param value
-     */
-    execCommand: function (commandName, showDefaultUI, value) {
-        var ret = document.execCommand(commandName, showDefaultUI, value);
-        this.notifyDomValueChange();
-        return ret;
-    },
-
-    /**
-     * Determines whether or not a commandHasBeen executed at the current
-     * selection.
-     *
-     * TODO: refactor this mess
-     *
-     * @param commandName
-     * @returns {Boolean}
-     */
-    queryCommandState: function (commandName) {
-        if (SC.browser.isMozilla) {
-            var sel = this.getSelection();
-            if (!sel || !sel.anchorNode) return;
-
-            var aNode = sel.anchorNode;
-
-            switch (commandName.toLowerCase()) {
-
-                case 'bold':
-                    return this._searchForParentNamed(aNode, 'B');
-                    break;
-
-                case 'italic':
-                    return this._searchForParentNamed(aNode, 'I');
-                    break;
-
-                default:
-                    return '';
-                    break;
+        updateState: function() {
+            if (this.getPath('wysiwygView.isFirstResponder')) {
+                this.notifyPropertyChange('recomputeEditorState');
             }
+        },
 
-        }
-        else {
-            return document.queryCommandState(commandName);
-        }
-    },
+        /**
+         * Text to be entered on a carraige return
+         */
+        carriageReturnText: '<p><br /></p>',
 
-    _searchForParentNamed: function (node, name) {
-        while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
-            if (node.nodeName === name) {
-                return true;
+        didCreateLayer: function () {
+            SC.Event.add(this.$(), 'focus', this, this.focus);
+            SC.Event.add(this.$(), 'blur', this, this.blur);
+            SC.Event.add(this.$(), 'paste', this, this.paste);
+        },
+
+        willDestroyLayer: function () {
+            SC.Event.remove(this.$(), 'focus', this, this.focus);
+            SC.Event.remove(this.$(), 'blur', this, this.blur);
+            SC.Event.remove(this.$(), 'paste', this, this.paste);
+        },
+
+        invokeCommand: function (commandView) {
+            this.focus();
+
+            var command = commandView.get('command');
+            if (command) {
+                command.execute(commandView, this);
             }
-            node = node.parentNode;
-        }
-        return false;
-    },
+            this.updateState();
+        },
 
-    /**
-     * Determines whether or not a commandHasBeen executed at the current
-     * selection.
-     *
-     * TODO: refactor this mess
-     *
-     * @param commandName
-     * @returns {Boolean}
-     */
-    queryCommandValue: function (commandName) {
-        if (SC.browser.isMozilla) {
-            var sel = this.getSelection();
-            if (!sel || !sel.anchorNode) return;
-
-            var node = sel.anchorNode;
-            switch (commandName.toLowerCase()) {
-
-                case 'formatblock':
-                    while (node && node.nodeName !== "DIV") {
-                        if (node.nodeName.match(/(P|H[1-6])/)) {
-                            return node.nodeName.toLowerCase();
-                        }
-                        node = node.parentNode;
-                    }
-                    return '';
-                    break;
-
-                default:
-                    return '';
-                    break;
-            }
-        }
-        else {
-            return document.queryCommandValue(commandName);
-        }
-    },
-
-    /**
-     * Insert some html at the current caret position
-     *
-     * @param html
-     *            {String} html to be inserted
-     */
-    insertHtmlAtCaret: function (html) {
-        if (document.getSelection) {
-            var sel = window.getSelection(), range;
-            if (sel.getRangeAt && sel.rangeCount) {
-                range = sel.getRangeAt(0);
-                range.deleteContents();
-                var el = document.createElement("div"),
-                    frag = document.createDocumentFragment(), 
-                    node = null, lastNode = null;
-                    
-
-                el.innerHTML = html;
-
-                while (node = el.firstChild) {
-                    lastNode = frag.appendChild(node);
-                }
-
-                range.insertNode(frag);
-                
-                if (lastNode) {
-                    range = range.cloneRange();
-                    range.setStartAfter(lastNode);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-            }
-        }
-        else if (document.selection && document.selection.type != "Control") {
-            document.selection.createRange().pasteHTML(html);
-        }
-
-        this.notifyDomValueChange();
-    },
-
-    paste: function (evt) {
-        if (evt.clipboardData) {
-            evt.preventDefault();
-            var data = evt.clipboardData.getData('text/html');
-            this.insertHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
-        }
-        // doesn't support clipbaordData so lets do this, and remove any
-        // horrible class and style information
-        else {
-            evt.allowDefault();
-        }
-
-        // TODO: Rather then parse things lets actually traverse the dom.
-        // bone head move.
-        this.invokeNext(function () {
+        /**
+         * Executes a command against the iFrame:
+         *
+         * https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
+         * http://msdn.microsoft.com/en-us/library/ms536419(v=vs.85).aspx
+         * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
+         *
+         * @param commandName
+         * @param showDefaultUI
+         * @param value
+         */
+        execCommand: function (commandName, showDefaultUI, value) {
+            var ret = document.execCommand(commandName, showDefaultUI, value);
             this.notifyDomValueChange();
-            var value = this.get('value');
+            return ret;
+        },
 
-            // handle IE pastes, which could include font tags
-            value = value.replace(/<\/?font[^>]*>/gim, '');
-
-            // also no ids
-            value = value.replace(/id="[^"]+"/, '');
-
-            // also no classes
-            value = value.replace(/class="[^"]+"/, '');
-
-            var matches = value.match(/style="([^"]+)"/g);
-            if (matches) {
-                for (var i = 0; i < matches.length; i++) {
-                    var subMatches = matches[i].match(/(text-align): [^;]+;/);
-                    value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
-                }
-            }
-
-            var links = value.match(/<a[^>]+>/g);
-            if (links) {
-                for (var i = 0; i < links.length; i++) {
-                    value = value.replace(links[i], links[i].replace(/target="[^"]+"/, '').replace('>', ' target="_blank">'));
-                }
-            }
-
-            this.set('value', value);
-        });
-    },
-
-    /**
-     * Reformats
-     *
-     * @param $element
-     * @param tagName
-     * @private
-     * @return reformated element
-     */
-    _formatElement: function ($element, tagName) {
-        var newElement = $('<' + tagName + '/>').append($element.clone().get(0).childNodes);
-        $element.replaceWith(newElement);
-        return newElement;
-    },
-
-    formatNode: function ($element, tagName) {
-        var newElement = $(tagName).append($element.clone().get(0).childNodes);
-        $element.replaceWith(newElement);
-        return newElement;
-    },
-
-    saveSelection: function () {
-        var range = this.getFirstRange();
-        if (range) this._savedSelection = range;
-        return this._savedSelection;
-    },
-
-    restoreSavedSelection: function () {
-        this.setRange(this._savedSelection);
-    },
-
-    setRange: function(range) {
-        if (range) {
-            if (window.getSelection) {
+        /**
+         * Determines whether or not a commandHasBeen executed at the current
+         * selection.
+         *
+         * TODO: refactor this mess
+         *
+         * @param commandName
+         * @returns {Boolean}
+         */
+        queryCommandState: function (commandName) {
+            if (SC.browser.isMozilla) {
                 var sel = this.getSelection();
-                if(sel.rangeCount > 0) sel.removeAllRanges();
-                sel.addRange(range);
-            }
-            else if (document.selection && range.select) {
-                range.select();
-            }
-        }
-    },
+                if (!sel || !sel.anchorNode) return;
 
-    getSelection: function () {
-        return document.selection || document.getSelection();
-    },
+                var aNode = sel.anchorNode;
 
-    getFirstRange: function() {
-        if (document.getSelection) {
-            var sel = document.getSelection();
+                switch (commandName.toLowerCase()) {
 
-            return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
-        }
-        else if (document.selection && document.selection.createRange) {
-            return document.selection.createRange();
-        }
-    },
+                    case 'bold':
+                        return this._searchForParentNamed(aNode, 'B');
+                        break;
 
-    /**
-     * Whether or not the value has been changed by the editor
-     *
-     * @property {Boolean}
-     * @private
-     */
-    _changeByEditor: false,
+                    case 'italic':
+                        return this._searchForParentNamed(aNode, 'I');
+                        break;
 
-    /**
-     * Syncronize the value with the dom.
-     */
-    _valueDidChange: function () {
-        var value = this.get('value') || '';
-        if (!this._changeByEditor) {
-            this.$().html(value);
-        }
-        this._changeByEditor = false;
-    }.observes('value'),
+                    default:
+                        return '';
+                        break;
+                }
 
-    /**
-     * @private notify the dom that values have been updated.
-     */
-    notifyDomValueChange: function () {
-        // get the value from the inner document
-        this._changeByEditor = true;
-        this.set('value', this.$().html());
-    },
-
-    keyUp: function (evt) {
-        // we don't allow regular returns because they are
-        // divs we want paragraphs
-        if (evt.keyCode === SC.Event.KEY_RETURN) {
-            if (this.queryCommandValue('formatBlock') === 'div') {
-                this.execCommand('formatBlock', null, 'p');
-            }
-        }
-
-        if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
-            first = this.$().children()[0];
-            if (!first || first && first.nodeName === "BR") {
-                this.insertHtmlAtCaret(this.get('carriageReturnText'));
             }
             else {
+                return document.queryCommandState(commandName);
+            }
+        },
+
+        _searchForParentNamed: function (node, name) {
+            while (node && (node.nodeName !== "P" || node.nodeName !== "DIV")) {
+                if (node.nodeName === name) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        },
+
+        /**
+         * Determines whether or not a commandHasBeen executed at the current
+         * selection.
+         *
+         * TODO: refactor this mess
+         *
+         * @param commandName
+         * @returns {Boolean}
+         */
+        queryCommandValue: function (commandName) {
+            if (SC.browser.isMozilla) {
+                var sel = this.getSelection();
+                if (!sel || !sel.anchorNode) return;
+
+                var node = sel.anchorNode;
+                switch (commandName.toLowerCase()) {
+
+                    case 'formatblock':
+                        while (node && node.nodeName !== "DIV") {
+                            if (node.nodeName.match(/(P|H[1-6])/)) {
+                                return node.nodeName.toLowerCase();
+                            }
+                            node = node.parentNode;
+                        }
+                        return '';
+                        break;
+
+                    default:
+                        return '';
+                        break;
+                }
+            }
+            else {
+                return document.queryCommandValue(commandName);
+            }
+        },
+
+        /**
+         * Insert some html at the current caret position
+         *
+         * @param html
+         *            {String} html to be inserted
+         */
+        insertHtmlAtCaret: function (html) {
+            if (document.getSelection) {
+                var sel = window.getSelection(), range;
+                if (sel.getRangeAt && sel.rangeCount) {
+                    range = sel.getRangeAt(0);
+                    range.deleteContents();
+                    var el = document.createElement("div"),
+                        frag = document.createDocumentFragment(), 
+                        node = null, lastNode = null;
+                        
+
+                    el.innerHTML = html;
+
+                    while (node = el.firstChild) {
+                        lastNode = frag.appendChild(node);
+                    }
+
+                    range.insertNode(frag);
+                    
+                    if (lastNode) {
+                        range = range.cloneRange();
+                        range.setStartAfter(lastNode);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }
+                }
+            }
+            else if (document.selection && document.selection.type != "Control") {
+                document.selection.createRange().pasteHTML(html);
             }
 
+            this.notifyDomValueChange();
+        },
+
+        paste: function (evt) {
+            if (evt.clipboardData) {
+                evt.preventDefault();
+                var data = evt.clipboardData.getData('text/html');
+                this.insertHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
+            }
+            // doesn't support clipbaordData so lets do this, and remove any
+            // horrible class and style information
+            else {
+                evt.allowDefault();
+            }
+
+            // TODO: Rather then parse things lets actually traverse the dom.
+            // bone head move.
+            this.invokeNext(function () {
+                this.notifyDomValueChange();
+                var value = this.get('value');
+
+                // handle IE pastes, which could include font tags
+                value = value.replace(/<\/?font[^>]*>/gim, '');
+
+                // also no ids
+                value = value.replace(/id="[^"]+"/, '');
+
+                // also no classes
+                value = value.replace(/class="[^"]+"/, '');
+
+                var matches = value.match(/style="([^"]+)"/g);
+                if (matches) {
+                    for (var i = 0; i < matches.length; i++) {
+                        var subMatches = matches[i].match(/(text-align): [^;]+;/);
+                        value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
+                    }
+                }
+
+                var links = value.match(/<a[^>]+>/g);
+                if (links) {
+                    for (var i = 0; i < links.length; i++) {
+                        value = value.replace(links[i], links[i].replace(/target="[^"]+"/, '').replace('>', ' target="_blank">'));
+                    }
+                }
+
+                this.set('value', value);
+            });
+        },
+
+        /**
+         * Reformats
+         *
+         * @param $element
+         * @param tagName
+         * @private
+         * @return reformated element
+         */
+        _formatElement: function ($element, tagName) {
+            var newElement = $('<' + tagName + '/>').append($element.clone().get(0).childNodes);
+            $element.replaceWith(newElement);
+            return newElement;
+        },
+
+        formatNode: function ($element, tagName) {
+            var newElement = $(tagName).append($element.clone().get(0).childNodes);
+            $element.replaceWith(newElement);
+            return newElement;
+        },
+
+        saveSelection: function () {
+            var range = this.getFirstRange();
+            if (range) this._savedSelection = range;
+            return this._savedSelection;
+        },
+
+        restoreSavedSelection: function () {
+            this.setRange(this._savedSelection);
+        },
+
+        setRange: function(range) {
+            if (range) {
+                if (window.getSelection) {
+                    var sel = this.getSelection();
+                    if(sel.rangeCount > 0) sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+                else if (document.selection && range.select) {
+                    range.select();
+                }
+            }
+        },
+
+        getSelection: function () {
+            return document.selection || document.getSelection();
+        },
+
+        getFirstRange: function() {
+            if (document.getSelection) {
+                var sel = document.getSelection();
+
+                return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+            }
+            else if (document.selection && document.selection.createRange) {
+                return document.selection.createRange();
+            }
+        },
+
+        /**
+         * Whether or not the value has been changed by the editor
+         *
+         * @property {Boolean}
+         * @private
+         */
+        _changeByEditor: false,
+
+        /**
+         * Syncronize the value with the dom.
+         */
+        _valueDidChange: function () {
+            var value = this.get('value') || '';
+            if (!this._changeByEditor) {
+                this.$().html(value);
+            }
+            this._changeByEditor = false;
+            this.invokeLast(function () {
+                this.updateFrameHeight();
+            });
+        }.observes('value'),
+
+        /**
+         * @private notify the dom that values have been updated.
+         */
+        notifyDomValueChange: function () {
+            // get the value from the inner document
+            this._changeByEditor = true;
+            this.set('value', this.$().html());
+            this.updateFrameHeight();
+        },
+
+        /**
+         * Recompute frame height based on the size of the content inside of the
+         * editor
+         */
+        updateFrameHeight: function () {
+            var lastNode = this.$().children().last();
+            if (lastNode.length > 0) {
+                var calcHeight = this.$().scrollTop() + lastNode.position().top + lastNode.height() + this.get('documentPadding');
+                this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
+            }
+        },
+
+        keyUp: function (evt) {
+            // we don't allow regular returns because they are
+            // divs we want paragraphs
+            if (evt.keyCode === SC.Event.KEY_RETURN) {
+                if (this.queryCommandValue('formatBlock') === 'div') {
+                    this.execCommand('formatBlock', null, 'p');
+                }
+            }
+
+            if (evt.keyCode === SC.Event.KEY_BACKSPACE) {
+                first = this.$().children()[0];
+                if (!first || first && first.nodeName === "BR") {
+                    this.insertHtmlAtCaret(this.get('carriageReturnText'));
+                }
+                else {
+                }
+
+            }
+            this.notifyDomValueChange();
+
+            return YES;
+        },
+
+        focus: function () {
+
+        },
+
+        blur: function (evt) {
+
         }
-        this.notifyDomValueChange();
 
-        return YES;
-    },
-
-    focus: function () {
-        this.wysiwygView.becomeFirstResponder();
-    },
-
-    blur: function (evt) {
-
-    }
-
-});
+    });

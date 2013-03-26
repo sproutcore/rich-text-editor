@@ -17,24 +17,41 @@ sc_require('views/wysiwyg_toolbar_view');
  * @extends SC.Control
  * @author Joe Gaudet - joe@learndot.com
  */
-SC.WYSIWYGView = SC.View.extend({
+SC.WYSIWYGView = SC.View.extend(SC.ContentValueSupport, SC.Control, SC.InlineEditor, {
 
-    classNames: 'sc-wysiwyg-view',
-
-    commands: [ 'styles', 'separator', 'insertImage', 'embedVideo', 'link', 'separator', 'bold', 'italic', 'underline', 'separator', 'insertOrderedList', 'insertUnorderedList', 'separator', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'separator', 'indent', 'outdent' ],
-
-    value: '',
+    contentKeys: {
+        contentValueKey: 'value',
+        contentErrorKey: 'error',
+        contentIsInErrorKey: 'isInError'
+    },
 
     acceptsFirstResponder: YES,
 
+    classNames: 'sc-wysiwyg-view',
+
     classNameBindings: [ 'isFirstResponder:focus' ],
 
-    
-    // ..........................................................
-    // VIEWS
-    //
-    
-    childViews: [ 'editor', 'toolbar' ],
+    childViews: [ 'scrollView', 'toolbar' ],
+
+    isTextSelectable: YES,
+
+    value: '',
+
+    shouldRepaint: NO,
+
+    commands: [ 'styles', 'separator', 'insertImage', 'embedVideo', 'link', 'separator', 'bold', 'italic', 'underline', 'separator', 'insertOrderedList', 'insertUnorderedList', 'separator', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'separator', 'indent', 'outdent' ],
+
+
+    // -------- Views
+
+    /**
+     *
+     * Pointer to the editorView, which is set to the contentView of the
+     * ScrollPane
+     *
+     * @property {SC.WYSIWYGEditorView}
+     */
+    editor: SC.outlet('scrollView.contentView'),
 
     /**
      * The toolbar that will be used for this view.
@@ -42,59 +59,109 @@ SC.WYSIWYGView = SC.View.extend({
      * @property {SC.WYSIWYGToolbarView}
      */
     toolbar: SC.WYSIWYGToolbarView.extend({
-        editor: SC.outlet('parentView.editor'),
+        editor: SC.outlet('parentView.scrollView.contentView'),
         commandsBinding: SC.Binding.oneWay('.parentView.commands'),
         layout: { top: 0, right: 0, left: 0, height: 32, }
     }),
 
     /**
-     * The editor view
+     * Container for the editor view
      *
      * @property {SC.ScrollView}
      */
-    editor: SC.WYSIWYGEditorView.extend({
+    scrollView: SC.ScrollView.extend({
+        acceptsFirstResponder: NO,
         layoutBinding: SC.Binding.oneWay('.parentView.toolbar.frame').transform(function(frame) {
             return { top: frame.height, right: 0, bottom: 0, left: 0 };
         }),
-        wysiwygView: SC.outlet('parentView'),
-        valueBinding: '.wysiwygView.value',
+
+        containerView: SC.ContainerView.extend({
+
+            didCreateLayer: function () {
+                SC.Event.add(this.$(), 'scroll', this, this.scroll);
+            },
+
+            willDestroyLayer: function () {
+                SC.Event.remove(this.$(), 'scroll', this, this.scroll);
+            },
+
+            // syncronizing scrolling
+            scroll: function (evt) {
+                var $this = this.$();
+                this.get('parentView').scrollTo($this.scrollLeft(), $this.scrollTop());
+                return YES;
+            }
+
+        }),
+
+        contentView: SC.WYSIWYGEditorView.extend({
+            wysiwygView: SC.outlet('parentView.parentView.parentView'),
+
+            valueBinding: '.wysiwygView.value',
+
+            minHeightBinding: SC.Binding.transform(function (frame) {
+                return frame ? frame.height : 0;
+            }).oneWay('.parentView.parentView.frame'),
+
+            focus: function (evt) {
+                // walk up the dom to find a scroll view that isn't the one containing
+                // this one.
+                var wysiwygView = this.get('wysiwygView'),
+                    scroller = wysiwygView.$().closest('.sc-container-view'),
+                    stored = scroller.scrollTop();
+
+                wysiwygView.becomeFirstResponder();
+                this.updateFrameHeight();
+
+                this.invokeLast(function () {
+                    scroller.scrollTop(stored);
+                    wysiwygView.scrollToVisible();
+                });
+            }
+        })
     }),
 
-
-    // ..........................................................
-    // EVENTS
-    //
+    mouseEntered: function () {
+        this.invokeLast(function () {
+            this.get('editor').updateFrameHeight();
+            this.get('editor').updateState();
+        });
+    },
 
     mouseDown: function (evt) {
+        this.rePaint();
         evt.allowDefault();
-        this.editor.updateState();
+        this.get('editor').updateState();
         return YES;
     },
 
     mouseUp: function (evt) {
+        this.rePaint();
         evt.allowDefault();
         this.becomeFirstResponder();
-        this.editor.updateState();
+        this.get('editor').updateState();
         return YES;
     },
 
     keyUp: function (evt) {
-        var ret = this.editor.keyUp(evt);
-        this.editor.updateState();
+        this.rePaint();
+        var ret = this.get('editor').keyUp(evt);
+        this.get('editor').updateState();
         return ret;
     },
 
     didBecomeKeyResponderFrom: function () {
-        this.editor.$().focus();
+        this.get('editor').$().focus();
     },
 
     willLoseFirstResponder: function () {
-        this.editor.$().blur();
+        this.get('editor').$().blur();
     },
 
     // TODO: Fix this up to be a bit more sane.
     keyDown: function (evt) {
         evt.allowDefault();
+        this.rePaint();
         var ret = this.interpretKeyEvents(evt) || this.performKeyEquivalent(evt.commandCodes()[0], evt);
         return ret;
     },
@@ -116,4 +183,11 @@ SC.WYSIWYGView = SC.View.extend({
         }
         return YES;
     },
+
+    rePaint: function () {
+        this.get('editor').toggleProperty('shouldRepaint');
+        this.invokeLater(function () {
+            this.get('editor').toggleProperty('shouldRepaint');
+        });
+    }
 });
