@@ -355,7 +355,6 @@ SC.WYSIWYGEditorView = SC.View.extend(SC.Control, SC.WYSIWYGDragMixin,
             // get the value from the inner document
             this._changeByEditor = true;
             this.set('value', this.$().html());
-            SproutCoreWysiwyg.adjustContentSizes(this);
             this.updateFrameHeight();
         },
 
