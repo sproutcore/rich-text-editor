@@ -22,6 +22,11 @@
 SC.WYSIWYGEditorView = SC.View.extend({
   classNames: 'sc-wysiwyg-editor',
 
+  /**
+    Padding of the editor
+
+    @property {Number}
+  */
   documentPadding: 20,
 
   /**
@@ -53,32 +58,46 @@ SC.WYSIWYGEditorView = SC.View.extend({
   */
   minHeight: 200,
 
+  /**
+    @type Boolean
+    @default YES
+  */
   isTextSelectable: YES,
 
+  /**
+    We want the editor to respond to key events
+
+    @type Boolean
+    @default YES
+  */
   acceptsFirstResponder: YES,
 
   // ..........................................................
   // INTERNAL SUPPORT
   // 
 
+  /** @private */
   render: function (context) {
     context.setAttr('contentEditable', true);
     context.addStyle('padding', this.get('documentPadding'));
     context.push(this.get('carriageReturnText'));
   },
 
+  /** @private */
   update: function (jquery) {
     this.get('wysiwygView').$().setClass('focus', this.get('isFirstResponder'));
 
     jquery.css('padding', this.get('documentPadding'));
   },
 
+  /** @private */
   didCreateLayer: function () {
     SC.Event.add(this.$(), 'focus', this, 'focus');
     SC.Event.add(this.$(), 'blur', this, 'blur');
     SC.Event.add(this.$(), 'paste', this, 'paste');
   },
 
+  /** @private */
   willDestroyLayer: function () {
     SC.Event.remove(this.$(), 'focus', this, 'focus');
     SC.Event.remove(this.$(), 'blur', this, 'blur');
@@ -93,7 +112,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   */
   _changeByEditor: false,
 
-  /**
+  /** @private 
     Syncronize the value with the dom.
   */
   _valueDidChange: function () {
@@ -115,13 +134,17 @@ SC.WYSIWYGEditorView = SC.View.extend({
     this.updateState();
   },
 
+  /** @private 
+    Internal property used to update the state of the commands
+  */
   recomputeEditorState: NO,
 
+  /** @private */
   updateState: function () {
     this.notifyPropertyChange('recomputeEditorState');
   },
 
-  /**
+  /** @private 
     Recompute frame height based on the size of the content inside of the
     editor
   */
