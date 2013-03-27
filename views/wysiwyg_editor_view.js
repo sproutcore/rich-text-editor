@@ -521,7 +521,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   blur: function (evt) {
-
+    this.resignFirstResponder();
   },
 
 
