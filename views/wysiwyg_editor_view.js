@@ -25,7 +25,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
   documentPadding: 20,
 
   /**
+    Text that will be set to the editor if the value is empty.
+
+    @property {String}
+  */
+  defaultValue: '',
+
+  /**
     Text to be entered on a carraige return
+
+    @property {String}
   */
   carriageReturnText: '<p><br></p>',
 
@@ -38,6 +47,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /**
     Min height of the frame
     Will be overighted to match the height of the container
+
+    @readOnly
+    @property {Number} 
   */
   minHeight: 200,
 
@@ -85,7 +97,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     Syncronize the value with the dom.
   */
   _valueDidChange: function () {
-    var value = this.get('value') || '';
+    var value = this.get('value') || this.get('defaultValue');
     if (!this._changeByEditor) {
       this.$().html(value);
     }
@@ -458,20 +470,20 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   insertNewline: function (evt) {
+    evt.allowDefault();
     if (this.queryCommandValue('formatBlock') === 'div') {
       this.execCommand('formatBlock', null, 'p');
     }
-    else evt.allowDefault();
     return YES;
   },
 
   /** @private*/
   deleteBackward: function(evt) {
+    evt.allowDefault();
     var first = this.$().children()[0];
     if (!first || first && first.nodeName === "BR") {
       this.insertHtmlAtCaret(this.get('carriageReturnText'));
     }
-    else evt.allowDefault();
     return YES;
   },
 
