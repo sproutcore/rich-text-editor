@@ -430,6 +430,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
+  didBecomeFirstResponder: function() {
+    this.$().focus();
+  },
+
+  /** @private*/
+  willLoseFirstResponder: function() {
+    this.$().blur();
+  },
+
+  /** @private*/
   keyDown: function (evt) {
     var ret = this.interpretKeyEvents(evt) || this.performKeyEquivalent(evt.commandCodes()[0], evt);
     if (!ret) evt.allowDefault();
@@ -454,7 +464,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
-  deleteBackward: function() {
+  deleteBackward: function(evt) {
     var first = this.$().children()[0];
     if (!first || first && first.nodeName === "BR") {
       this.insertHtmlAtCaret(this.get('carriageReturnText'));
@@ -470,6 +480,36 @@ SC.WYSIWYGEditorView = SC.View.extend({
     if (nextKeyView) {
       nextKeyView.becomeFirstResponder();
     }
+    return YES;
+  },
+
+  /** @private*/
+  selectAll: function (evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+  /** @private */
+  moveLeft: function(evt) { 
+    evt.allowDefault();
+    return YES;
+  },
+
+  /** @private */
+  moveRight: function(evt) { 
+    evt.allowDefault();
+    return YES;
+  },
+  
+  /** @private */
+  moveUp: function(evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+  /** @private */
+  moveDown: function(evt) {
+    evt.allowDefault();
     return YES;
   },
 

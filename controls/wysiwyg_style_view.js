@@ -46,8 +46,8 @@ SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
 
   formatBlock: function (source) {
     this.command.set('argument', '<%@>'.fmt(this.menu.selectedItem.value.toUpperCase()));
-    var toolbar = this.get('parentView');
-    if (toolbar) toolbar.invokeCommand(this);
+
+    this.invokeCommand();
   },
 
   menu: SC.MenuPane.extend({

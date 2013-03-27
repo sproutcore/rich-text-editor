@@ -70,6 +70,23 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       };
     }),
 
+    containerView: SC.ContainerView.extend({
+      didCreateLayer: function () {
+        SC.Event.add(this.$(), 'scroll', this, this.scroll);
+      },
+
+      willDestroyLayer: function () {
+        SC.Event.remove(this.$(), 'scroll', this, this.scroll);
+      },
+
+      // syncronizing scrolling
+      scroll: function (evt) {
+        var $this = this.$();
+        this.get('parentView').scrollTo($this.scrollLeft(), $this.scrollTop());
+        return YES;
+      }
+    }),
+    
     contentView: SC.WYSIWYGEditorView.extend({
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
