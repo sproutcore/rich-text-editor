@@ -436,7 +436,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   willLoseFirstResponder: function() {
-    this.$().blur();
+    // Don't blur the editor when it lose its first responder. This avoid loosing the 
+    // selection in the case where the new first responder is a command.
+    // this.$().blur();
   },
 
   /** @private*/
