@@ -9,13 +9,11 @@ sc_require('commands/wysiwyg_picker_command_support');
 sc_require('panes/wysiwyg_link_picker_pane');
 
 /**
- * @class
- * 
- * Creates a with the current selection at the url entered by the user via the
- * pickerPane
- * 
- * TODO: Add support for changing the link
- */
+  @class
+  
+  Creates a with the current selection at the url entered by the user via the
+  pickerPane
+*/
 SC.WYSIWYGCreateLinkCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPickerCommandSupport, {
 
 	commandName: 'link',

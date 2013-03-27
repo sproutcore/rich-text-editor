@@ -31,9 +31,10 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 		this[instance.commandName] = klass;
 	},
 
-	/**
-	 * Default commands
-	 */
+
+  // ..........................................................
+  // DEFAULTS COMMANDS SUPPORT
+  // 
 
 	bold: SC.WYSIWYGBaseCommand.extend({
 		commandName: 'bold',

@@ -8,47 +8,45 @@ sc_require('delegates/wysiwyg_toolbar_view_delegate');
 
 SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {
 
-    acceptsFirstResponder: NO,
+  classNames: 'sc-wysiwyg-toolbar',
 
-    classNames: 'sc-wysiwyg-toolbar',
+  editor: null,
 
-    editor: null,
+  commands: null,
 
-    commands: null,
+  flowPadding: {
+    top: 0,
+    left: 0,
+    right: 4,
+    bottom: 4
+  },
 
-    flowPadding: {
-        top: 0,
-        left: 0,
-        right: 4,
-        bottom: 4
-    },
+  defaultFlowSpacing: {
+    top: 4,
+    left: 4
+  },
 
-    defaultFlowSpacing: {
-        top: 4,
-        left: 4
-    },
+  calculatedHeightDidChange: function () {
+    this.adjust('height', this.get('calculatedHeight'));
+  }.observes('calculatedHeight'),
 
-    calculatedHeightDidChange: function () {
-        this.adjust('height', this.get('calculatedHeight'));
-    }.observes('calculatedHeight'),
+  anchorLocation: SC.ANCHOR_TOP,
 
-    anchorLocation: SC.ANCHOR_TOP,
+  commandsDidChange: function () {
+    var commands = this.get('commands');
+    for (var i = 0; i < commands.length; i++) {
+      var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
+      if (view) {
+        this.childViews.push(view);
+        this.appendChild(view);
+      }
+    }
+  }.observes('commands'),
 
-    commandsDidChange: function () {
-        var commands = this.get('commands');
-        for (var i = 0; i < commands.length; i++) {
-            var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
-            if (view) {
-                this.childViews.push(view);
-                this.appendChild(view);
-            }
-        }
-    }.observes('commands'),
+  delegate: null,
 
-    delegate: null,
-
-    viewDelegate: function () {
-        return this.delegateFor('isWYSIWYGToolbarViewDelegate', this.get('delegate'));
-    }.property('delegate')
+  viewDelegate: function () {
+    return this.delegateFor('isWYSIWYGToolbarViewDelegate', this.get('delegate'));
+  }.property('delegate')
 
 });

@@ -5,81 +5,79 @@
  - License:   Licensed under MIT license (see license.js)                                         -
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
-
 SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
-    title: 'Paragraph'.loc(),
+  layout: { width: 120 },
+  
+  title: 'Paragraph'.loc(),
 
-    editorStateDidChange: function() {
-        var currentStyle = this.currentEditorStyle(),
-            value = SproutCoreWysiwyg.styles.findProperty('value', currentStyle);
+  editorStateDidChange: function () {
+    var currentStyle = this.currentEditorStyle(),
+      value = SproutCoreWysiwyg.styles.findProperty('value', currentStyle);
 
-        if (!value) value = { title: "Paragraph" };
-            
-        var title = value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
+    if (!value) value = {
+        title: "Paragraph"
+    };
 
-        this.set('title', title.loc());
-    },
+    var title = value.title.replace(/<[^>]+>([^<]+)<[^>]+>/, '$1');
 
-    currentEditorStyle: function () {
-        var editor = this.get('editor'),
-            style = editor.queryCommandValue('formatBlock') || 'p';
-        // because IE is stupid;
-        if (style === 'Normal') {
-            style = "p";
-        }
-        else if (style.indexOf('Heading') !== -1) {
-            style = style.replace('Heading ', 'h');
-        }
-        return style;
-    },
+    this.set('title', title.loc());
+  },
 
+  currentEditorStyle: function () {
+    var editor = this.get('editor'),
+      style = editor.queryCommandValue('formatBlock') || 'p';
+    // because IE is stupid;
+    if (style === 'Normal') {
+      style = "p";
+    } else if (style.indexOf('Heading') !== -1) {
+      style = style.replace('Heading ', 'h');
+    }
+    return style;
+  },
+
+  _instantiateMenu: function () {
+    var menu = this.get('menu');
+    if (!menu || !menu.isClass) return;
+    this.menu = menu.create({
+      button: this
+    });
+    this._setupMenu();
+  },
+
+  formatBlock: function (source) {
+    this.command.set('argument', '<%@>'.fmt(this.menu.selectedItem.value.toUpperCase()));
+    var toolbar = this.get('parentView');
+    if (toolbar) toolbar.invokeCommand(this);
+  },
+
+  menu: SC.MenuPane.extend({
     layout: {
-        width: 120
+      width: SC.browser.isMac ? 240 : 260
     },
-
-    _instantiateMenu: function () {
-        var menu = this.get('menu');
-        if (!menu || !menu.isClass) return;
-        this.menu = menu.create({
-            button: this
+    menuHeightPadding: 0,
+    items: function () {
+      var button = this.button;
+      return SproutCoreWysiwyg.styles.map(function (values) {
+        return SC.Object.create(values, {
+          target: button,
+          shortcut: function () {
+            return SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
+          }.property(),
+          title: values.title.loc()
         });
-        this._setupMenu();
-    },
+      });
+    }.property().cacheable(),
 
-    formatBlock: function (source) {
-        this.command.set('argument', '<%@>'.fmt(this.menu.selectedItem.value.toUpperCase()));
-        var toolbar = this.get('parentView');
-        if (toolbar) toolbar.invokeCommand(this);
-    },
+    exampleView: SC.MenuItemView.extend({
+      classNames: 'sc-wysiwyg-menu-item',
+      escapeHTML: NO,
+      render: function (context) {
+        sc_super();
+        context.addStyle({
+          lineHeight: this.get('layout').height + 'px'
+        });
+      }
 
-    menu: SC.MenuPane.extend({
-        layout: {
-            width: SC.browser.isMac ? 240 : 260
-        },
-        menuHeightPadding: 0,
-        items: function () {
-            var button = this.button;
-            return SproutCoreWysiwyg.styles.map(function (values) {
-                return SC.Object.create(values, {
-                    target: button,
-                    shortcut: function () {
-                        return SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
-                    }.property(),
-                    title: values.title.loc()
-                });
-            });
-        }.property().cacheable(),
-
-        exampleView: SC.MenuItemView.extend({
-            classNames: 'sc-wysiwyg-menu-item',
-            escapeHTML: NO,
-            render: function (context) {
-                sc_super();
-                context.addStyle({
-                    lineHeight: this.get('layout').height + 'px'
-                });
-            }
-
-        })
     })
+  })
 });

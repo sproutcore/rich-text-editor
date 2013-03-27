@@ -7,43 +7,43 @@
 /*globals SproutCoreWysiwyg */
 sc_require('controls/wysiwyg_button_view');
 /**
- * @class
- * 
- * A command object contains all of the information about a command including
- * how it is executed.
- * 
- * Required to implement execute: function(source, editor);
- * 
- * If you implement a class you are required to add it to the command factory
- * after your definition.
- * 
- * @extends SC.Object
- * @author Joe Gaudet - joe@learndot.com
- */
+  @class
+  
+  A command object contains all of the information about a command including
+  how it is executed.
+  
+  Required to implement execute: function(source, editor);
+  
+  If you implement a class you are required to add it to the command factory
+  after your definition.
+  
+  @extends SC.Object
+  @author Joe Gaudet - joe@learndot.com
+*/
 SC.WYSIWYGCommand = {
 
 	/**
-	 * Quack like a duck
-	 */
+	  Quack like a duck
+	*/
 	isWYSIWYGCommand: YES,
 
 	/**
-	 * @property {String} - Name of the command.
-	 */
+	  @property {String} - Name of the command.
+	*/
 	commandName: '',
 
 	/**
-	 * @property {String} - class name for the icon that represents this
-	 *           command.
-	 */
+	  @property {String} - class name for the icon that represents this
+	            command.
+	*/
 	icon: function() {
 		return this.get('commandName').dasherize();
 	}.property().cacheable(),
 
 	/**
-	 * @property {String} - toolTip for this command, will be applied to the
-	 *           control that invokes this command
-	 */
+	  @property {String} - toolTip for this command, will be applied to the
+	            control that invokes this command
+	*/
 	toolTip: function() {
 		var keyEquivalent = SproutCoreWysiwyg.beautifyShortcut(this.get('keyEquivalent'));
 
@@ -55,23 +55,23 @@ SC.WYSIWYGCommand = {
 	}.property().cacheable(),
 
 	/**
-	 * @property {String} - key equivalent that will execute this command.
-	 */
+	  @property {String} - key equivalent that will execute this command.
+	*/
 	keyEquivalent: '',
 
 	/**
-	 * @property {SC.View} - view to display in the toolbar
-	 */
+	  @property {SC.View} - view to display in the toolbar
+	*/
 	exampleView: SC.WYSIWYGButtonView,
 
 	/**
-	 * The expected interface through which commands are called.
-	 * 
-	 * @param {SC.Control}
-	 *            source - control that invoked this command
-	 * @param {SC.WYSIWYGEditorView}
-	 *            editor - instance of the wysiwyg editor
-	 */
+	  The expected interface through which commands are called.
+	  
+	  @param {SC.Control}
+	             source - control that invoked this command
+	  @param {SC.WYSIWYGEditorView}
+	             editor - instance of the wysiwyg editor
+	*/
 	execute: function(source, editor) {
 		SC.info('Override me for action');
 	},
