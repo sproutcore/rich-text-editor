@@ -339,6 +339,25 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
+    Determine is the passed range is inside the editor or not.
+    
+    @param range
+    @return {Boolean}
+  */
+  rangeIsInsideEditor: function (range) {
+    range = range.commonAncestorContainer;
+    var editor = this.get('layer');
+
+    while (range) {
+      if (range === editor) {
+        return true;
+      }
+      else range = range.parentNode;
+    }
+    return false;
+  },
+
+  /**
     Reformats
     
     @param $element
@@ -363,6 +382,19 @@ SC.WYSIWYGEditorView = SC.View.extend({
   // EVENTS
   // 
 
+  /** @private
+
+    Hack to avoid the rootResponder to return NO to selectstart
+    because the view handle mouseDragged
+  */
+  respondsTo: function( methodName ) {
+    if (this._mouseDown && methodName === 'mouseDragged') {
+      this._mouseDown = NO;
+      return NO;
+    }
+    return sc_super();
+  },
+
   /** @private*/
   mouseEntered: function () {
     this.updateFrameHeight();
@@ -370,19 +402,24 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   mouseDown: function (evt) {
-    var allowDrag = this.startDrag(evt);
-
-    if (!allowDrag) evt.allowDefault();
+    this._mouseDown = YES;
+    this._mouseDownEvent = evt;
+    evt.allowDefault();
     this.updateState();
     return YES;
   },
 
   /** @private*/
-  mouseUp: function (evt) {
-    if (this._allowDrag) this.endDrag(evt);
-    else evt.allowDefault();
+  mouseDragged: function (evt) {
+    this.startDrag();
+    return YES;
+  },
 
+  /** @private*/
+  mouseUp: function (evt) {
+    evt.allowDefault();
     this.updateState();
+    this._mouseDownEvent = null;
     return YES;
   },
 
@@ -430,6 +467,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return YES;
   },
 
+  /** @private*/
   paste: function (evt) {
     if (evt.clipboardData) {
       evt.preventDefault();
@@ -476,10 +514,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
     });
   },
 
+  /** @private*/
   focus: function (evt) {
     this.becomeFirstResponder();
   },
 
+  /** @private*/
   blur: function (evt) {
 
   },
@@ -489,8 +529,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   // DRAG
   // 
 
-  startDrag: function(evt) {
-    var draggableElements = this.$().find('img'),
+  /** @private*/
+  startDrag: function() {
+    var evt = this._mouseDownEvent,
+        draggableElements = this.$().find('img'),
         target = evt.target,
         content = target.outerHTML;
 
@@ -530,14 +572,18 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return this._allowDrag;
   },
 
-  // TODO don't work well
+  /** @private
+
+    TODO don't work well
+  */
   dragDidMove: function(drag, loc) {
     var range = document.caretRangeFromPoint(loc.x, loc.y);
     this.setRange(range);
   },
 
-  endDrag: function(evt) {
-    var range = document.caretRangeFromPoint(evt.clientX, evt.clientY);
+  /** @private*/
+  dragDidEnd: function(drag, loc) {
+    var range = document.caretRangeFromPoint(loc.x, loc.y);
 
     if (this.rangeIsInsideEditor(range)) {
       this.setRange(range);
@@ -558,22 +604,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
     }
   },
 
-  // Avoid showing an insertionPoint on a SC.listView
+  /** @private
+
+    Avoid showing the insertionPoint of a SC.listView if 
+    we drag an image over a it.
+  */
   dragSourceOperationMaskFor: function() {
     return SC.DRAG_NONE;
-  },
-
-  rangeIsInsideEditor: function (range) {
-    range = range.commonAncestorContainer;
-    var editor = this.get('layer');
-
-    while (range) {
-      if (range === editor) {
-        return true;
-      }
-      else range = range.parentNode;
-    }
-    return false;
   }
 
 });
