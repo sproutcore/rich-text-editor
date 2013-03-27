@@ -88,9 +88,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var value = this.get('value') || '';
     if (!this._changeByEditor) {
       this.$().html(value);
-      this.updateFrameHeight();
     }
     this._changeByEditor = false;
+    this.updateFrameHeight();
   }.observes('value'),
 
   /**
@@ -245,6 +245,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
     @param html {String} html to be inserted
   */
   insertHtmlAtCaret: function (html) {
+    var didInsertNode = false;
+
     if (document.getSelection) {
       var sel = window.getSelection(),
         range;
@@ -264,6 +266,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
         }
 
         range.insertNode(frag);
+        didInsertNode = true;
 
         if (lastNode) {
           range = range.cloneRange();
@@ -275,9 +278,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
       }
     } else if (document.selection && document.selection.type != "Control") {
       document.selection.createRange().pasteHTML(html);
+      didInsertNode = true;
     }
 
     this.notifyDomValueChange();
+
+    return didInsertNode;
   },
 
   /**
@@ -442,9 +448,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
   insertNewline: function (evt) {
     if (this.queryCommandValue('formatBlock') === 'div') {
       this.execCommand('formatBlock', null, 'p');
-      return YES;
     }
-    return NO;
+    else evt.allowDefault();
+    return YES;
   },
 
   /** @private*/
@@ -452,9 +458,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var first = this.$().children()[0];
     if (!first || first && first.nodeName === "BR") {
       this.insertHtmlAtCaret(this.get('carriageReturnText'));
-      return YES;
     }
-    return NO;
+    else evt.allowDefault();
+    return YES;
   },
 
   /** @private*/
@@ -531,6 +537,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   startDrag: function() {
+    if (this._didStartDrag) return true;
     var evt = this._mouseDownEvent,
         draggableElements = this.$().find('img'),
         target = evt.target,
@@ -546,7 +553,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
         return false;
       }
 
-      this._allowDrag = true;
+      this._didStartDrag = true;
       this._target = target;
       this._content = content;
 
@@ -566,17 +573,19 @@ SC.WYSIWYGEditorView = SC.View.extend({
       });
     }
     else {
-      this._allowDrag = false;
+      this._didStartDrag = false;
     }
 
-    return this._allowDrag;
+    return this._didStartDrag;
   },
 
-  /** @private
-
-    TODO don't work well
-  */
+  /** @private*/
   dragDidMove: function(drag, loc) {
+    // Prevent the dragView from being drag by the browser
+    drag._lastMouseDraggedEvent.preventDefault();
+
+    // Update the caret position to the place where the element will be drop
+    // TODO The caret blink or is invisible 
     var range = document.caretRangeFromPoint(loc.x, loc.y);
     this.setRange(range);
   },
@@ -587,11 +596,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     if (this.rangeIsInsideEditor(range)) {
       this.setRange(range);
-      this._target.parentNode.removeChild(this._target);
-      this.insertHtmlAtCaret(this._content);
+      var didInsert = this.insertHtmlAtCaret(this._content);
+      if (didInsert) {
+        this._target.parentNode.removeChild(this._target);
+      }
     }
 
-    this._allowDrag = this._target = this._content = null;
+    this._didStartDrag = this._target = this._content = null;
 
     if (this._dragView) {
       this._dragView.destroy();
