@@ -100,6 +100,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     // get the value from the inner document
     this._changeByEditor = true;
     this.set('value', this.$().html());
+    this.updateState();
   },
 
   recomputeEditorState: NO,
@@ -137,7 +138,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
     if (command) {
       command.execute(commandView, this);
     }
-    this.updateState();
   },
 
   /**
