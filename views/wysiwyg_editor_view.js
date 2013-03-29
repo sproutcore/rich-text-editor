@@ -738,6 +738,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       if (didInsert) {
         this._target.parentNode.removeChild(this._target);
       }
+      this.notifyDomValueChange();
     }
 
     this._didStartDrag = this._target = this._content = null;
