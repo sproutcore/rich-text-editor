@@ -91,6 +91,18 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private */
+  init: function() {
+    sc_super();
+    this.undoManager = SC.UndoManager.create();
+  },
+  
+  /** @private */
+  destroy: function() {
+    this.undoManager.destroy();
+    sc_super();
+  },
+  
+  /** @private */
   didCreateLayer: function () {
     SC.Event.add(this.$(), 'focus', this, 'focus');
     SC.Event.add(this.$(), 'blur', this, 'blur');
@@ -119,6 +131,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var value = this.get('value') || this.get('defaultValue');
     if (!this._changeByEditor) {
       this.$().html(value);
+      this.resetUndoStack();
     }
     this._changeByEditor = false;
     this.updateFrameHeight();
@@ -128,10 +141,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
     @private notify the dom that values have been updated.
   */
   notifyDomValueChange: function () {
-    // get the value from the inner document
-    this._changeByEditor = true;
-    this.set('value', this.$().html());
-    this.updateState();
+    var value = this.get('value'),
+        html = this.$().html(); // get the value from the inner document
+
+    if (value !== html) {
+      this._changeByEditor = true;
+      this.set('value', html);
+      this.registerUndo(value);
+      this.updateState();
+    }
   },
 
   /** @private 
@@ -283,8 +301,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var didInsertNode = false;
 
     if (document.getSelection) {
-      var sel = window.getSelection(),
-        range;
+      var sel = this.getSelection(),
+          range;
+
       if (sel.getRangeAt && sel.rangeCount) {
         range = sel.getRangeAt(0);
         range.deleteContents();
@@ -292,7 +311,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
           frag = document.createDocumentFragment(),
           node = null,
           lastNode = null;
-
 
         el.innerHTML = html;
 
@@ -340,6 +358,20 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
+    Create a new Range object.
+
+    @return range
+  */
+  createRange: function() {
+    if (document.getSelection) {
+      return document.createRange();
+    }
+    else if (document.selection) { //IE 8 and lower
+      return document.body.createTextRange();
+    }
+  },
+
+  /**
     Set a range to the selection
     All the current ranges will be removed first
     
@@ -347,7 +379,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   */
   setRange: function (range) {
     if (range) {
-      if (window.getSelection) {
+      if (document.getSelection) {
         var sel = this.getSelection();
         if (sel.rangeCount > 0) sel.removeAllRanges();
         sel.addRange(range);
@@ -359,6 +391,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /**
     Get the current the selection
+
+    @return selection
   */
   getSelection: function () {
     return document.selection || document.getSelection();
@@ -367,7 +401,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /**
     Get the first range from the selection
     
-    @param range
+    @return range
   */
   getFirstRange: function () {
     if (document.getSelection) {
@@ -396,6 +430,33 @@ SC.WYSIWYGEditorView = SC.View.extend({
       else range = range.parentNode;
     }
     return false;
+  },
+
+  /**
+    Cross-browser method to select all the content of the editor
+
+    @return range
+  */
+  selectNodeContents: function () {
+    var layer = this.get('layer'),
+        range = this.createRange();
+
+    if (document.getSelection) {
+      range.selectNodeContents(layer);
+    }
+    else if (document.selection) { //IE 8 and lower
+      range.moveToElementText(layer);
+    }
+    return range;
+  },
+
+  /**
+    Move the caret at the end to the editor
+  */
+  setCaretAtEditorEnd: function () {
+    var range = this.selectNodeContents();
+    range.collapse(false);
+    this.setRange(range);
   },
 
   /**
@@ -699,6 +760,45 @@ SC.WYSIWYGEditorView = SC.View.extend({
   */
   dragSourceOperationMaskFor: function() {
     return SC.DRAG_NONE;
+  },
+
+
+  // ..........................................................
+  // UNDO MANAGER
+  // 
+
+  /** @private */
+  undoManager: null,
+
+  /** @private*/
+  undo: function(evt) {
+    this.undoManager.undo();
+    return YES;
+  },
+
+  /** @private */
+  redo: function(evt) {
+    this.undoManager.redo();
+    return YES;
+  },
+
+  /** @private */
+  registerUndo: function(value) {
+    var that = this;
+
+    this.undoManager.registerUndo(function() {
+      that.$().html(value);
+      that.notifyDomValueChange();
+      that.setCaretAtEditorEnd();
+    });
+  },
+
+  /** @private */
+  resetUndoStack: function() {
+    var undoManager = this.undoManager;
+    undoManager.set('undoStack', null);
+    undoManager.set('redoStack', null);
+    this.updateState();
   }
 
 });
