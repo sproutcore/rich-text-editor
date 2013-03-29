@@ -10,17 +10,12 @@ sc_require('controls/wysiwyg_style_view');
 
 SC.WYSIWYGCommandFactory = SC.Object.create({
 
-	commandFor: function(key) {
-		var klass = this[key];
-
-		// If it's an uninstantiated view, then attempt to instantiate it.
-		if (SC.typeOf(klass) === SC.T_CLASS) {
-			klass = this[key] = klass.create();
-		}
-
-		return klass;
-	},
-
+	/**
+		This method allow you to register custom command. 
+		The command object can be either instanciated or not.
+		
+		@param {Object} need to implement the SC.WYSIWYGCommand mixin
+	*/
 	registerCommand: function(klass) {
 		var instance = klass;
 
@@ -31,6 +26,25 @@ SC.WYSIWYGCommandFactory = SC.Object.create({
 		this[instance.commandName] = klass;
 	},
 
+	/**
+	  This method is used to get a command object from its name.
+
+		If the command is not instanciated, the method will instanciate it
+		and save the instance for later reuse.
+
+		@param {String} commandName
+	  @return {Object}
+	*/
+	commandFor: function(commandName) {
+		var klass = this[commandName];
+
+		// If it's an uninstantiated view, then attempt to instantiate it.
+		if (SC.typeOf(klass) === SC.T_CLASS) {
+			klass = this[commandName] = klass.create();
+		}
+
+		return klass;
+	},
 
   // ..........................................................
   // DEFAULTS COMMANDS SUPPORT
