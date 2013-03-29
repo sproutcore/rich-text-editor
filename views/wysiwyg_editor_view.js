@@ -739,6 +739,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
         this._target.parentNode.removeChild(this._target);
       }
       this.notifyDomValueChange();
+
+      // HACK: a timeout of 50ms is need in order to get the correct height of the editor.
+      this.invokeLater('updateFrameHeight', 50);
     }
 
     this._didStartDrag = this._target = this._content = null;
