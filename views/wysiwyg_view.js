@@ -36,6 +36,38 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   */
   commands: ['styles', 'separator', 'insertImage', 'embedVideo', 'link', 'separator', 'bold', 'italic', 'underline', 'separator', 'insertOrderedList', 'insertUnorderedList', 'separator', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'separator', 'indent', 'outdent'],
 
+  /**
+    Text that will be set to the editor if the value is empty.
+
+    @property {String}
+    @default ''
+  */
+  defaultValue: '',
+
+  /**
+    Padding of the editor
+
+    @property {Number}
+    @default 20
+  */
+  documentPadding: 20,
+
+  /**
+    Set to true to paste the content of the clipboard as plain text.
+
+    @type Boolean
+    @default NO
+  */
+  pasteAsPlainText: NO,
+
+  /**
+    Text to be entered on a carraige return
+
+    @property {String}
+    @default '<p><br></p>'
+  */
+  carriageReturnText: '<p><br></p>',
+  
   contentKeys: {
     contentValueKey: 'value',
     contentErrorKey: 'error',
@@ -91,6 +123,10 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
       valueBinding: '.wysiwygView.value',
+      defaultValue: SC.outlet('wysiwygView.defaultValue'),
+      documentPadding: SC.outlet('wysiwygView.documentPadding'),
+      pasteAsPlainText: SC.outlet('wysiwygView.pasteAsPlainText'),
+      carriageReturnText: SC.outlet('wysiwygView.carriageReturnText'),
 
       minHeightBinding: SC.Binding.transform(function (frame) {
         return frame ? frame.height : 0;

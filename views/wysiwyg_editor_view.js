@@ -23,25 +23,32 @@ SC.WYSIWYGEditorView = SC.View.extend({
   classNames: 'sc-wysiwyg-editor',
 
   /**
-    Padding of the editor
-
-    @property {Number}
+    @type Number
+    @default 20
+    @see SC.WYSIWYGView#documentPadding
   */
   documentPadding: 20,
 
   /**
-    Text that will be set to the editor if the value is empty.
-
-    @property {String}
+    @type String
+    @default ''
+    @see SC.WYSIWYGView#defaultValue
   */
   defaultValue: '',
 
   /**
-    Text to be entered on a carraige return
-
-    @property {String}
+    @type String
+    @default '<p><br></p>'
+    @see SC.WYSIWYGView#carriageReturnText
   */
   carriageReturnText: '<p><br></p>',
+
+  /**
+    @type Boolean
+    @default NO
+    @see SC.WYSIWYGView#pasteAsPlainText
+  */
+  pasteAsPlainText: NO,
 
   /**
     @readOnly
@@ -613,49 +620,63 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   paste: function (evt) {
+    // We need to use originalEvent to be able to access the clipboardData property
+    var evt = evt.originalEvent,
+        pasteAsPlainText = this.get('pasteAsPlainText');
+
     if (evt.clipboardData) {
+      var data;
+      if (pasteAsPlainText) {
+        data = evt.clipboardData.getData('text');
+      }
+      else {
+        data = evt.clipboardData.getData('text/html');
+        if (data.indexOf('<body>') !== -1) {
+          data = data.substring(data.indexOf('<body>'), data.indexOf('</body>'));
+        }
+      }
+      this.insertHtmlAtCaret(data);
       evt.preventDefault();
-      var data = evt.clipboardData.getData('text/html');
-      this.insertHtmlAtCaret(data.substring(data.indexOf('<body>'), data.indexOf('</body>')));
     }
     // doesn't support clipbaordData so lets do this, and remove any
     // horrible class and style information 
     else {
       evt.allowDefault();
+
     }
 
-    // TODO: Rather then parse things lets actually traverse the dom.
-    // bone head move.
-    this.invokeNext(function () {
-      this.notifyDomValueChange();
-      var value = this.get('value');
-
-      // handle IE pastes, which could include font tags
-      value = value.replace(/<\/?font[^>]*>/gim, '');
-
-      // also no ids
-      value = value.replace(/id="[^"]+"/, '');
-
-      // also no classes
-      value = value.replace(/class="[^"]+"/, '');
-
-      var matches = value.match(/style="([^"]+)"/g);
-      if (matches) {
-        for (var i = 0; i < matches.length; i++) {
-          var subMatches = matches[i].match(/(text-align): [^;]+;/);
-          value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
+    if (!pasteAsPlainText) {
+      // TODO: Rather then parse things lets actually traverse the dom.
+      // bone head move.
+      this.invokeNext(function() {
+        this.notifyDomValueChange();
+        var value = this.get('value');
+  
+        // handle IE pastes, which could include font tags
+        value = value.replace(/<\/?font[^>]*>/gim, '');
+  
+        // also no ids
+        value = value.replace(/id="[^"]+"/, '');
+  
+        // also no classes
+        value = value.replace(/class="[^"]+"/, '');
+  
+        var matches = value.match(/style="([^"]+)"/g);
+        if (matches) {
+          for (var i = 0; i < matches.length; i++) {
+            var subMatches = matches[i].match(/(text-align): [^;]+;/);
+            value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
+          }
         }
-      }
-
-      var links = value.match(/<a[^>]+>/g);
-      if (links) {
-        for (var i = 0; i < links.length; i++) {
-          value = value.replace(links[i], links[i].replace(/target="[^"]+"/, '').replace('>', ' target="_blank">'));
+  
+        var links = value.match(/<a[^>]+>/g);
+        if (links) {
+          for (var i = 0; i < links.length; i++) {
+            value = value.replace(links[i], links[i].replace(/target="[^"]+"/, '').replace('>', ' target="_blank">'));
+          }
         }
-      }
-
-      this.set('value', value);
-    });
+      });
+    }
   },
 
   /** @private*/
