@@ -10,25 +10,23 @@ sc_require('commands/wysiwyg_command');
 SC.WYSIWYGBaseCommand = SC.Object.extend(SC.WYSIWYGCommand, {
 
 	/**
-	 * Quack like a duck
-	 */
+	  Quack like a duck
+	*/
 	isWYSIWYGBaseCommand: YES,
 
 	/**
-	 * @property {String} - Name of the command to be executed
-	 */
+	  @property {String} - Name of the command to be executed
+	*/
 	commandName: '',
 
 	argument: null,
 
 	/**
-	 * Minimum interface for SC.WYSIWYGCommand
-	 * 
-	 * @param {SC.Control}
-	 *            source - control that invoked this command
-	 * @param {SC.WYSIWYGEditorView}
-	 *            editor - instance of the wysiwyg editor
-	 */
+	  Minimum interface for SC.WYSIWYGCommand
+	  
+	  @param {SC.Control} source - control that invoked this command
+	  @param {SC.WYSIWYGEditorView} editor - instance of the wysiwyg editor
+	*/
 	execute: function(source, editor) {
 		editor.execCommand(this.get('commandName'), false, this.get('argument'));
 	},

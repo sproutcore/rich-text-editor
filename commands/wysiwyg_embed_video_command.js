@@ -10,19 +10,19 @@ sc_require('commands/wysiwyg_picker_command_support');
 sc_require('panes/wysiwyg_video_picker_pane');
 
 /**
- * @class
- * 
- * Embeds a Youtube or Vimeo link at the current location
- * 
- * TODO: Add a PILE of validation
- */
+  @class
+  
+  Embeds a Youtube or Vimeo link at the current location
+  
+  TODO: Add a PILE of validation
+*/
 SC.WYSIWYGEmbedVideoCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPickerCommandSupport, {
 
 	commandName: 'embedVideo',
 
 	/**
-	 * @property {String} URL of the video to be embeded
-	 */
+	  @property {String} URL of the video to be embeded
+	*/
 	url: '',
 
 	pickerPane: SC.WYSIWYGVideoPickerPane,

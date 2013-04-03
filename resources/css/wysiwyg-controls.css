@@ -33,10 +33,6 @@ $theme.sc-wysiwyg-editor {
 	border: none;
 	background: none;
 	overflow: hidden;
-	
-	&.repaint {
-		color: #414141 !important;
-	}
 }
 
 /*
@@ -116,16 +112,8 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 	}
 }
 
-$theme.sc-wysiwyg-view.repaint {
-	color: #000001 !important;	
-	
-	textarea {
-		color: #000001;	
-	}
-		
-	input {
-		color: #000001;		
-	}
+.sc-wysiwyg-drag-view {
+	cursor: copy;	
 }
 
 $theme.sc-view.sc-wysiwyg-video-preview {

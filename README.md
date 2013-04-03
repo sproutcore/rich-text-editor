@@ -10,6 +10,8 @@ A basic WYSIWYG editor for SproutCore.
 - Basic image inserting
 - Basic video (youtube/vimeo) embeding
 - Compatible with the SC view layer (unlike all other editors)
+- Undo/Redo Support
+- Move image inside the editor by drag'n'drop
 - Extensible
 
 ## Basic Usage

@@ -56,39 +56,6 @@ SproutCoreWysiwyg = SC.Object.create(
 		action: 'formatBlock'
 	} ],
 
-	adjustContentSizes: function(view) {
-		var width = view.get('frame').width;
-		var $vimeoPlayer = view.$('.vimeo-player');
-		$vimeoPlayer.attr('width', '100%');
-		$vimeoPlayer.attr('height', Math.round($vimeoPlayer.width() * 0.56));
-
-		var $youtubePlayer = view.$('.youtube-player');
-		$youtubePlayer.attr('width', '100%');
-		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
-
-		var $youtubePlayer = view.$('.wistia-player');
-		$youtubePlayer.attr('width', '100%');
-		$youtubePlayer.attr('height', Math.round($youtubePlayer.width() * 0.56));
-
-		var $images = view.$('img');
-		$images.forEach(function(image) {
-			var $image = SC.$(image);
-			var widthAttr = $image.attr('width');
-			if (widthAttr && parseInt(widthAttr.replace("px", '')) > (width * 0.90)) {
-				$image.css({
-					width: "90%",
-					height: 'auto'
-				});
-			}
-			else {
-				$image.css({
-					width: "auto",
-					height: 'auto'
-				});
-			}
-		});
-	},
-
 	beautifyShortcut: function (shortcut) {
 		if (shortcut) {
 			if (SC.browser.isMac) {
@@ -106,3 +73,7 @@ SproutCoreWysiwyg = SC.Object.create(
 	},
 
 });
+
+// Firefox: Disable image resizing
+document.execCommand("enableObjectResizing", false, false);
+

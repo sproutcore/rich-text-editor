@@ -10,12 +10,12 @@ sc_require('commands/wysiwyg_picker_command_support');
 sc_require('panes/wysiwyg_image_picker_pane');
 
 /**
- * @class
- * 
- * Inserts an image at the current location
- * 
- * TODO: Support Image size
- */
+  @class
+  
+  Inserts an image at the current location
+  
+  TODO: Support Image size
+*/
 SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPickerCommandSupport, {
 
 	commandName: 'insertImage',
@@ -23,8 +23,8 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 	keyEquivalent: 'ctrl_shift_i',
 
 	/**
-	 * @property {String} URL the image to be inserted
-	 */
+	  @property {String} URL the image to be inserted
+	*/
 	url: '',
 
 	width: 0,
