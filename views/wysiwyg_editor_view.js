@@ -771,11 +771,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
       this._dragView.destroy();
       this._dragView = null;
     }
-
-    if (this._dropzones) {
-      this._dropzones.off('dragleave').off('drop');
-      this._dropzones = null;
-    }
   },
 
   /** @private
