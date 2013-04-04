@@ -707,7 +707,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       // to drop the img. 
       // rangy 1.3 will add a cross-browser solution for this.
       if (!document.caretRangeFromPoint) {
-        // In this cas, we disable the drag
+        // In this case, we disable the drag
         evt.preventDefault();
         return false;
       }
