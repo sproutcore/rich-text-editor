@@ -101,6 +101,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
   init: function() {
     sc_super();
     this.undoManager = SC.UndoManager.create();
+
+    // Firefox: Disable image resizing
+    this.invokeLast(function() { 
+      document.execCommand("enableObjectResizing", false, false); 
+    });
   },
   
   /** @private */
