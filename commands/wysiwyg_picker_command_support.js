@@ -51,13 +51,21 @@ SC.WYSIWYGPickerCommandSupport = {
 	  @param {SC.WYSIWYGEditorView} editor
 	*/
 	_popup: function(anchor, editor) {
-		if (!this._pickerPaneInstance) {
+		var pickerPaneInstance = this._pickerPaneInstance;
+
+		if (!pickerPaneInstance) {
 			if (!this.pickerPane) throw new Error("Can't find pickerPane for the '%@' command.".fmt(this.commandName));
-			this._pickerPaneInstance = this.pickerPane.create({
-				editor: editor,
+			pickerPaneInstance = this._pickerPaneInstance = this.pickerPane.create({
 				command: this
 			});
 		}
-		this._pickerPaneInstance.popup(anchor, SC.PICKER_POINTER, [ 2, 3, 0, 1, 2 ]);
+
+		// This is needed in the case where there is several instances of the editor
+		// because the commands and the command panes are singletons.
+		// Note that binding with the editor property will have to be like this:
+		// SC.Binding.from('.pane*editor.value')
+		pickerPaneInstance.set('editor', editor);
+
+		pickerPaneInstance.popup(anchor, SC.PICKER_POINTER, [ 2, 3, 0, 1, 2 ]);
 	}
 };
