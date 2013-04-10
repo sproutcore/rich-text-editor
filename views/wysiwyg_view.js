@@ -67,6 +67,14 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     @default '<p><br></p>'
   */
   carriageReturnText: '<p><br></p>',
+
+  /**
+    Class name or array of class names to add to the RTE editor
+
+    @property {Array|String}
+    @default null
+  */
+  editorClassNames: null,
   
   contentKeys: {
     contentValueKey: 'value',
@@ -120,6 +128,18 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     }),
     
     contentView: SC.WYSIWYGEditorView.extend({
+      init: function() {
+        sc_super();
+        
+        var wysiwygView = this.get('wysiwygView'),
+            editorClassNames = wysiwygView.get('editorClassNames');
+
+        if (editorClassNames) {
+          editorClassNames = SC.makeArray(editorClassNames);
+          this.classNames.pushObjects(editorClassNames);
+        }
+      },
+
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
       valueBinding: '.wysiwygView.value',
@@ -130,7 +150,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
       minHeightBinding: SC.Binding.transform(function (frame) {
         return frame ? frame.height : 0;
-      }).oneWay('.wysiwygView.frame'),
+      }).oneWay('.parentView.frame'),
     })
   }),
 

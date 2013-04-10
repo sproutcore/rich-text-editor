@@ -101,6 +101,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
   init: function() {
     sc_super();
     this.undoManager = SC.UndoManager.create();
+
+    // Firefox: Disable image resizing
+    this.invokeLast(function() { 
+      document.execCommand("enableObjectResizing", false, false); 
+    });
   },
   
   /** @private */
@@ -707,7 +712,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       // to drop the img. 
       // rangy 1.3 will add a cross-browser solution for this.
       if (!document.caretRangeFromPoint) {
-        // In this cas, we disable the drag
+        // In this case, we disable the drag
         evt.preventDefault();
         return false;
       }
@@ -770,11 +775,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
     if (this._dragView) {
       this._dragView.destroy();
       this._dragView = null;
-    }
-
-    if (this._dropzones) {
-      this._dropzones.off('dragleave').off('drop');
-      this._dropzones = null;
     }
   },
 
