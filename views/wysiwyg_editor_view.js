@@ -146,7 +146,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       this.resetUndoStack();
     }
     this._changeByEditor = false;
-    this.updateFrameHeight();
+    this.set('_lastChangeTime', new Date().getTime());
   }.observes('value'),
 
   /**
@@ -189,8 +189,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
     @return {Number}
   */
   computeHeight: function() {
-    var layer = this.get('layer'),
-        layerOverflow = layer.style.overflow,
+    var layer = this.get('layer');
+    if (!layer) return 0;
+
+    var layerOverflow = layer.style.overflow,
         layerHeight = layer.style.height;
     layer.style.overflow = '';
     layer.style.height = '';
@@ -199,6 +201,24 @@ SC.WYSIWYGEditorView = SC.View.extend({
     layer.style.overflow = layerOverflow;
     return height;
   },
+
+  /** @private 
+    Because we can't really know when the elements displayed in the editor
+    are loads (images, fonts, ...) we schedule an update of the height of the  
+    editor during about 5s each time the value change.
+
+    This is particularly useful at initialization, but also if we drag or
+    resize an image.
+  */
+  scheduleHeightUpdate: function () {
+    var currentTime = new Date().getTime(), 
+        gap = currentTime - this._lastChangeTime;
+
+    if (gap < 10000) {
+      this.updateFrameHeight();
+      this.invokeOnceLater('scheduleHeightUpdate', gap); 
+    }
+  }.observes('_lastChangeTime'),
 
 
   // ..........................................................
@@ -524,11 +544,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
-  mouseEntered: function () {
-    this.updateFrameHeight();
-  },
-
-  /** @private*/
   mouseDown: function (evt) {
     this._mouseDown = YES;
     this._mouseDownEvent = evt;
@@ -779,9 +794,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
         this._target.parentNode.removeChild(this._target);
       }
       this.notifyDomValueChange();
-
-      // HACK: a timeout of 50ms is need in order to get the correct height of the editor.
-      this.invokeLater('updateFrameHeight', 50);
     }
 
     this._didStartDrag = this._target = this._content = null;
