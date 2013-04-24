@@ -179,11 +179,25 @@ SC.WYSIWYGEditorView = SC.View.extend({
     editor
   */
   updateFrameHeight: function () {
-    var lastNode = this.$().children().last();
-    if (lastNode.length > 0) {
-      var calcHeight = this.$().scrollTop() + lastNode.position().top + lastNode.height() + this.get('documentPadding');
-      this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
-    }
+    var calcHeight = this.computeHeight();
+    this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
+  },
+
+  /** @private 
+    Method to compute the height of the the editor.
+
+    @return {Number}
+  */
+  computeHeight: function() {
+    var layer = this.get('layer'),
+        layerOverflow = layer.style.overflow,
+        layerHeight = layer.style.height;
+    layer.style.overflow = '';
+    layer.style.height = '';
+    var height = layer.offsetHeight;
+    layer.style.height = layerHeight;
+    layer.style.overflow = layerOverflow;
+    return height;
   },
 
 
