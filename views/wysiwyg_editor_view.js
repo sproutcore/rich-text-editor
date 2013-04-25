@@ -715,12 +715,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   focus: function (evt) {
-    this.becomeFirstResponder();
+      SC.run(function(){
+          this.becomeFirstResponder();
+      }, this);
   },
 
   /** @private*/
   blur: function (evt) {
-    this.resignFirstResponder();
+      SC.run(function(){
+          this.resignFirstResponder();
+      }, this);
   },
 
 
