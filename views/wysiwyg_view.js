@@ -68,6 +68,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   */
   carriageReturnText: '<p><br></p>',
 
+
   /**
     Class name or array of class names to add to the RTE editor
 
@@ -161,5 +162,14 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     @property {SC.WYSIWYGEditorView}
   */
   editor: SC.outlet('scrollView.contentView'),
+
+    /**
+     *
+     * Whether or not the editor is the current first responder
+     *
+     * @property {Boolean}
+     */
+  editorIsFirstResponder: NO,
+  editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder'),
 
 });
