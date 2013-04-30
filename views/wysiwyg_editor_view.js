@@ -742,9 +742,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
       }
 
       $child.attr({
-        id: null,
-        style: null,
-        class: null
+        'id': null,
+        'style': null,
+        'class': null
       });
       $child.css('text-align', textAlign);
       self._stripFormatting($child.children());
