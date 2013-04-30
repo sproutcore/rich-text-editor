@@ -6,77 +6,77 @@
  -------------------------------------------------------------------------------------------------*/
 /*globals SproutCoreWysiwyg */
 /**
-  @class
-  
-  View class responsible for encapsulating the RTE editor built into modern
-  browsers.
-  
-  https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
-  http://msdn.microsoft.com/en-us/library/ms536419(v=vs.85).aspx
-  https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
-  
-  @extends SC.View
-  @extends SC.Control
-  @author Joe Gaudet - joe@learndot.com
-*/
+ @class
+
+   View class responsible for encapsulating the RTE editor built into modern
+ browsers.
+
+ https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
+ http://msdn.microsoft.com/en-us/library/ms536419(v=vs.85).aspx
+ https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
+
+ @extends SC.View
+ @extends SC.Control
+ @author Joe Gaudet - joe@learndot.com
+ */
 SC.WYSIWYGEditorView = SC.View.extend({
   classNames: 'sc-wysiwyg-editor',
 
   /**
-    @type Number
-    @default 20
-    @see SC.WYSIWYGView#documentPadding
-  */
+   @type Number
+   @default 20
+   @see SC.WYSIWYGView#documentPadding
+   */
   documentPadding: 20,
 
   /**
-    @type String
-    @default ''
-    @see SC.WYSIWYGView#defaultValue
-  */
+   @type String
+   @default ''
+   @see SC.WYSIWYGView#defaultValue
+   */
   defaultValue: '',
 
   /**
-    @type String
-    @default '<p><br></p>'
-    @see SC.WYSIWYGView#carriageReturnText
-  */
+   @type String
+   @default '<p><br></p>'
+   @see SC.WYSIWYGView#carriageReturnText
+   */
   carriageReturnText: '<p><br></p>',
 
   /**
-    @type Boolean
-    @default NO
-    @see SC.WYSIWYGView#pasteAsPlainText
-  */
+   @type Boolean
+   @default NO
+   @see SC.WYSIWYGView#pasteAsPlainText
+   */
   pasteAsPlainText: NO,
 
   /**
-    @readOnly
-    @property {SC.WYSIWYGView} 
-  */
+   @readOnly
+   @property {SC.WYSIWYGView}
+   */
   wysiwygView: null,
 
   /**
-    Min height of the frame
-    Will be overighted to match the height of the container
+   Min height of the frame
+   Will be overighted to match the height of the container
 
-    @readOnly
-    @property {Number} 
-  */
+   @readOnly
+   @property {Number}
+   */
   minHeight: 200,
 
   /**
-    @type Boolean
-    @default YES
-  */
+   @type Boolean
+   @default YES
+   */
   isTextSelectable: YES,
 
   /**
-    We want the editor to respond to key events
+   We want the editor to respond to key events
 
-    @type Boolean
-    @default YES
-  */
+   @type Boolean
+   @default YES
+   */
   acceptsFirstResponder: YES,
 
   // ..........................................................
@@ -98,22 +98,22 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private */
-  init: function() {
+  init: function () {
     sc_super();
     this.undoManager = SC.UndoManager.create();
 
     // Firefox: Disable image resizing
-    this.invokeLast(function() { 
-      document.execCommand("enableObjectResizing", false, false); 
+    this.invokeLast(function () {
+      document.execCommand("enableObjectResizing", false, false);
     });
   },
-  
+
   /** @private */
-  destroy: function() {
+  destroy: function () {
     this.undoManager.destroy();
     sc_super();
   },
-  
+
   /** @private */
   didCreateLayer: function () {
     SC.Event.add(this.$(), 'focus', this, 'focus');
@@ -129,16 +129,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Whether or not the value has been changed by the editor
-    
-    @property {Boolean}
-    @private
-  */
+   Whether or not the value has been changed by the editor
+
+   @property {Boolean}
+   @private
+   */
   _changeByEditor: false,
 
-  /** @private 
-    Syncronize the value with the dom.
-  */
+  /** @private
+   Syncronize the value with the dom.
+   */
   _valueDidChange: function () {
     var value = this.get('value') || this.get('defaultValue');
     if (!this._changeByEditor) {
@@ -150,11 +150,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
   }.observes('value'),
 
   /**
-    @private notify the dom that values have been updated.
-  */
+   @private notify the dom that values have been updated.
+   */
   notifyDomValueChange: function () {
     var value = this.get('value'),
-        html = this.$().html(); // get the value from the inner document
+      html = this.$().html(); // get the value from the inner document
 
     if (value !== html) {
       this._changeByEditor = true;
@@ -164,9 +164,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
     }
   },
 
-  /** @private 
-    Internal property used to update the state of the commands
-  */
+  /** @private
+   Internal property used to update the state of the commands
+   */
   recomputeEditorState: NO,
 
   /** @private */
@@ -174,26 +174,26 @@ SC.WYSIWYGEditorView = SC.View.extend({
     this.notifyPropertyChange('recomputeEditorState');
   },
 
-  /** @private 
-    Recompute frame height based on the size of the content inside of the
-    editor
-  */
+  /** @private
+   Recompute frame height based on the size of the content inside of the
+   editor
+   */
   updateFrameHeight: function () {
     var calcHeight = this.computeHeight();
     this.adjust('height', Math.max(calcHeight, this.get('minHeight')));
   },
 
-  /** @private 
-    Method to compute the height of the the editor.
+  /** @private
+   Method to compute the height of the the editor.
 
-    @return {Number}
-  */
-  computeHeight: function() {
+   @return {Number}
+   */
+  computeHeight: function () {
     var layer = this.get('layer');
     if (!layer) return 0;
 
     var layerOverflow = layer.style.overflow,
-        layerHeight = layer.style.height;
+      layerHeight = layer.style.height;
     layer.style.overflow = '';
     layer.style.height = '';
     var height = layer.offsetHeight;
@@ -202,34 +202,33 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return height;
   },
 
-  /** @private 
-    Because we can't really know when the elements displayed in the editor
-    are loads (images, fonts, ...) we schedule an update of the height of the  
-    editor during about 5s each time the value change.
+  /** @private
+   Because we can't really know when the elements displayed in the editor
+   are loads (images, fonts, ...) we schedule an update of the height of the
+   editor during about 5s each time the value change.
 
-    This is particularly useful at initialization, but also if we drag or
-    resize an image.
-  */
+   This is particularly useful at initialization, but also if we drag or
+   resize an image.
+   */
   scheduleHeightUpdate: function () {
-    var currentTime = new Date().getTime(), 
-        gap = currentTime - this._lastChangeTime;
+    var currentTime = new Date().getTime(),
+      gap = currentTime - this._lastChangeTime;
 
     if (gap < 10000) {
       this.updateFrameHeight();
-      this.invokeOnceLater('scheduleHeightUpdate', gap); 
+      this.invokeOnceLater('scheduleHeightUpdate', gap);
     }
   }.observes('_lastChangeTime'),
-
 
   // ..........................................................
   // RTE SUPPORT
   // 
 
   /**
-    Call this method from a commandView to execute the its command
-    
-    @param commandView
-  */
+   Call this method from a commandView to execute the its command
+
+   @param commandView
+   */
   invokeCommand: function (commandView) {
     this.focus();
 
@@ -240,16 +239,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Executes a command against the editor:
-    
-    https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
-    http://msdn.microsoft.com/en-us/library/ms536419(v=vs.85).aspx
-    https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
-    
-    @param commandName
-    @param showDefaultUI
-    @param value
-  */
+   Executes a command against the editor:
+
+   https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
+   http://msdn.microsoft.com/en-us/library/ms536419(v=vs.85).aspx
+   https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
+
+   @param commandName
+   @param showDefaultUI
+   @param value
+   */
   execCommand: function (commandName, showDefaultUI, value) {
     var ret = document.execCommand(commandName, showDefaultUI, value);
     this.notifyDomValueChange();
@@ -257,14 +256,14 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Determines whether or not a commandHasBeen executed at the current
-    selection.
-    
-    TODO: refactor this mess
-    
-    @param commandName
-    @returns {Boolean}
-  */
+   Determines whether or not a commandHasBeen executed at the current
+   selection.
+
+   TODO: refactor this mess
+
+   @param commandName
+   @returns {Boolean}
+   */
   queryCommandState: function (commandName) {
     if (SC.browser.isMozilla) {
       var sel = this.getSelection();
@@ -287,7 +286,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
           break;
       }
 
-    } else {
+    }
+    else {
       return document.queryCommandState(commandName);
     }
   },
@@ -303,14 +303,14 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Determines whether or not a commandHasBeen executed at the current
-    selection.
-    
-    TODO: refactor this mess
-    
-    @param commandName
-    @returns {Boolean}
-  */
+   Determines whether or not a commandHasBeen executed at the current
+   selection.
+
+   TODO: refactor this mess
+
+   @param commandName
+   @returns {Boolean}
+   */
   queryCommandValue: function (commandName) {
     if (SC.browser.isMozilla) {
       var sel = this.getSelection();
@@ -333,22 +333,23 @@ SC.WYSIWYGEditorView = SC.View.extend({
           return '';
           break;
       }
-    } else {
+    }
+    else {
       return document.queryCommandValue(commandName);
     }
   },
 
   /**
-    Insert some html at the current caret position
-    
-    @param html {String} html to be inserted
-  */
+   Insert some html at the current caret position
+
+   @param html {String} html to be inserted
+   */
   insertHtmlAtCaret: function (html) {
     var didInsertNode = false;
 
     if (document.getSelection) {
       var sel = this.getSelection(),
-          range;
+        range;
 
       if (sel.getRangeAt && sel.rangeCount) {
         range = sel.getRangeAt(0);
@@ -375,7 +376,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
           sel.addRange(range);
         }
       }
-    } else if (document.selection && document.selection.type != "Control") {
+    }
+    else if (document.selection && document.selection.type != "Control") {
       document.selection.createRange().pasteHTML(html);
       didInsertNode = true;
     }
@@ -386,10 +388,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Set the current range of the selection
-    
-    @return range
-  */
+   Set the current range of the selection
+
+   @return range
+   */
   saveSelection: function () {
     var range = this.getFirstRange();
     if (range) this._savedSelection = range;
@@ -397,18 +399,18 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Restore the previously saved range
-  */
-  restoreSavedSelection: function() {
+   Restore the previously saved range
+   */
+  restoreSavedSelection: function () {
     this.setRange(this._savedSelection);
   },
 
   /**
-    Create a new Range object.
+   Create a new Range object.
 
-    @return range
-  */
-  createRange: function() {
+   @return range
+   */
+  createRange: function () {
     if (document.getSelection) {
       return document.createRange();
     }
@@ -418,53 +420,55 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Set a range to the selection
-    All the current ranges will be removed first
-    
-    @param range
-  */
+   Set a range to the selection
+   All the current ranges will be removed first
+
+   @param range
+   */
   setRange: function (range) {
     if (range) {
       if (document.getSelection) {
         var sel = this.getSelection();
         if (sel.rangeCount > 0) sel.removeAllRanges();
         sel.addRange(range);
-      } else if (document.selection && range.select) {
+      }
+      else if (document.selection && range.select) {
         range.select();
       }
     }
   },
 
   /**
-    Get the current the selection
+   Get the current the selection
 
-    @return selection
-  */
+   @return selection
+   */
   getSelection: function () {
     return document.selection || document.getSelection();
   },
 
   /**
-    Get the first range from the selection
-    
-    @return range
-  */
+   Get the first range from the selection
+
+   @return range
+   */
   getFirstRange: function () {
     if (document.getSelection) {
       var sel = document.getSelection();
 
       return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
-    } else if (document.selection && document.selection.createRange) {
+    }
+    else if (document.selection && document.selection.createRange) {
       return document.selection.createRange();
     }
   },
 
   /**
-    Determine is the passed range is inside the editor or not.
-    
-    @param range
-    @return {Boolean}
-  */
+   Determine is the passed range is inside the editor or not.
+
+   @param range
+   @return {Boolean}
+   */
   rangeIsInsideEditor: function (range) {
     range = range.commonAncestorContainer;
     var editor = this.get('layer');
@@ -479,13 +483,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Cross-browser method to select all the content of the editor
+   Cross-browser method to select all the content of the editor
 
-    @return range
-  */
+   @return range
+   */
   selectNodeContents: function () {
     var layer = this.get('layer'),
-        range = this.createRange();
+      range = this.createRange();
 
     if (document.getSelection) {
       range.selectNodeContents(layer);
@@ -497,8 +501,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Move the caret at the end to the editor
-  */
+   Move the caret at the end to the editor
+   */
   setCaretAtEditorEnd: function () {
     var range = this.selectNodeContents();
     range.collapse(false);
@@ -506,13 +510,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /**
-    Reformats
-    
-    @param $element
-    @param tagName
-    @private
-    @return reformated element
-  */
+   Reformats
+
+   @param $element
+   @param tagName
+   @private
+   @return reformated element
+   */
   _formatElement: function ($element, tagName) {
     var newElement = $('<' + tagName + '/>').append($element.clone().get(0).childNodes);
     $element.replaceWith(newElement);
@@ -525,17 +529,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return newElement;
   },
 
-
   // ..........................................................
   // EVENTS
   // 
 
   /** @private
 
-    Hack to avoid the rootResponder to return NO to selectstart
-    because the view handle mouseDragged
-  */
-  respondsTo: function( methodName ) {
+   Hack to avoid the rootResponder to return NO to selectstart
+   because the view handle mouseDragged
+   */
+  respondsTo: function (methodName) {
     if (this._mouseDown && methodName === 'mouseDragged') {
       this._mouseDown = NO;
       return NO;
@@ -567,12 +570,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
-  didBecomeFirstResponder: function() {
+  didBecomeFirstResponder: function () {
     this.$().focus();
   },
 
   /** @private*/
-  willLoseFirstResponder: function() {
+  willLoseFirstResponder: function () {
     // Don't blur the editor when it lose its first responder. This avoid loosing the 
     // selection in the case where the new first responder is a command.
     // this.$().blur();
@@ -603,7 +606,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
-  deleteBackward: function(evt) {
+  deleteBackward: function (evt) {
     evt.allowDefault();
     var first = this.$().children()[0];
     if (!first || first && first.nodeName === "BR") {
@@ -629,25 +632,25 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private */
-  moveLeft: function(evt) { 
+  moveLeft: function (evt) {
     evt.allowDefault();
     return YES;
   },
 
   /** @private */
-  moveRight: function(evt) { 
-    evt.allowDefault();
-    return YES;
-  },
-  
-  /** @private */
-  moveUp: function(evt) {
+  moveRight: function (evt) {
     evt.allowDefault();
     return YES;
   },
 
   /** @private */
-  moveDown: function(evt) {
+  moveUp: function (evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+  /** @private */
+  moveDown: function (evt) {
     evt.allowDefault();
     return YES;
   },
@@ -656,7 +659,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   paste: function (evt) {
     // We need to use originalEvent to be able to access the clipboardData property
     var evt = evt.originalEvent,
-        pasteAsPlainText = this.get('pasteAsPlainText');
+      pasteAsPlainText = this.get('pasteAsPlainText');
 
     if (evt.clipboardData) {
       var data;
@@ -669,77 +672,110 @@ SC.WYSIWYGEditorView = SC.View.extend({
           data = data.substring(data.indexOf('<body>'), data.indexOf('</body>'));
         }
       }
-      this.insertHtmlAtCaret(data);
+      SC.run(function () {
+        this.insertHtmlAtCaret(data);
+      }, this);
       evt.preventDefault();
     }
     // doesn't support clipbaordData so lets do this, and remove any
     // horrible class and style information 
     else {
       evt.allowDefault();
-
     }
 
     if (!pasteAsPlainText) {
-      // TODO: Rather then parse things lets actually traverse the dom.
-      // bone head move.
-      this.invokeNext(function() {
+      this.invokeNext(function () {
+        this._normalizeMarkup(this.$().children());
+        this._stripFormatting(this.$().children());
         this.notifyDomValueChange();
-        var value = this.get('value');
-  
-        // handle IE pastes, which could include font tags
-        value = value.replace(/<\/?font[^>]*>/gim, '');
-  
-        // also no ids
-        value = value.replace(/id="[^"]+"/, '');
-  
-        // also no classes
-        value = value.replace(/class="[^"]+"/, '');
-  
-        var matches = value.match(/style="([^"]+)"/g);
-        if (matches) {
-          for (var i = 0; i < matches.length; i++) {
-            var subMatches = matches[i].match(/(text-align): [^;]+;/);
-            value = value.replace(matches[i], subMatches ? subMatches.join('') : '');
-          }
-        }
-  
-        var links = value.match(/<a[^>]+>/g);
-        if (links) {
-          for (var i = 0; i < links.length; i++) {
-            value = value.replace(links[i], links[i].replace(/target="[^"]+"/, '').replace('>', ' target="_blank">'));
-          }
-        }
       });
     }
   },
 
+  _normalizeMarkup: function (children) {
+    var self = this;
+    children.each(function (index, child) {
+      var $child = $(child), nodeName = child.nodeName, fontWeight = $child.css('font-weight');
+
+      // If it's a bold tag that for some odd reason has a normal
+      // font weight lets un bold it.
+      if (nodeName === 'B' && (fontWeight === 'normal' || fontWeight === 400)) {
+        $child.children().unwrap();
+      }
+
+      // orphan spans lets remove em.
+      if (nodeName === 'SPAN' && $child.text() === '') {
+        $child.remove();
+      }
+
+      // No Font tags allowed
+      if (nodeName === 'FONT') {
+        $child.children().unwrap();
+      }
+
+      self._normalizeMarkup($child.children());
+    });
+  },
+
+  _stripFormatting: function (children) {
+    var self = this;
+    children.each(function (index, child) {
+      var $child = $(child),
+        nodeName = child.nodeName,
+        fontWeight = $child.css('font-weight'),
+        textAlign = $child.css('text-align');
+
+      // Make sure all anchors spawn new windows.
+      if (nodeName === 'A') {
+        $child.attr('target', '_blank');
+      }
+
+      // If it's a bold tag that for some odd reason has a normal
+      // font weight lets un bold it.
+      if (nodeName === 'B' && (fontWeight === 'normal' || fontWeight === 400)) {
+        $child.children().unwrap();
+      }
+
+      // No Font tags allowed
+      if (nodeName === 'FONT') {
+        $child.children().unwrap();
+      }
+
+      $child.attr({
+        id: null,
+        style: null,
+        class: null
+      });
+      $child.css('text-align', textAlign);
+      self._stripFormatting($child.children());
+    });
+  },
+
   /** @private*/
   focus: function (evt) {
-      SC.run(function(){
-          this.becomeFirstResponder();
-      }, this);
+    SC.run(function () {
+      this.becomeFirstResponder();
+    }, this);
   },
 
   /** @private*/
   blur: function (evt) {
-      SC.run(function(){
-          this.resignFirstResponder();
-      }, this);
+    SC.run(function () {
+      this.resignFirstResponder();
+    }, this);
   },
-
-
 
   // ..........................................................
   // DRAG
   // 
 
   /** @private*/
-  startDrag: function() {
+  startDrag: function () {
     if (this._didStartDrag) return true;
     var evt = this._mouseDownEvent,
-        draggableElements = this.$().find('img'),
-        target = evt.target,
-        content = target.outerHTML;
+      draggableElements = this.$().find('img'),
+      target = evt.target,
+      content = target.outerHTML;
 
     if (draggableElements.is(target)) {
       // If the browser doesn't support caretRangeFromPoint we can't compute where
@@ -757,10 +793,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
       var dragViewLayer = target.cloneNode(false);
       dragViewLayer.className = dragViewLayer.className + ' sc-wysiwyg-drag-view';
-      var dragView = this._dragView = SC.View.create({ 
+      var dragView = this._dragView = SC.View.create({
         layer: dragViewLayer
       });
-      dragView.adjust({ top: evt.pageY-5, left: evt.pageX-5 });
+      dragView.adjust({ top: evt.pageY - 5, left: evt.pageX - 5 });
       dragView.createLayer();
 
       SC.Drag.start({
@@ -778,7 +814,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
-  dragDidMove: function(drag, loc) {
+  dragDidMove: function (drag, loc) {
     // Prevent the dragView from being drag by the browser
     drag._lastMouseDraggedEvent.preventDefault();
 
@@ -789,7 +825,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private*/
-  dragDidEnd: function(drag, loc) {
+  dragDidEnd: function (drag, loc) {
     var range = document.caretRangeFromPoint(loc.x, loc.y);
 
     if (this.rangeIsInsideEditor(range)) {
@@ -811,13 +847,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private
 
-    Avoid showing the insertionPoint of a SC.listView if 
-    we drag an image over a it.
-  */
-  dragSourceOperationMaskFor: function() {
+   Avoid showing the insertionPoint of a SC.listView if
+   we drag an image over a it.
+   */
+  dragSourceOperationMaskFor: function () {
     return SC.DRAG_NONE;
   },
-
 
   // ..........................................................
   // UNDO MANAGER
@@ -827,22 +862,22 @@ SC.WYSIWYGEditorView = SC.View.extend({
   undoManager: null,
 
   /** @private*/
-  undo: function(evt) {
+  undo: function (evt) {
     this.undoManager.undo();
     return YES;
   },
 
   /** @private */
-  redo: function(evt) {
+  redo: function (evt) {
     this.undoManager.redo();
     return YES;
   },
 
   /** @private */
-  registerUndo: function(value) {
+  registerUndo: function (value) {
     var that = this;
 
-    this.undoManager.registerUndo(function() {
+    this.undoManager.registerUndo(function () {
       that.$().html(value);
       that.notifyDomValueChange();
       that.setCaretAtEditorEnd();
@@ -850,7 +885,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private */
-  resetUndoStack: function() {
+  resetUndoStack: function () {
     var undoManager = this.undoManager;
     undoManager.set('undoStack', null);
     undoManager.set('redoStack', null);

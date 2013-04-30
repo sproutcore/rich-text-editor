@@ -123,7 +123,9 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       // syncronizing scrolling
       scroll: function (evt) {
         var $this = this.$();
-        this.get('parentView').scrollTo($this.scrollLeft(), $this.scrollTop());
+        SC.run(function(){
+          this.get('parentView').scrollTo($this.scrollLeft(), $this.scrollTop());
+        }, this);
         return YES;
       }
     }),
