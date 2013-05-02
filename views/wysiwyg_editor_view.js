@@ -81,7 +81,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   // ..........................................................
   // INTERNAL SUPPORT
-  // 
+  //
 
   /** @private */
   render: function (context) {
@@ -156,6 +156,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var value = this.get('value'),
       html = this.$().html(); // get the value from the inner document
 
+    // ideally later
+    if (this.queryCommandValue('formatBlock') === 'div') {
+      this.execCommand('formatBlock', null, 'p');
+    }
+
     if (value !== html) {
       this._changeByEditor = true;
       this.set('value', html);
@@ -222,7 +227,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   // ..........................................................
   // RTE SUPPORT
-  // 
+  //
 
   /**
    Call this method from a commandView to execute the its command
@@ -531,7 +536,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   // ..........................................................
   // EVENTS
-  // 
+  //
 
   /** @private
 
@@ -576,7 +581,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   willLoseFirstResponder: function () {
-    // Don't blur the editor when it lose its first responder. This avoid loosing the 
+    // Don't blur the editor when it lose its first responder. This avoid loosing the
     // selection in the case where the new first responder is a command.
     // this.$().blur();
   },
@@ -585,7 +590,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
   keyDown: function (evt) {
     var ret = this.interpretKeyEvents(evt) || this.performKeyEquivalent(evt.commandCodes()[0], evt);
     if (!ret) evt.allowDefault();
-
     return ret;
   },
 
@@ -599,9 +603,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   insertNewline: function (evt) {
     evt.allowDefault();
-    if (this.queryCommandValue('formatBlock') === 'div') {
-      this.execCommand('formatBlock', null, 'p');
-    }
+    console.log('INSERT NEW LINE')
+    anEditor = this;
+
+    this.invokeNext(function () {
+      this.invokeNext(function () {
+      });
+    });
     return YES;
   },
 
@@ -671,6 +679,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
         if (data.indexOf('<body>') !== -1) {
           data = data.substring(data.indexOf('<body>'), data.indexOf('</body>'));
         }
+
+        // some times text can be plain
+        if (!data) {
+          data = evt.clipboardData.getData('text');
+        }
       }
       SC.run(function () {
         this.insertHtmlAtCaret(data);
@@ -678,17 +691,19 @@ SC.WYSIWYGEditorView = SC.View.extend({
       evt.preventDefault();
     }
     // doesn't support clipbaordData so lets do this, and remove any
-    // horrible class and style information 
+    // horrible class and style information
     else {
       evt.allowDefault();
     }
 
     if (!pasteAsPlainText) {
-      this.invokeNext(function () {
-        this._normalizeMarkup(this.$().children());
-        this._stripFormatting(this.$().children());
-        this.notifyDomValueChange();
-      });
+      SC.run(function () {
+        this.invokeNext(function () {
+          this._normalizeMarkup(this.$().children());
+          this._stripFormatting(this.$().children());
+          this.notifyDomValueChange();
+        });
+      }, this);
     }
   },
 
@@ -767,7 +782,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   // ..........................................................
   // DRAG
-  // 
+  //
 
   /** @private*/
   startDrag: function () {
@@ -779,7 +794,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     if (draggableElements.is(target)) {
       // If the browser doesn't support caretRangeFromPoint we can't compute where
-      // to drop the img. 
+      // to drop the img.
       // rangy 1.3 will add a cross-browser solution for this.
       if (!document.caretRangeFromPoint) {
         // In this case, we disable the drag
@@ -819,7 +834,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     drag._lastMouseDraggedEvent.preventDefault();
 
     // Update the caret position to the place where the element will be drop
-    // TODO The caret blink or is invisible 
+    // TODO The caret blink or is invisible
     var range = document.caretRangeFromPoint(loc.x, loc.y);
     this.setRange(range);
   },
@@ -856,7 +871,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   // ..........................................................
   // UNDO MANAGER
-  // 
+  //
 
   /** @private */
   undoManager: null,
