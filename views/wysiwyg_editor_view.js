@@ -103,9 +103,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     this.undoManager = SC.UndoManager.create();
 
     // Firefox: Disable image resizing
-    this.invokeLast(function () {
-      document.execCommand("enableObjectResizing", false, false);
-    });
+    if (SC.browser.isMozilla) {
+      this.invokeLast(function () {
+        document.execCommand("enableObjectResizing", false, false);
+      });
+    }
   },
 
   /** @private */
@@ -603,13 +605,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   insertNewline: function (evt) {
     evt.allowDefault();
-    console.log('INSERT NEW LINE')
-    anEditor = this;
-
-    this.invokeNext(function () {
-      this.invokeNext(function () {
-      });
-    });
     return YES;
   },
 
