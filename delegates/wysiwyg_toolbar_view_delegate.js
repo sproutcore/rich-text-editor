@@ -15,6 +15,7 @@ SC.WYSIWYGToolbarViewDelegate = {
   isWYSIWYGToolbarViewDelegate: YES,
 
   toolbarViewCreateControlForCommandNamed: function (toolbarView, commandName) {
+
     if (commandName === 'separator') {
       var separatorView = this.toolbarViewSeparator();
       return toolbarView.createChildView(separatorView);
@@ -87,10 +88,10 @@ SC.WYSIWYGToolbarViewDelegate = {
         height: SC.Theme.find(SC.defaultTheme).buttonRenderDelegate[SC.REGULAR_CONTROL_SIZE].height,
         width: 3
       },
-      layoutDirection: SC.LAYOUT_VERTICAL,
+      layoutDirection: SC.LAYOUT_VERTICAL
     });
     return separator;
-  },
+  }
 
 
 };

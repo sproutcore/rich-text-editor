@@ -153,7 +153,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
       minHeightBinding: SC.Binding.transform(function (frame) {
         return frame ? frame.height : 0;
-      }).oneWay('.parentView.frame'),
+      }).oneWay('.parentView.frame')
     })
   }),
 
