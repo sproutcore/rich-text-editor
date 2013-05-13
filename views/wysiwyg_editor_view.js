@@ -293,7 +293,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     }
     else {
-      return document.queryCommandState(commandName);
+        var ret = false
+        try {
+           document.queryCommandState(commandName);
+        }
+        catch(e) { }
+      return ret;
     }
   },
 
