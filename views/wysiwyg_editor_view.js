@@ -603,13 +603,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   insertNewline: function (evt) {
     evt.allowDefault();
-    console.log('INSERT NEW LINE')
-    anEditor = this;
-
-    this.invokeNext(function () {
-      this.invokeNext(function () {
-      });
-    });
     return YES;
   },
 
