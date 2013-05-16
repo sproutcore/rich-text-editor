@@ -601,6 +601,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   keyUp: function (evt) {
+    // if there are no children lets format the selection with a paragraph
+    if(this.$().children().length === 0)  {
+      document.execCommand('formatBlock', false, 'p');
+    }
     this.notifyDomValueChange();
     this.updateState();
     return YES;
@@ -615,10 +619,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   deleteBackward: function (evt) {
     evt.allowDefault();
-    var first = this.$().children()[0];
-    if (!first || first && first.nodeName === "BR") {
-      this.insertHtmlAtCaret(this.get('carriageReturnText'));
-    }
+//    var first = this.$().children()[0];
+//    if (!first || first && first.nodeName === "BR") {
+//      this.insertHtmlAtCaret(this.get('carriageReturnText'));
+//    }
     return YES;
   },
 
