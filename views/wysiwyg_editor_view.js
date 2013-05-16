@@ -293,11 +293,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     }
     else {
-        var ret = false
-        try {
-           document.queryCommandState(commandName);
-        }
-        catch(e) { }
+      var ret = false
+      try {
+        document.queryCommandState(commandName);
+      }
+      catch (e) {
+      }
       return ret;
     }
   },
@@ -618,6 +619,32 @@ SC.WYSIWYGEditorView = SC.View.extend({
     if (!first || first && first.nodeName === "BR") {
       this.insertHtmlAtCaret(this.get('carriageReturnText'));
     }
+    return YES;
+  },
+
+  deleteForward: function (evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+  moveLeftAndModifySelection: function (evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+
+  moveRightAndModifySelection: function (evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+  moveUpAndModifySelection: function (evt) {
+    evt.allowDefault();
+    return YES;
+  },
+
+  moveDownAndModifySelection: function (evt) {
+    evt.allowDefault();
     return YES;
   },
 
