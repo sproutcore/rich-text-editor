@@ -60,7 +60,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    Min height of the frame
    Will be overighted to match the height of the container
 
-   @readOnly
+rotide   @readOnlyeeddiittoror
    @property {Number}
    */
   minHeight: 200,
@@ -156,10 +156,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var value = this.get('value'),
       html = this.$().html(); // get the value from the inner document
 
-    // ideally later
-    if (this.queryCommandValue('formatBlock') === 'div') {
-      this.execCommand('formatBlock', null, 'p');
-    }
+//    // ideally later
+//    if (this.queryCommandValue('formatBlock') === 'div') {
+//      this.execCommand('formatBlock', null, 'p');
+//    }
 
     if (value !== html) {
       this._changeByEditor = true;
