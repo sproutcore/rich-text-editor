@@ -156,11 +156,6 @@ rotide   @readOnlyeeddiittoror
     var value = this.get('value'),
       html = this.$().html(); // get the value from the inner document
 
-//    // ideally later
-//    if (this.queryCommandValue('formatBlock') === 'div') {
-//      this.execCommand('formatBlock', null, 'p');
-//    }
-
     if (value !== html) {
       this._changeByEditor = true;
       this.set('value', html);
