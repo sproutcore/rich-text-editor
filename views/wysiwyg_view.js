@@ -177,7 +177,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
      * @property {Boolean}
      */
   editorIsFirstResponder: NO,
-  editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder')
+  editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder'),
 
 
   // .......................................................
