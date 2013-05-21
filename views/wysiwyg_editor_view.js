@@ -103,9 +103,11 @@ rotide   @readOnlyeeddiittoror
     this.undoManager = SC.UndoManager.create();
 
     // Firefox: Disable image resizing
-    this.invokeLast(function () {
-      document.execCommand("enableObjectResizing", false, false);
-    });
+    if (SC.browser.isMozilla) {
+      this.invokeLast(function () {
+        document.execCommand("enableObjectResizing", false, false);
+      });
+    }
   },
 
   /** @private */
