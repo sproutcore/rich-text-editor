@@ -288,11 +288,12 @@ rotide   @readOnlyeeddiittoror
 
     }
     else {
-      var ret = false
+      var ret = false;
       try {
-        document.queryCommandState(commandName);
+        ret = document.queryCommandState(commandName);
       }
       catch (e) {
+        SC.error('Quering for command state failed: ' + commandName)
       }
       return ret;
     }

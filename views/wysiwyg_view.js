@@ -20,6 +20,11 @@ sc_require('views/wysiwyg_toolbar_view');
 SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
   classNames: 'sc-wysiwyg-view',
+
+  /*
+    Wire the editor focus style to the view
+   */
+  classNameBindings: ['editorIsFirstResponder:focus'],
   
   /**
     The value of the editor.
@@ -172,6 +177,6 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
      * @property {Boolean}
      */
   editorIsFirstResponder: NO,
-  editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder'),
+  editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder')
 
 });

@@ -24,7 +24,7 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
 
   /**
     Only SC.ANCHOR_TOP is handle by SC.WYSIWYGView.
-  
+
     @type Object
   */
   anchorLocation: SC.ANCHOR_TOP,
@@ -32,7 +32,7 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
   /**
     The commands to display in the toolbar.
     This property is set by SC.WYSIWYGView at initialization.
-  
+
     @type Array
   */
   commands: null,
@@ -42,7 +42,7 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
     This property is set by SC.WYSIWYGView at initialization
 
     @readOnly
-    @property {SC.WYSIWYGEditorView} 
+    @property {SC.WYSIWYGEditorView}
   */
   editor: null,
 
@@ -50,13 +50,11 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
     this.adjust('height', this.get('calculatedHeight'));
   }.observes('calculatedHeight'),
 
-
   commandsDidChange: function () {
     var commands = this.get('commands');
     for (var i = 0; i < commands.length; i++) {
       var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
       if (view) {
-        this.childViews.push(view);
         this.appendChild(view);
       }
     }

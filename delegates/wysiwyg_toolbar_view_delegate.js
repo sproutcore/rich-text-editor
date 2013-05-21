@@ -60,22 +60,25 @@ SC.WYSIWYGToolbarViewDelegate = {
         icon: command.get('icon'),
         toolTip: command.get('toolTip'),
         keyEquivalent: command.get('keyEquivalent'),
+
         init: function () {
           sc_super();
           if (this.editorStateDidChange) {
             this.editor.addObserver('recomputeEditorState', this, 'editorStateDidChange');
           }
         },
+
         destroy: function () {
           if (this.editorStateDidChange) {
             this.editor.removeObserver('recomputeEditorState', this, 'editorStateDidChange');
           }
           sc_super();
         },
+
         invokeCommand: function () {
           var editor = this.get('editor');
           editor.invokeCommand(this);
-        },
+        }
       });
     return buttonClass;
   },
