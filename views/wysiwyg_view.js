@@ -179,4 +179,14 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   editorIsFirstResponder: NO,
   editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder')
 
+
+  // .......................................................
+  // PRIVATE
+  //
+
+  destroy: function () {
+    var editor = this.get('editor');
+    editor.resignFirstResponder();
+    sc_super();
+  },
 });
