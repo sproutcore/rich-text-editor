@@ -142,13 +142,18 @@ rotide   @readOnlyeeddiittoror
    Syncronize the value with the dom.
    */
   _valueDidChange: function () {
-    var value = this.get('value') || this.get('defaultValue');
-    if (!this._changeByEditor) {
-      this.$().html(value);
-      this.resetUndoStack();
-    }
-    this._changeByEditor = false;
-    this.set('_lastChangeTime', new Date().getTime());
+      var value = this.get('value') || this.get('defaultValue');
+      if (!this._changeByEditor) {
+          // if the value was changed as part of the setup,
+          // sometimes the dom isn't ready, so we wait till
+          // the next run loop
+          this.invokeNext(function(){
+              this.$().html(value);
+              this.resetUndoStack();
+          });
+      }
+      this._changeByEditor = false;
+      this.set('_lastChangeTime', new Date().getTime());
   }.observes('value'),
 
   /**
