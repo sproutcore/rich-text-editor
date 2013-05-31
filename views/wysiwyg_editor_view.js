@@ -60,7 +60,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    Min height of the frame
    Will be overighted to match the height of the container
 
-rotide   @readOnlyeeddiittoror
+   rotide   @readOnlyeeddiittoror
    @property {Number}
    */
   minHeight: 200,
@@ -142,18 +142,18 @@ rotide   @readOnlyeeddiittoror
    Syncronize the value with the dom.
    */
   _valueDidChange: function () {
-      var value = this.get('value') || this.get('defaultValue');
-      if (!this._changeByEditor) {
-          // if the value was changed as part of the setup,
-          // sometimes the dom isn't ready, so we wait till
-          // the next run loop
-          this.invokeNext(function(){
-              this.$().html(value);
-              this.resetUndoStack();
-          });
-      }
-      this._changeByEditor = false;
-      this.set('_lastChangeTime', new Date().getTime());
+    var value = this.get('value') || this.get('defaultValue');
+    if (!this._changeByEditor) {
+      // if the value was changed as part of the setup,
+      // sometimes the dom isn't ready, so we wait till
+      // the next run loop
+      this.invokeNext(function () {
+        this.$().html(value);
+        this.resetUndoStack();
+      });
+    }
+    this._changeByEditor = false;
+    this.set('_lastChangeTime', new Date().getTime());
   }.observes('value'),
 
   /**
@@ -585,14 +585,16 @@ rotide   @readOnlyeeddiittoror
 
   /** @private*/
   didBecomeFirstResponder: function () {
-    this.$().focus();
+    this.invokeNext(function () {
+      this.$().focus();
+    });
   },
 
   /** @private*/
   willLoseFirstResponder: function () {
     // Don't blur the editor when it lose its first responder. This avoid loosing the
     // selection in the case where the new first responder is a command.
-    // this.$().blur();
+    this.$().blur();
   },
 
   /** @private*/
@@ -604,8 +606,11 @@ rotide   @readOnlyeeddiittoror
 
   /** @private*/
   keyUp: function (evt) {
+    console.log('key up');
+    console.log(document.activeElement);
+
     // if there are no children lets format the selection with a paragraph
-    if(this.$().children().length === 0)  {
+    if (this.$().children().length === 0) {
       document.execCommand('formatBlock', false, 'p');
     }
     this.notifyDomValueChange();
@@ -622,10 +627,6 @@ rotide   @readOnlyeeddiittoror
   /** @private*/
   deleteBackward: function (evt) {
     evt.allowDefault();
-//    var first = this.$().children()[0];
-//    if (!first || first && first.nodeName === "BR") {
-//      this.insertHtmlAtCaret(this.get('carriageReturnText'));
-//    }
     return YES;
   },
 
@@ -798,10 +799,20 @@ rotide   @readOnlyeeddiittoror
     });
   },
 
+  firstTime: YES,
   /** @private*/
   focus: function (evt) {
     SC.run(function () {
-      this.becomeFirstResponder();
+      // sometimes it won't focus properly so we need to toggle the
+      // focus blue
+      if (this.firstTime) {
+        this.firstTime = false;
+        this.$().blur();
+        this.$().focus();
+      }
+      else {
+        this.becomeFirstResponder();
+      }
     }, this);
   },
 
