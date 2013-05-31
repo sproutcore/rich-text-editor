@@ -807,6 +807,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       // focus blue
       if (this.firstTime) {
         this.firstTime = false;
+        this.doNotResign = true;
         this.$().blur();
         this.$().focus();
       }
@@ -819,7 +820,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   blur: function (evt) {
     SC.run(function () {
-      this.resignFirstResponder();
+        if(!this.doNotResign){
+          this.resignFirstResponder();
+        }
+        else {
+          this.doNotResign = false;
+        }
     }, this);
   },
 
