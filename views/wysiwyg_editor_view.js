@@ -606,9 +606,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   keyUp: function (evt) {
-    console.log('key up');
-    console.log(document.activeElement);
-
     // if there are no children lets format the selection with a paragraph
     if (this.$().children().length === 0) {
       document.execCommand('formatBlock', false, 'p');
@@ -799,15 +796,17 @@ SC.WYSIWYGEditorView = SC.View.extend({
     });
   },
 
-  firstTime: YES,
+
+  _firstTime: false,
+  _doNotResign: false,
   /** @private*/
   focus: function (evt) {
     SC.run(function () {
       // sometimes it won't focus properly so we need to toggle the
       // focus blue
-      if (this.firstTime) {
-        this.firstTime = false;
-        this.doNotResign = true;
+      if (this._firstTime) {
+        this._firstTime = false;
+        this._doNotResign = true;
         this.$().blur();
         this.$().focus();
       }
@@ -820,11 +819,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   blur: function (evt) {
     SC.run(function () {
-        if(!this.doNotResign){
+        if(!this._doNotResign){
           this.resignFirstResponder();
         }
         else {
-          this.doNotResign = false;
+          this._doNotResign = false;
         }
     }, this);
   },
