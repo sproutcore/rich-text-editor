@@ -15,5 +15,6 @@ SC.WYSIWYGButtonView = SC.ButtonView.extend({
 
     this.set('isSelected', editor.queryCommandState(command.commandName));
   },
+
   action: 'invokeCommand'
 });

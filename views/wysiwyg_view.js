@@ -11,8 +11,8 @@ sc_require('views/wysiwyg_toolbar_view');
 
 /**
   @class
-  
-  
+
+
   @extends SC.View
   @extends SC.Control
   @author Joe Gaudet - joe@learndot.com
@@ -25,7 +25,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     Wire the editor focus style to the view
    */
   classNameBindings: ['editorIsFirstResponder:focus'],
-  
+
   /**
     The value of the editor.
     You may also set the value using a content object and a contentValueKey.
@@ -81,7 +81,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     @default null
   */
   editorClassNames: null,
-  
+
   contentKeys: {
     contentValueKey: 'value',
     contentErrorKey: 'error',
@@ -97,7 +97,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
   /**
     The toolbar that will be used for this view.
-    
+
     @property {SC.WYSIWYGToolbarView}
   */
   toolbar: SC.WYSIWYGToolbarView.extend({
@@ -107,7 +107,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
   /**
     Container for the editor view
-    
+
     @property {SC.ScrollView}
   */
   scrollView: SC.ScrollView.extend({
@@ -134,11 +134,11 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
         return YES;
       }
     }),
-    
+
     contentView: SC.WYSIWYGEditorView.extend({
       init: function() {
         sc_super();
-        
+
         var wysiwygView = this.get('wysiwygView'),
             editorClassNames = wysiwygView.get('editorClassNames');
 
@@ -151,9 +151,13 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
       valueBinding: '.wysiwygView.value',
+
       defaultValue: SC.outlet('wysiwygView.defaultValue'),
+
       documentPadding: SC.outlet('wysiwygView.documentPadding'),
+
       pasteAsPlainText: SC.outlet('wysiwygView.pasteAsPlainText'),
+
       carriageReturnText: SC.outlet('wysiwygView.carriageReturnText'),
 
       minHeightBinding: SC.Binding.transform(function (frame) {
@@ -165,7 +169,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   /**
     Pointer to the editorView, which is set to the contentView of the
     ScrollPane
-    
+
     @property {SC.WYSIWYGEditorView}
   */
   editor: SC.outlet('scrollView.contentView'),
@@ -179,14 +183,12 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   editorIsFirstResponder: NO,
   editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder'),
 
-
   // .......................................................
   // PRIVATE
   //
 
   destroy: function () {
-    var editor = this.get('editor');
-    editor.resignFirstResponder();
+    this.get('editor').resignFirstResponder();
     sc_super();
-  },
+  }
 });
