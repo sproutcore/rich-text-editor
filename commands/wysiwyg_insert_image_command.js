@@ -61,4 +61,5 @@ SC.WYSIWYGInsertImageCommand = SC.Object.extend(SC.WYSIWYGCommand, SC.WYSIWYGPic
 	}
 
 });
+
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGInsertImageCommand);
