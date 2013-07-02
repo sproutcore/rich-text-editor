@@ -138,6 +138,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   _changeByEditor: false,
 
+  /*
+    The time when loading of images, fonts, etc. may have been triggered
+    by a value or visibility change.
+
+    @property {Boolean}
+    @private
+  */
+  _valueChangeTriggerTime: null,
+
   /** @private
    Syncronize the value with the dom.
    */
@@ -153,7 +162,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
       });
     }
     this._changeByEditor = false;
-    this.set('_lastChangeTime', new Date().getTime());
+    this._valueChangeTriggerTime = new Date().getTime();
+    this.scheduleHeightUpdate();
   }.observes('value'),
 
   /**
@@ -210,22 +220,46 @@ SC.WYSIWYGEditorView = SC.View.extend({
   },
 
   /** @private
-   Because we can't really know when the elements displayed in the editor
-   are loads (images, fonts, ...) we schedule an update of the height of the
-   editor during about 5s each time the value change.
-
+   Since we can't really know when the elements displayed in the editor are
+   loaded (images, fonts, ...) we run a rapid but slowing set of updates over
+   the course of ten seconds in hopes of catching any reflows in the act.
    This is particularly useful at initialization, but also if we drag or
    resize an image.
+
+   Since scheduling height updates is useless when we're detached from the
+   DOM, we defer scheduled updates until then.
    */
   scheduleHeightUpdate: function () {
+    // GATEKEEP: If we're detached, set up an observer on isVisibleInWindow and wait.
+    // Note: the reason we don't just observe isVisibleInWindow all the time is that
+    // if no height update was scheduled during detachment there's no reason to schedule
+    // it on attachment.
+    if (!this.get('isVisibleInWindow')) {
+      if (!this._isWaitingOnVisible) {
+        this.addObserver('isVisibleInWindow', this, this.scheduleHeightUpdate);
+        this._isWaitingOnVisible = YES; //sigh flags
+      }
+      return;
+    }
+
+    // If we were waiting for visibility, then clean up and update the DOM trigger time.
+    if (this._isWaitingOnVisible) {
+      this.removeObserver('isVisibleInWindow', this, this.scheduleHeightUpdate);
+      this._isWaitingOnVisible = NO;
+      this._valueChangeTriggerTime = new Date().getTime();
+    }
+
     var currentTime = new Date().getTime(),
-      gap = currentTime - this._lastChangeTime;
+        gap = currentTime - this._valueChangeTriggerTime + 10;
+    // (Adding ten milliseconds slows the initially high rate of updates; improves
+    // performance without slowing apparent reaction time or impacting schedule
+    // of later, slower updates.)
 
     if (gap < 10000) {
       this.updateFrameHeight();
       this.invokeOnceLater('scheduleHeightUpdate', gap);
     }
-  }.observes('_lastChangeTime'),
+  },
 
   // ..........................................................
   // RTE SUPPORT
