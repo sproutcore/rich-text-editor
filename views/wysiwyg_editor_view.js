@@ -763,6 +763,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
         this.invokeNext(function () {
           this._normalizeMarkup(this.$().children());
           this._stripFormatting(this.$().children());
+          // TODO: Integrate the MSO filter into the prior two methods to reduce recursive
+          // passes through the DOM.
+          this._stripMsoJunk(this.$());
           this.notifyDomValueChange();
         });
       }, this);
@@ -828,6 +831,150 @@ SC.WYSIWYGEditorView = SC.View.extend({
     });
   },
 
+  // Pasting in from MS Office gives you a bunch of technically parseable but really horrible crap. Strip
+  // it all out. Gone. Done. Get rid of it.
+  // Thanks TinyMCE for the inspiration and regexes!
+  // TODO: Integrate the MSO filter into the prior two methods to reduce recursive passes through the DOM.
+  _stripMsoJunk: function($el) {
+    var content = $el.html();
+    
+    // Gatekeep: No word junk.
+    if (!/class="?Mso|style="[^"]*\bmso-|style='[^'']*\bmso-|w:WordDocument/i.test(content)) return;
+    
+    // Remove rampant HTML comment if blocks.
+    content = content.replace(/<!--[\s\S]+?-->/gi, '');
+
+    // Remove various unwanted tags (comments, scripts (e.g. msoShowComment), the XML tag, VML
+    // content, MS Office namespaced tags, and a few others).
+    content = content.replace(/<(!|script[^>]*>.*?<\/script(?=[>\s])|\/?(\?xml(:\w+)?|img|meta|link|style|\w:\w+)(?=[\s\/>]))[^>]*>/gi, '');
+    
+    // OpenXML has this awful thing (<span style="mso-spacerun:yes">    </span>) for runs of empty
+    // spaces. Convert them to normal things.
+    content = content.replace(
+      /<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s\u00a0]*)<\/span>/gi,
+      function(str, spaces) {
+        return (spaces.length > 0) ? spaces.replace(/./g, '&nbsp;') : '';
+      }
+    );
+
+    // Jam the stripped markup back into the element so we can operate on the nodes.
+    $el.html(content);
+
+    // Convert Microsofty styles to actual CSS styles.
+    $el.children().forEach(this.__stripMsoJunk_StylesRecurser, this);
+
+    // Convert MS's fake lists to semantic lists.
+    // MS represents lists as <p> tags whose first <span> contains a bullet (unordered list) or
+    // an index ("1.", "a.", or "i."; ordered lists). Detect and wrap sequential list items in
+    // <ul> or <ol> tags.
+
+    // NOTE: Detecting fake nested lists is presently out of scope. This will generate one-dimensional
+    // ULs and OLs. When someone gets around to it, this page has a stupendous roman numeral translator
+    // script: http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter
+
+    var children = $el.children(),
+        child, $child, testText, numberMatch, start, attrs,
+        currentListType, // The list type we're currently handling. Used to detect sequential matches.
+        $currentList, // The current list element. Sequential matches are added to it.
+        i, len = children.length;
+    // Iterate through the children (which, wonderfully, doesn't change as we edit things).
+    for (i = 0; i < len; i++) {
+      child = children[i];
+      // If it's not a <p>, move along.
+      if (child.nodeName !== 'P') {
+        currentListType = null;
+        continue;
+      }
+
+      // Detect list elements.
+      $child = $(child);
+      testText = $child.find(':first').text(); // See above for more about this.
+      // Detect unordered lists (bullets).
+      if (/^\s*[\u2022\u00b7\u00a7\u00d8o\u25CF]\s+$/.test(testText)) {
+        // If this is the first sequential unordered list item, kick off a new UL element.
+        if (currentListType !== 'ul') {
+          currentListType = 'ul';
+          currentList = $('<ul />');
+          $child.before(currentList);
+        }
+
+        // Pop $child off of its parent (and from the children list).
+        $child.detach();
+
+        // Convert.
+        $child = this.__stripMsoJunk_ConvertFakeLiToRealLi($child);
+
+        // Append the new semantic list item to the current list.
+        currentList.append($child);
+      }
+
+      // Detect ordered lists ("1. ", "a. ", "i. ").
+      else if (/^\s*\w+\.\s+$/.test(testText)) {
+        // If this is the first sequential ordered list item, kick off a new UL element.
+        if (currentListType !== 'ol') {
+          currentListType = 'ol';
+          currentList = $('<ol />');
+          // Special case: if we're lucky enough to be looking at a numeric list (1. 2. 3.) then
+          // let's preserve the number it starts at.
+          numberMatch = testText.match(/([0-9])+\./g) || [];
+          start = parseInt(numberMatch[0], 10);
+          if (!isNaN(start)) {
+            currentList.attr('start', start);
+          }
+          $child.before(currentList);
+        }
+
+        // Pop $child off of its parent (and from the children list).
+        $child.detach();
+
+        // Convert.
+        $child = this.__stripMsoJunk_ConvertFakeLiToRealLi($child);
+
+        // Append the new semantic list item to the current list.
+        currentList.append($child);
+      }
+
+      // Otherwise, wrap up current cycle.
+      else {
+        currentListType = null;
+        currentList = null;
+      }
+    }
+
+  },
+  // Just some internal functions that I'd prefer to create once and cache.
+  __stripMsoJunk_StylesRecurser: function(el) {
+    var $el = $(el),
+        styles = $el.attr('style') || '',
+        newStyles;
+    
+    // Replace known MSO-weird styles with happy W3C ones.
+    newStyles = styles.replace(/horiz-align/gi, 'text-align')
+                   .replace(/vert-align/gi, 'vertical-align')
+                   .replace(/font-color|mso-foreground/gi, 'color')
+                   .replace(/mso-background|mso-highlight/gi, 'background');
+    
+    // TODO: It would be nice to get rid of any other "mso-" styles. They're ignored by browsers
+    // though, and at the moment I embarrassingly don't have the brainspace to work out the regex
+    // for "mso-[non-whitespace]: [non-whitespace];".
+
+    // Update the node.
+    if (newStyles !== styles) $el.attr('style', styles);
+
+    // Recurse.
+    $el.children().forEach(this.__stripMsoJunk_StylesRecurser, this);
+  },
+  __stripMsoJunk_ConvertFakeLiToRealLi: function($child) {
+    // Remove the fake list item elements.
+    $child.find(':first').remove();
+
+    // Change the element from a <p> to a <li>.
+    attrs = {};
+    $.each($child[0].attributes, function(idx, attr) {
+      attrs[attr.nodeName] = attr.nodeValue;
+    });
+    return $('<li />', attrs).append($child.contents());
+  },
 
   _firstTime: false,
   _doNotResign: false,
