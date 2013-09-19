@@ -392,7 +392,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
    @param html {String} html to be inserted
    */
-  insertHtmlAtCaret: function (html) {
+  insertHtmlAtCaret: function (html, notify) {
     var didInsertNode = false;
 
     if (document.getSelection) {
@@ -430,7 +430,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       didInsertNode = true;
     }
 
-    this.notifyDomValueChange();
+    if (notify !== false) this.notifyDomValueChange();
 
     return didInsertNode;
   },
@@ -747,9 +747,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
           data = evt.clipboardData.getData('text');
         }
       }
-      SC.run(function () {
-        this.insertHtmlAtCaret(data);
-      }, this);
+      this.insertHtmlAtCaret(data, false);
       evt.preventDefault();
     }
     // doesn't support clipbaordData so lets do this, and remove any
@@ -1072,7 +1070,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     if (this.rangeIsInsideEditor(range)) {
       this.setRange(range);
-      var didInsert = this.insertHtmlAtCaret(this._content);
+      var didInsert = this.insertHtmlAtCaret(this._content, false);
       if (didInsert) {
         this._target.parentNode.removeChild(this._target);
       }
