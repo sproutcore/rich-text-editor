@@ -86,7 +86,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private */
   render: function (context) {
     context.setAttr('contentEditable', true);
-    context.addStyle('padding', this.get('documentPadding'));
+
+    var padding = this.get('documentPadding');
+    if (!SC.none(padding)) {
+      context.addStyle('padding', padding);
+    }
+
     context.push(this.get('carriageReturnText'));
   },
 
@@ -94,7 +99,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   update: function (jquery) {
     this.get('wysiwygView').$().setClass('focus', this.get('isFirstResponder'));
 
-    jquery.css('padding', this.get('documentPadding'));
+    var padding = this.get('documentPadding');
+    if (!SC.none(padding)) {
+      jquery.css('padding', padding);
+    }
   },
 
   /** @private */
