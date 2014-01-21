@@ -8,7 +8,7 @@ $theme.sc-view.sc-label-view.sc-wysiwyg-text,
 
 $theme.sc-view.sc-wysiwyg-static-value-view,
 
-$theme.sc-wysiwyg-editor {
+$theme.sc-wysiwyg-editor-inner {
   word-wrap: break-word;
   font-family: Helvetica, Arial, sans-serif;
   color: #404040;

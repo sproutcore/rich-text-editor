@@ -44,6 +44,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
   defaultValue: '',
 
   /**
+    This value is added to the bottom of the view's height. This works around a problem where
+    a new line will cause the view to jump up before jumping back down.
+
+    @type Number
+    @default 25
+  */
+  lineHeight: 25,
+
+  /**
    @type String
    @default '<p><br></p>'
    @see SC.WYSIWYGView#carriageReturnText
@@ -91,7 +100,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   //
 
   /** @private */
-  attributeBindings: ['contentEditable'],
+  displayProperties: ['contentEditable'],
 
   /** @private */
   contentEditable: function() {
@@ -105,12 +114,18 @@ SC.WYSIWYGEditorView = SC.View.extend({
       context.addStyle('padding', padding);
     }
 
-    context.push(this.get('carriageReturnText'));
+    context = context.begin().addClass('sc-wysiwyg-editor-inner');
+      context.setAttr('contenteditable', this.get('contentEditable'));
+      context.push(this.get('carriageReturnText'));
+    context = context.end();
   },
 
   /** @private */
   update: function (jquery) {
-    this.get('wysiwygView').$().setClass('focus', this.get('isFirstResponder'));
+    var parentView = this.get('wysiwygView');
+    if (parentView) parentView.$().setClass('focus', this.get('isFirstResponder'));
+
+    jquery.find('.sc-wysiwyg-editor-inner').attr('contenteditable', this.get('contentEditable'));
 
     var padding = this.get('documentPadding');
     if (!SC.none(padding)) {
@@ -139,16 +154,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   didCreateLayer: function () {
-    SC.Event.add(this.$(), 'focus', this, 'focus');
-    SC.Event.add(this.$(), 'blur', this, 'blur');
-    SC.Event.add(this.$(), 'paste', this, 'paste');
+    SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'focus', this, 'focus');
+    SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'blur', this, 'blur');
+    SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
   },
 
   /** @private */
   willDestroyLayer: function () {
-    SC.Event.remove(this.$(), 'focus', this, 'focus');
-    SC.Event.remove(this.$(), 'blur', this, 'blur');
-    SC.Event.remove(this.$(), 'paste', this, 'paste');
+    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'focus', this, 'focus');
+    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'blur', this, 'blur');
+    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
   },
 
   /**
@@ -172,27 +187,35 @@ SC.WYSIWYGEditorView = SC.View.extend({
    Syncronize the value with the dom.
    */
   _valueDidChange: function () {
-    var value = this.get('value') || this.get('defaultValue');
+    
     if (!this._changeByEditor) {
       // if the value was changed as part of the setup,
       // sometimes the dom isn't ready, so we wait till
       // the next run loop
-      this.invokeNext(function () {
-        this.$().html(value);
-        this.resetUndoStack();
-      });
+      if (this.get('layer')) {
+        this._doUpdateValue();
+      } else {
+        this.invokeNext(this._doUpdateValue);
+      }
     }
     this._changeByEditor = false;
     this._valueChangeTriggerTime = new Date().getTime();
     this.scheduleHeightUpdate();
   }.observes('value'),
 
+  _doUpdateValue: function() {
+    var value = this.get('value') || this.get('defaultValue');
+    this.$().find('.sc-wysiwyg-editor-inner').html(value);
+    this.resetUndoStack();
+    this.updateFrameHeight();
+  },
+
   /**
    @private notify the dom that values have been updated.
    */
   notifyDomValueChange: function () {
     var value = this.get('value'),
-      html = this.$().html(); // get the value from the inner document
+      html = this.$().find('.sc-wysiwyg-editor-inner').html(); // get the value from the inner document
 
     if (value !== html) {
       this._changeByEditor = true;
@@ -227,17 +250,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return {Number}
    */
   computeHeight: function () {
-    var layer = this.get('layer');
+    var layer = this.$().find('.sc-wysiwyg-editor-inner')[0];
     if (!layer) return 0;
 
-    var layerOverflow = layer.style.overflow,
-      layerHeight = layer.style.height;
-    layer.style.overflow = '';
-    layer.style.height = '';
-    var height = layer.offsetHeight;
-    layer.style.height = layerHeight;
-    layer.style.overflow = layerOverflow;
-    return height;
+    return layer.clientHeight + (this.get('lineHeight') || 0);
   },
 
   /** @private
@@ -540,7 +556,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   rangeIsInsideEditor: function (range) {
     range = range.commonAncestorContainer;
-    var editor = this.get('layer');
+    var editor = this.$().find('.sc-wysiwyg-editor-inner')[0];
 
     while (range) {
       if (range === editor) {
@@ -557,7 +573,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return range
    */
   selectNodeContents: function () {
-    var layer = this.get('layer'),
+    var layer = this.$().find('.sc-wysiwyg-editor-inner')[0],
       range = this.createRange();
 
     if (document.getSelection) {
@@ -641,13 +657,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   didBecomeFirstResponder: function () {
     this.invokeNext(function () {
-      this.$().focus();
+      this.$().find('.sc-wysiwyg-editor-inner').focus();
     });
   },
 
   /** @private*/
   willLoseFirstResponder: function () {
-    this.$().blur();
+    this.$().find('.sc-wysiwyg-editor-inner').blur();
   },
 
   /** @private*/
@@ -660,7 +676,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   keyUp: function (evt) {
     // if there are no children lets format the selection with a paragraph
-    if (this.$().children().length === 0) {
+    if (this.$().find('.sc-wysiwyg-editor-inner').children().length === 0) {
       document.execCommand('formatBlock', false, 'p');
     }
     this.notifyDomValueChange();
@@ -780,11 +796,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     if (!pasteAsPlainText) {
       SC.run(function () {
         this.invokeNext(function () {
-          this._normalizeMarkup(this.$().children());
-          this._stripFormatting(this.$().children());
+          this._normalizeMarkup(this.$().find('.sc-wysiwyg-editor-inner').children());
+          this._stripFormatting(this.$().find('.sc-wysiwyg-editor-inner').children());
           // TODO: Integrate the MSO filter into the prior two methods to reduce recursive
           // passes through the DOM.
-          this._stripMsoJunk(this.$());
+          this._stripMsoJunk(this.$().find('.sc-wysiwyg-editor-inner'));
           this.notifyDomValueChange();
         });
       }, this);
@@ -1005,8 +1021,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
       if (this._firstTime) {
         this._firstTime = false;
         this._doNotResign = true;
-        this.$().blur();
-        this.$().focus();
+        this.$().find('.sc-wysiwyg-editor-inner').blur();
+        this.$().find('.sc-wysiwyg-editor-inner').focus();
       }
       else {
         this.becomeFirstResponder();
