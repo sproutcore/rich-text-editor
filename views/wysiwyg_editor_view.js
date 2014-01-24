@@ -166,6 +166,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
     SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
   },
 
+  viewDidResize: function() {
+    sc_super();
+    var width = this.getPath('frame.width'),
+        previousWidth = this._previousWidth;
+    if (width === previousWidth) return;
+    this._previousWidth = width;
+    this.invokeNext(this.updateFrameHeight);
+  },
+
   /**
    Whether or not the value has been changed by the editor
 
