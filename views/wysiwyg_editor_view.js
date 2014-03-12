@@ -95,8 +95,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   contentEditable: function() {
-    return this.get('isEnabled') ? 'true' : 'false';
-  }.property('isEnabled').cacheable(),
+    return this.get('isEnabledInPane') ? 'true' : 'false';
+  }.property('isEnabledInPane').cacheable(),
 
   /** @private */
   render: function (context) {
