@@ -58,6 +58,14 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   documentPadding: 20,
 
   /**
+    Whether the editor view is enabled.
+
+    @property {Boolean}
+    @default YES
+   */
+  isEditable: YES,
+
+  /**
     Set to true to paste the content of the clipboard as plain text.
 
     @type Boolean
@@ -151,6 +159,8 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
       valueBinding: '.wysiwygView.value',
+
+      isEnabledBinding: SC.Binding.oneWay('.wysiwygView.isEditable'),
 
       defaultValue: SC.outlet('wysiwygView.defaultValue'),
 

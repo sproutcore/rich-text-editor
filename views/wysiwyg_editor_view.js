@@ -23,6 +23,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   classNames: 'sc-wysiwyg-editor',
 
   /**
+    Whether the editor is presently editable.
+    @type Boolean
+    @default YES
+  */
+  isEnabled: YES,
+
+  /**
    @type Number
    @default 20
    @see SC.WYSIWYGView#documentPadding
@@ -84,9 +91,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
   //
 
   /** @private */
-  render: function (context) {
-    context.setAttr('contentEditable', true);
+  attributeBindings: ['contentEditable'],
 
+  /** @private */
+  contentEditable: function() {
+    return this.get('isEnabledInPane') ? 'true' : 'false';
+  }.property('isEnabledInPane').cacheable(),
+
+  /** @private */
+  render: function (context) {
     var padding = this.get('documentPadding');
     if (!SC.none(padding)) {
       context.addStyle('padding', padding);
