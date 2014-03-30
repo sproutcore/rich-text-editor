@@ -663,6 +663,36 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return YES;
   },
 
+
+  /** @private */
+  touchStart: function(evt) {
+    evt.allowDefault();
+    this._mouseDown = YES;
+    return YES;
+  },
+  /** @private */
+  touchesDragged: function(evt, touchesForView) {
+    // If we have focus, just allow the event to go back through to the browser.
+    if (this.get('hasFirstResponder')) {
+      evt.allowDefault();
+    }
+    // If we've moved too much, we need to pass the touch back to the scroll view that it's presumably wrapped in.
+    else {
+      var deltaY = Math.abs(evt.pageY - evt.startY);
+      if (deltaY > 4) {
+        touchesForView.invoke('restoreLastTouchResponder');
+      }
+    }
+    return YES;
+  },
+  /** @private */
+  touchEnd: function(evt) {
+    evt.allowDefault();
+    this.updateState();
+    this._mouseDownEvent = null;
+    return YES;
+  },
+
   /** @private*/
   didBecomeFirstResponder: function () {
     this.invokeNext(function () {
@@ -1020,35 +1050,14 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return $('<li />', attrs).append($child.contents());
   },
 
-  _firstTime: false,
-  _doNotResign: false,
   /** @private*/
   focus: function (evt) {
-    SC.run(function () {
-      // sometimes it won't focus properly so we need to toggle the
-      // focus blue
-      if (this._firstTime) {
-        this._firstTime = false;
-        this._doNotResign = true;
-        this.$().find('.sc-wysiwyg-editor-inner').blur();
-        this.$().find('.sc-wysiwyg-editor-inner').focus();
-      }
-      else {
-        this.becomeFirstResponder();
-      }
-    }, this);
+    SC.run(this.becomeFirstResponder, this);
   },
 
   /** @private*/
   blur: function (evt) {
-    SC.run(function () {
-        if(!this._doNotResign){
-          this.resignFirstResponder();
-        }
-        else {
-          this._doNotResign = false;
-        }
-    }, this);
+    SC.run(this.resignFirstResponder, this);
   },
 
   // ..........................................................
