@@ -2,7 +2,7 @@
 
 A basic WYSIWYG editor for SproutCore.
 
-![ScreenShot](https://raw.github.com/joegaudet/sproutcore-wysiwyg/master/screen-shot.png)
+![ScreenShot](https://raw.github.com/sproutcore/rich-text-editor/master/screen-shot.png)
 
 ## Features
 
@@ -86,3 +86,7 @@ To insert arbitrary html at the current location:
 - full screen support ?
 - image / file uploading (probably with the sproutcore-fileupload framework)
 - clean up the way the styles are enumerated / displayed (kindof brittle with the css + js views)
+
+## Thanks to LearnDot & Joe Gaudet
+
+Special thanks to LearnDot's Joe Gaudet for incepting, developing and open-sourcing this project!
