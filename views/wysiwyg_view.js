@@ -96,6 +96,8 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   },
 
   init: function() {
+    sc_super();
+    
     // Renamed property notice.
     if (!SC.none(this.carriageReturnText)) {
       //@if(debug)
