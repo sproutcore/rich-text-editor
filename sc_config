@@ -1,4 +1,7 @@
 
+// This file registers this framework with the node-based build tools. The ruby
+// build tools that come with the gem ("abbot") safely ignore this file.
+
 BT.addFramework(BT.Framework.extend({
   ref: "rich-text-editor",
   path: dirname()
