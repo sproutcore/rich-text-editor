@@ -13,24 +13,24 @@
   @extends SC.Object
 */
 SC.WYSIWYGUndoCommand = SC.Object.extend(SC.WYSIWYGCommand, {
-	commandName: 'undo',
+  commandName: 'undo',
 
-	title: 'Undo',
+  title: 'Undo',
 
-	keyEquivalent: 'ctrl_z',
+  keyEquivalent: 'ctrl_z',
 
-	exampleView: SC.WYSIWYGButtonView.extend({
-		isEnabled: NO,
-		
-		editorStateDidChange: function() {
-	    var editor = this.get('editor');
-	    this.set('isEnabled', editor.undoManager.get('canUndo'));
-	  },
+  exampleView: SC.WYSIWYGButtonView.extend({
+    isEnabled: NO,
+    
+    editorStateDidChange: function() {
+      var editor = this.get('editor');
+      this.set('isEnabled', editor.undoManager.get('canUndo'));
+    },
   }),
 
-	execute: function(source, editor) {
-		editor.undo();
-	},
+  execute: function(source, editor) {
+    editor.undo();
+  },
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGUndoCommand);
@@ -44,24 +44,24 @@ SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGUndoCommand);
   @extends SC.Object
 */
 SC.WYSIWYGRedoCommand = SC.Object.extend(SC.WYSIWYGCommand, {
-	commandName: 'redo',
+  commandName: 'redo',
 
-	title: 'Redo',
+  title: 'Redo',
 
-	keyEquivalent: 'ctrl_shift_z',
+  keyEquivalent: 'ctrl_shift_z',
 
-	exampleView: SC.WYSIWYGButtonView.extend({
-		isEnabled: NO,
+  exampleView: SC.WYSIWYGButtonView.extend({
+    isEnabled: NO,
 
-		editorStateDidChange: function() {
-	    var editor = this.get('editor');
-	    this.set('isEnabled', editor.undoManager.get('canRedo'));
-	  },
+    editorStateDidChange: function() {
+      var editor = this.get('editor');
+      this.set('isEnabled', editor.undoManager.get('canRedo'));
+    },
   }),
 
-	execute: function(source, editor) {
-		editor.redo();
-	},
+  execute: function(source, editor) {
+    editor.redo();
+  },
 
 });
 SC.WYSIWYGCommandFactory.registerCommand(SC.WYSIWYGRedoCommand);
