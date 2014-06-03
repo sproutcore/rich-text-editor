@@ -7,6 +7,8 @@
 /*globals SproutCoreWysiwyg */
 SC.WYSIWYGStyleView = SC.PopupButtonView.extend({
   layout: { width: 120 },
+
+  acceptsFirstResponder: false,
   
   title: 'Paragraph'.loc(),
 
