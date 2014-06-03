@@ -74,12 +74,11 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   pasteAsPlainText: NO,
 
   /**
-    Text to be entered on a carraige return
-
     @property {String}
     @default '<p><br></p>'
+    @see SC.WYSIWYGEditorView#carriageReturnMarkup
   */
-  carriageReturnText: '<p><br></p>',
+  carriageReturnMarkup: '<p><br></p>',
 
 
   /**
@@ -96,6 +95,16 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     contentIsInErrorKey: 'isInError'
   },
 
+  init: function() {
+    // Renamed property notice.
+    if (!SC.none(this.carriageReturnText)) {
+      //@if(debug)
+      SC.warn("Developer Warning: The SC.WYSIWYGView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views. This warning will be removed in a future release.");
+      //@endif
+      this.set('carriageReturnMarkup', this.get('carriageReturnText'));
+      this.setPath('scrollView.contentView.carriageReturnMarkup', this.get('carriageReturnText'));
+    }
+  },
 
   // .......................................................
   // VIEWS
@@ -169,7 +178,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
       pasteAsPlainText: SC.outlet('wysiwygView.pasteAsPlainText'),
 
-      carriageReturnText: SC.outlet('wysiwygView.carriageReturnText'),
+      carriageReturnMarkup: SC.outlet('wysiwygView.carriageReturnMarkup'),
 
       minHeightBinding: SC.Binding.transform(function (frame) {
         return frame ? frame.height : 0;

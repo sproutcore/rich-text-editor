@@ -53,11 +53,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
   lineHeight: 25,
 
   /**
+   Markup to be entered on a carraige return.
+
+   (The default '<p><br></p>' is selected to work around several issues with older Firefox browsers; see
+   http://accessgarage.wordpress.com/2009/05/08/how-to-hack-your-app-to-make-contenteditable-work/
+   for more.)
+
    @type String
    @default '<p><br></p>'
-   @see SC.WYSIWYGView#carriageReturnText
    */
-  carriageReturnText: '<p><br></p>',
+  carriageReturnMarkup: '<p><br></p>',
 
   /**
    @type Boolean
@@ -116,7 +121,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     context = context.begin().addClass('sc-wysiwyg-editor-inner');
       context.setAttr('contenteditable', this.get('contentEditable'));
-      context.push(this.get('carriageReturnText'));
+      context.push(this.get('carriageReturnMarkup'));
     context = context.end();
   },
 
@@ -137,6 +142,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
   init: function () {
     sc_super();
     this.undoManager = SC.UndoManager.create();
+
+    // Renamed property notice.
+    if (!SC.none(this.carriageReturnText)) {
+      //@if(debug)
+      // Deprecated for v1.0
+      SC.warn("Developer Warning: The SC.WYSIWYGEditorView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views. This warning will be removed in a future release.");
+      //@endif
+      this.set('carriageReturnMarkup', this.get('carriageReturnText'));
+    }
 
     // Firefox: Disable image resizing
     if (SC.browser.isMozilla) {
@@ -723,9 +737,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     return YES;
   },
 
-  /** @private*/
+  /** @private Inserts carriageReturnMarkup, if available. */
   insertNewline: function (evt) {
-    evt.allowDefault();
+    var carriageReturnMarkup = this.get('carriageReturnMarkup');
+    if (!SC.none(carriageReturnMarkup)) this.insertHtmlAtCaret(carriageReturnMarkup);
+    else this.allowDefault();
     return YES;
   },
 
