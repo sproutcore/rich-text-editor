@@ -141,7 +141,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private */
   init: function () {
     sc_super();
-    this.undoManager = SC.UndoManager.create();
+
+    this.undoManager = SC.AutoGroupUndoManager.create({
+      groupLapse: 1000
+    });
 
     // Renamed property notice.
     if (!SC.none(this.carriageReturnText)) {
