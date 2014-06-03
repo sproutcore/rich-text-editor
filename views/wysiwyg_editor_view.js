@@ -926,10 +926,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
   // Thanks TinyMCE for the inspiration and regexes!
   // TODO: Integrate the MSO filter into the prior two methods to reduce recursive passes through the DOM.
   _stripMsoJunk: function($el) {
-    var content = $el.html();
-    
-    // Gatekeep: No word junk.
-    if (!/class="?Mso|style="[^"]*\bmso-|style='[^'']*\bmso-|w:WordDocument/i.test(content)) return;
+    var content = $el.html(),
+      isMsoJunk = /class="?Mso|style="[^"]*\bmso-|style='[^'']*\bmso-|w:WordDocument/i.test(content);
     
     // Remove rampant HTML comment if blocks.
     content = content.replace(/<!--[\s\S]+?-->/gi, '');
@@ -949,6 +947,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
     // Jam the stripped markup back into the element so we can operate on the nodes.
     $el.html(content);
+    
+    // Gatekeep: No word junk.
+    if (!isMsoJunk) return;
 
     // Convert Microsofty styles to actual CSS styles.
     $el.children().forEach(this.__stripMsoJunk_StylesRecurser, this);
