@@ -267,10 +267,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return {Number}
    */
   computeHeight: function () {
+    // Get the height of the editable element.
     var layer = this.$().find('.sc-wysiwyg-editor-inner')[0];
     if (!layer) return 0;
 
-    return layer.clientHeight + (this.get('lineHeight') || 0);
+    // Get the outer padding, and constrain to no smaller than lineHeight.
+    var padding = (this.get('documentPadding') || 0) * 2;
+    padding = Math.max(padding, (this.get('lineHeight') || 0));
+
+    return layer.clientHeight + padding;
   },
 
   /** @private
