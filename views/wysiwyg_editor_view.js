@@ -1173,7 +1173,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var that = this;
 
     this.undoManager.registerUndo(function () {
-      that.$().html(value);
+      that.$().find('.sc-wysiwyg-editor-inner').html(value);
       that.notifyDomValueChange();
       that.setCaretAtEditorEnd();
     });
