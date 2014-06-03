@@ -19,12 +19,8 @@ sc_require('views/wysiwyg_toolbar_view');
 */
 SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
+  /** @private */
   classNames: 'sc-wysiwyg-view',
-
-  /*
-    Wire the editor focus style to the view
-   */
-  classNameBindings: ['editorIsFirstResponder:focus'],
 
   /**
     The value of the editor.
@@ -42,18 +38,16 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   commands: ['styles', 'separator', 'insertImage', 'embedVideo', 'link', 'separator', 'bold', 'italic', 'underline', 'separator', 'insertOrderedList', 'insertUnorderedList', 'separator', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'separator', 'indent', 'outdent'],
 
   /**
-    Text that will be set to the editor if the value is empty.
-
     @property {String}
     @default ''
+    @see SC.WYSIWYGEditorView#defaultValue
   */
   defaultValue: '',
 
   /**
-    Padding of the editor
-
     @property {Number}
     @default 20
+    @see SC.WYSIWYGEditorView#documentPadding
   */
   documentPadding: 20,
 
@@ -66,10 +60,9 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   isEditable: YES,
 
   /**
-    Set to true to paste the content of the clipboard as plain text.
-
     @type Boolean
     @default NO
+   @see SC.WYSIWYGEditorView#pasteAsPlainText
   */
   pasteAsPlainText: NO,
 
@@ -196,7 +189,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     })
   }),
 
-  /**
+  /** @private
     Pointer to the editorView, which is set to the contentView of the
     ScrollPane
 
@@ -204,14 +197,19 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   */
   editor: SC.outlet('scrollView.contentView'),
 
-    /**
-     *
-     * Whether or not the editor is the current first responder
-     *
-     * @property {Boolean}
-     */
+  /** @private
+   *
+   * Whether or not the editor is the current first responder
+   *
+   * @property {Boolean}
+   */
   editorIsFirstResponder: NO,
   editorIsFirstResponderBinding: SC.Binding.oneWay('.scrollView.contentView.isFirstResponder'),
+
+  /* @private
+    Wire the editor focus style to the view.
+   */
+  classNameBindings: ['editorIsFirstResponder:focus'],
 
   // .......................................................
   // PRIVATE

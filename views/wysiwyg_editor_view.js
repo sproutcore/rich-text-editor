@@ -30,9 +30,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   isEnabled: YES,
 
   /**
+   A padding, in pixels, that is added to the editor element.
+
    @type Number
    @default 20
-   @see SC.WYSIWYGView#documentPadding
    */
   documentPadding: 20,
 
