@@ -1181,10 +1181,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   resetUndoStack: function () {
-    var undoManager = this.undoManager;
-    undoManager.set('undoStack', null);
-    undoManager.set('redoStack', null);
-    this.updateState();
+    this.undoManager.reset();
   }
 
 });
