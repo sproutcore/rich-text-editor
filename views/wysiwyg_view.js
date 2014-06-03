@@ -110,7 +110,8 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   */
   toolbar: SC.WYSIWYGToolbarView.extend({
     editor: SC.outlet('parentView.scrollView.contentView'),
-    commandsBinding: SC.Binding.oneWay('.parentView.commands')
+    commandsBinding: SC.Binding.oneWay('.parentView.commands'),
+    isEnabledBinding: SC.Binding.oneWay('.parentView.isEditable')
   }),
 
   /**
