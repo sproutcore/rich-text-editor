@@ -18,6 +18,11 @@ $theme.sc-wysiwyg-editor-inner {
   line-height: 25px;
   white-space: normal;
 
+  /* Override the blue webkit focus outline. */
+  &:focus {
+    outline: none;
+  }
+
   .smoothed {
       -webkit-font-smoothing: antialiased;
       font-smoothing: antialiased;
