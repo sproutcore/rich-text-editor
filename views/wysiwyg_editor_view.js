@@ -72,12 +72,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
   pasteAsPlainText: NO,
 
   /**
-   @readOnly
-   @property {SC.WYSIWYGView}
-   */
-  wysiwygView: null,
-
-  /**
    Min height of the frame
    Will be overighted to match the height of the container
 
@@ -127,9 +121,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   update: function (jquery) {
-    var parentView = this.get('wysiwygView');
-    if (parentView) parentView.$().setClass('focus', this.get('isFirstResponder'));
-
     jquery.find('.sc-wysiwyg-editor-inner').attr('contenteditable', this.get('contentEditable'));
 
     var padding = this.get('documentPadding');

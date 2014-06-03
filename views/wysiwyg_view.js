@@ -156,6 +156,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     }),
 
     contentView: SC.WYSIWYGEditorView.extend({
+      // Overrides some extra stuff. Adds a reference to the owner.
       init: function() {
         sc_super();
 
@@ -169,6 +170,13 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       },
 
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
+
+      update: function() {
+        var wysiwygView = this.get('wysiwygView');
+        if (wysiwygView) parentView.$().setClass('focus', this.get('isFirstResponder'));
+
+        sc_super();
+      },
 
       valueBinding: '.wysiwygView.value',
 
