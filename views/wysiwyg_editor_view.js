@@ -38,9 +38,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   documentPadding: 20,
 
   /**
+   A text hint that is displayed when the value is empty.
+
    @type String
    @default ''
-   @see SC.WYSIWYGView#defaultValue
    */
   defaultValue: '',
 
@@ -66,9 +67,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   carriageReturnMarkup: '<p><br></p>',
 
   /**
+    Set to true to paste the content of the clipboard as plain text.
+
    @type Boolean
    @default NO
-   @see SC.WYSIWYGView#pasteAsPlainText
    */
   pasteAsPlainText: NO,
 
