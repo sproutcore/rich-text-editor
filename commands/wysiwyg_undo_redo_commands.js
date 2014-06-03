@@ -22,6 +22,20 @@ SC.WYSIWYGUndoCommand = SC.Object.extend(SC.WYSIWYGCommand, {
   exampleView: SC.WYSIWYGButtonView.extend({
     isEnabled: false,
     shouldInheritEnabled: false,
+
+    init: function () {
+      sc_super();
+      if (this.editorStateDidChange) {
+        this.editor.undoManager.addObserver('canUndo', this, 'editorStateDidChange');
+      }
+    },
+
+    destroy: function () {
+      if (this.editorStateDidChange) {
+        this.editor.undoManager.removeObserver('canUndo', this, 'editorStateDidChange');
+      }
+      sc_super();
+    },
     
     editorStateDidChange: function() {
       var editor = this.get('editor');
@@ -54,6 +68,20 @@ SC.WYSIWYGRedoCommand = SC.Object.extend(SC.WYSIWYGCommand, {
   exampleView: SC.WYSIWYGButtonView.extend({
     isEnabled: false,
     shouldInheritEnabled: false,
+
+    init: function () {
+      sc_super();
+      if (this.editorStateDidChange) {
+        this.editor.undoManager.addObserver('canRedo', this, 'editorStateDidChange');
+      }
+    },
+
+    destroy: function () {
+      if (this.editorStateDidChange) {
+        this.editor.undoManager.removeObserver('canRedo', this, 'editorStateDidChange');
+      }
+      sc_super();
+    },
     
     editorStateDidChange: function() {
       var editor = this.get('editor');
