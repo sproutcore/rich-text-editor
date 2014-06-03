@@ -20,7 +20,8 @@ SC.WYSIWYGUndoCommand = SC.Object.extend(SC.WYSIWYGCommand, {
   keyEquivalent: 'ctrl_z',
 
   exampleView: SC.WYSIWYGButtonView.extend({
-    isEnabled: NO,
+    isEnabled: false,
+    shouldInheritEnabled: false,
     
     editorStateDidChange: function() {
       var editor = this.get('editor');
@@ -51,8 +52,9 @@ SC.WYSIWYGRedoCommand = SC.Object.extend(SC.WYSIWYGCommand, {
   keyEquivalent: 'ctrl_shift_z',
 
   exampleView: SC.WYSIWYGButtonView.extend({
-    isEnabled: NO,
-
+    isEnabled: false,
+    shouldInheritEnabled: false,
+    
     editorStateDidChange: function() {
       var editor = this.get('editor');
       this.set('isEnabled', editor.undoManager.get('canRedo'));
