@@ -1188,7 +1188,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   registerUndo: function (value) {
     var that = this;
 
-    this.undoManager.registerUndo(function () {
+    this.undoManager.registerUndoAction(null, function () {
       that.$().find('.sc-wysiwyg-editor-inner').html(value);
       that.notifyDomValueChange();
       that.setCaretAtEditorEnd();
