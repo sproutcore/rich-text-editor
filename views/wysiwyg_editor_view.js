@@ -136,7 +136,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private */
   init: function () {
     sc_super();
-    this.undoManager = SC.UndoManager.create();
+
+    this.undoManager = SC.AutoGroupUndoManager.create({
+      groupLapse: 1000
+    });
 
     // Firefox: Disable image resizing
     if (SC.browser.isMozilla) {
