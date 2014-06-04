@@ -37,13 +37,28 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   documentPadding: 20,
 
-  /**
-   A text hint that is displayed when the value is empty.
+  /** @deprecated Use `hint` instead. */
+  defaultValue: null,
 
+  /**
+   A text hint displayed when no value is present.
+   
    @type String
    @default ''
    */
-  defaultValue: '',
+  hint: function() {
+    // This is only a calculated property to enable a deprecation notice. Feel free to override it
+    // in your own code.
+    var defaultValue = this.get('defaultValue');
+
+    //@if(debug)
+    if (!SC.none(defaultValue)) {
+      SC.warn("Developer Warning: The SC.WYSIWYGEditorView property `defaultValue` has been renamed `hint`. Please update your views.");
+    }
+    //@endif
+
+    return defaultValue || '';
+  }.property('defaultValue').cacheable(),
 
   /**
     This value is added to the bottom of the view's height. This works around a problem where
@@ -54,8 +69,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
   */
   lineHeight: 25,
 
+  /** @deprecated Use carriageReturnMarkup instead. */
+  carriageReturnText: null,
+
   /**
-   Markup to be entered on a carraige return.
+   Markup to represent a carraige return.
 
    (The default '<p><br></p>' is selected to work around several issues with older Firefox browsers; see
    http://accessgarage.wordpress.com/2009/05/08/how-to-hack-your-app-to-make-contenteditable-work/
@@ -64,7 +82,18 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @type String
    @default '<p><br></p>'
    */
-  carriageReturnMarkup: '<p><br></p>',
+  carriageReturnMarkup: function() {
+    // This is only a calc property to allow the deprecation notice. Feel free to override in your own code.
+    var carriageReturnText = this.get('carriageReturnText');
+
+    //@if(debug)
+    if (!SC.none(carriageReturnText)) {
+      SC.warn("Developer Warning: The SC.WYSIWYGEditorView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views.");
+    }
+    //@endif
+
+    return carriageReturnText || '<p><br></p>';
+  }.property('carriageReturnText').cacheable(),
 
   /**
     Set to true to paste the content of the clipboard as plain text.
@@ -136,15 +165,6 @@ SC.WYSIWYGEditorView = SC.View.extend({
   init: function () {
     sc_super();
     this.undoManager = SC.UndoManager.create();
-
-    // Renamed property notice.
-    if (!SC.none(this.carriageReturnText)) {
-      //@if(debug)
-      // Deprecated for v1.0
-      SC.warn("Developer Warning: The SC.WYSIWYGEditorView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views. This warning will be removed in a future release.");
-      //@endif
-      this.set('carriageReturnMarkup', this.get('carriageReturnText'));
-    }
 
     // Firefox: Disable image resizing
     if (SC.browser.isMozilla) {
@@ -221,7 +241,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   }.observes('value'),
 
   _doUpdateValue: function() {
-    var value = this.get('value') || this.get('defaultValue');
+    var value = this.get('value') || this.get('carriageReturnMarkup');
     this.$().find('.sc-wysiwyg-editor-inner').html(value);
     this.resetUndoStack();
     this.updateFrameHeight();

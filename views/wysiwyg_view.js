@@ -9,9 +9,8 @@ sc_require('views/wysiwyg_editor_view');
 sc_require('views/wysiwyg_toolbar_view');
 // Framework: SproutcoreWysiwyg
 
-/**
-  @class
-
+/** @class
+  A convenience view combining an editor view with a toolbar view, hooked up correctly.
 
   @extends SC.View
   @extends SC.Control
@@ -62,17 +61,30 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   /**
     @type Boolean
     @default NO
-   @see SC.WYSIWYGEditorView#pasteAsPlainText
+    @see SC.WYSIWYGEditorView#pasteAsPlainText
   */
   pasteAsPlainText: NO,
 
-  /**
-    @property {String}
-    @default '<p><br></p>'
-    @see SC.WYSIWYGEditorView#carriageReturnMarkup
-  */
-  carriageReturnMarkup: '<p><br></p>',
+  /** @deprecated Use carriageReturnMarkup instead. */
+  carriageReturnText: null,
 
+  /**
+   @type String
+   @default '<p><br></p>'
+   @see SC.WYSIWYGEditorView#carriageReturnMarkup
+   */
+  carriageReturnMarkup: function() {
+    // This is only a calc property to allow the deprecation notice. Feel free to override in your own code.
+    var carriageReturnText = this.get('carriageReturnText');
+
+    //@if(debug)
+    if (!SC.none(carriageReturnText)) {
+      SC.warn("Developer Warning: The SC.WYSIWYGEditorView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views.");
+    }
+    //@endif
+
+    return carriageReturnText || '<p><br></p>';
+  }.property('carriageReturnText').cacheable(),
 
   /**
     Class name or array of class names to add to the RTE editor
@@ -86,19 +98,6 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     contentValueKey: 'value',
     contentErrorKey: 'error',
     contentIsInErrorKey: 'isInError'
-  },
-
-  init: function() {
-    sc_super();
-    
-    // Renamed property notice.
-    if (!SC.none(this.carriageReturnText)) {
-      //@if(debug)
-      SC.warn("Developer Warning: The SC.WYSIWYGView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views. This warning will be removed in a future release.");
-      //@endif
-      this.set('carriageReturnMarkup', this.get('carriageReturnText'));
-      this.setPath('scrollView.contentView.carriageReturnMarkup', this.get('carriageReturnText'));
-    }
   },
 
   // .......................................................
@@ -149,7 +148,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     }),
 
     contentView: SC.WYSIWYGEditorView.extend({
-      // Overrides some extra stuff. Adds a reference to the owner.
+      // Adds class names from the wrapper view. (TODO: See if we can't do this with a simple classNames binding.)
       init: function() {
         sc_super();
 
