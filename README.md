@@ -1,4 +1,6 @@
-# SproutCore WYSIWYG Editor
+Note: The DOM structure of SC.WYSIWYGEditorView has changed. If you need to retain the view's previous version for a legacy project, you can check out the v0.9 tag (`git checkout v0.9`).
+
+# SproutCore Rich Text Editor
 
 A basic WYSIWYG editor for SproutCore.
 
