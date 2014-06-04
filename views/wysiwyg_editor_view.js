@@ -720,14 +720,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   mouseDragged: function (evt) {
     this.startDrag();
+    this._mouseDragged = true;
     return YES;
   },
 
   /** @private*/
   mouseUp: function (evt) {
     evt.allowDefault();
+    if (!this._mouseDragged) this.becomeFirstResponder();
     this.updateState();
-    this._mouseDownEvent = null;
+    this._mouseDownEvent = this._mouseDragged = null;
     return YES;
   },
 

@@ -3,6 +3,10 @@
 $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint {
   position: absolute;
   top: 0; left: 0;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint,
