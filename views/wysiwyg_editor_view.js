@@ -760,7 +760,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   insertNewline: function (evt) {
     var carriageReturnMarkup = this.get('carriageReturnMarkup');
     if (!SC.none(carriageReturnMarkup)) this.insertHtmlAtCaret(carriageReturnMarkup);
-    else this.allowDefault();
+    else evt.allowDefault();
     return YES;
   },
 
