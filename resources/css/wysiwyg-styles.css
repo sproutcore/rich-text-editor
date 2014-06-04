@@ -1,9 +1,11 @@
 @import "compass/css3";
 
-/*
- *	The CSS that is applied to the actual wysiwyg view
- *  and the output content.
- */
+$theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint {
+  position: absolute;
+  top: 0; left: 0;
+}
+
+$theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint,
 $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-inner {
   word-wrap: break-word;
   font-family: Helvetica, Arial, sans-serif;
@@ -96,8 +98,7 @@ $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-inner {
       line-height: 1.5;
   }
 
-  // div is included because they are momentarily
-  // inserted before we reformat them as p
+  /* div is included because they are momentarily inserted before we reformat them as p */
   p, div {
       margin-bottom: 15px;
       line-height: 1.5;

@@ -20,10 +20,20 @@
  @author Joe Gaudet - joe@learndot.com
  */
 SC.WYSIWYGEditorView = SC.View.extend({
+  /** @private */
   classNames: 'sc-wysiwyg-editor',
 
   /**
+   The editor's current value, including markup.
+
+   @type String
+   @default NO
+   */
+  value: null,
+
+  /**
     Whether the editor is presently editable.
+
     @type Boolean
     @default YES
   */
@@ -42,7 +52,10 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /**
    A text hint displayed when no value is present.
-   
+
+   Note that the hint will not update when changed. For dynamic hints, add 'hint' to
+   your view's displayProperties.
+
    @type String
    @default ''
    */
@@ -131,7 +144,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   //
 
   /** @private */
-  displayProperties: ['contentEditable'],
+  displayProperties: ['contentEditable', 'hintIsVisible'],
 
   /** @private */
   contentEditable: function() {
@@ -139,26 +152,43 @@ SC.WYSIWYGEditorView = SC.View.extend({
   }.property('isEnabledInPane').cacheable(),
 
   /** @private */
+  hintIsVisible: function() {
+    // FAST PATH: first responder = no hint.
+    if (this.get('hasFirstResponder')) return false;
+
+    var value = this.get('value');
+    // TODO: Make this better than a short list of things we've seen browsers stick in empty contenteditable elements.
+    return !value || value === '<br>' || value === '<p><br></p>' || value === this.get('carriageReturnMarkup');
+  }.property('hasFirstResponder').cacheable(),
+
+  /** @private */
   render: function (context) {
+    // Padding.
     var padding = this.get('documentPadding');
     if (!SC.none(padding)) {
       context.addStyle('padding', padding);
     }
 
+    // The contenteditable element itself.
     context = context.begin().addClass('sc-wysiwyg-editor-inner');
       context.setAttr('contenteditable', this.get('contentEditable'));
       context.push(this.get('carriageReturnMarkup'));
+    context = context.end();
+
+    // The hint.
+    context = context.begin().addClass('sc-wysiwyg-editor-hint');
+      context.setClass({ 'sc-hidden': !this.get('hintIsVisible') });
+      context.push(SC.RenderContext.escapeHTML(this.get('hint') || ''));
     context = context.end();
   },
 
   /** @private */
   update: function (jquery) {
-    jquery.find('.sc-wysiwyg-editor-inner').attr('contenteditable', this.get('contentEditable'));
-
-    var padding = this.get('documentPadding');
-    if (!SC.none(padding)) {
-      jquery.css('padding', padding);
-    }
+    jquery.find('.sc-wysiwyg-editor-inner')
+      .attr('contenteditable', this.get('contentEditable'));
+    jquery.find('.sc-wysiwyg-editor-hint')
+      .text(this.get('hint') || '')
+      .setClass({ 'sc-hidden': !this.get('hintIsVisible') });
   },
 
   /** @private */
@@ -183,6 +213,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private */
   didCreateLayer: function () {
     SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'focus', this, 'focus');
+    SC.Event.add(this.$().find('.sc-wysiwyg-editor-hint'), 'click', this, 'focus');
     SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'blur', this, 'blur');
     SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
   },
@@ -190,6 +221,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private */
   willDestroyLayer: function () {
     SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'focus', this, 'focus');
+    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-hint'), 'click', this, 'focus');
     SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'blur', this, 'blur');
     SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
   },
@@ -202,6 +234,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
     this._previousWidth = width;
     this.invokeNext(this.updateFrameHeight);
   },
+
+  /** @private Whether the hint is currently visible. */
+  _hintIsVisible: NO,
 
   /**
    Whether or not the value has been changed by the editor
@@ -224,11 +259,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
    Syncronize the value with the dom.
    */
   _valueDidChange: function () {
-    
     if (!this._changeByEditor) {
-      // if the value was changed as part of the setup,
-      // sometimes the dom isn't ready, so we wait till
-      // the next run loop
+      // If we're not the first responder, an external force may have changed the hint's visibility. (Note that
+      // the hasFirstResopnder check may essentially duplicate the _changeByEditor check and may not be needed.)
+      if (!this.get('hasFirstResponder')) this.notifyPropertyChange('hintIsVisible');
+      // If the layer isn't yet available, we wait a cycle for it to be created.
       if (this.get('layer')) {
         this._doUpdateValue();
       } else {
