@@ -163,21 +163,19 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   render: function (context) {
-    // Padding.
     var padding = this.get('documentPadding');
-    if (!SC.none(padding)) {
-      context.addStyle('padding', padding);
-    }
 
     // The contenteditable element itself.
     context = context.begin().addClass('sc-wysiwyg-editor-inner');
       context.setAttr('contenteditable', this.get('contentEditable'));
+      if (!SC.none(padding)) context.addStyle('padding', padding);
       context.push(this.get('carriageReturnMarkup'));
     context = context.end();
 
     // The hint.
     context = context.begin().addClass('sc-wysiwyg-editor-hint');
       context.setClass({ 'sc-hidden': !this.get('hintIsVisible') });
+      if (!SC.none(padding)) context.addStyle('padding', padding);
       context.push(SC.RenderContext.escapeHTML(this.get('hint') || ''));
     context = context.end();
   },
@@ -326,9 +324,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var layer = this.$().find('.sc-wysiwyg-editor-inner')[0];
     if (!layer) return 0;
 
-    // Get the outer padding, and constrain to no smaller than lineHeight.
-    var padding = (this.get('documentPadding') || 0) * 2;
-    padding = Math.max(padding, (this.get('lineHeight') || 0));
+    // We need to add enough height that there's room for a carriage return before we go offscreen.
+    var padding = (this.get('lineHeight')) - (this.get('documentPadding') || 0);
+
+    // (Constrain the padding delta to positive numbers.)
+    padding = Math.max(padding, 0);
 
     return layer.clientHeight + padding;
   },
@@ -514,8 +514,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
         range;
 
       if (sel.getRangeAt && sel.rangeCount) {
+        // If any text is selected, remove it.
         range = sel.getRangeAt(0);
         range.deleteContents();
+
+        // The dummy div element is used to turn the HTML into DOM, which is then removed and appended to
+        // the element fragment (frag).
         var el = document.createElement("div"),
           frag = document.createDocumentFragment(),
           node = null,
@@ -527,9 +531,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
           lastNode = frag.appendChild(node);
         }
 
+        // The fragment, now full of the DOM we generated from html goes into the document at range.
         range.insertNode(frag);
         didInsertNode = true;
 
+        // If we actually inserted anything, move the cursor to the end.
         if (lastNode) {
           range = range.cloneRange();
           range.setStartAfter(lastNode);
