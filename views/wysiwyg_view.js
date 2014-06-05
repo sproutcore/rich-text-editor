@@ -51,7 +51,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   documentPadding: 20,
 
   /**
-    Whether the editor view is enabled.
+    Whether the editor view and toolbars are enabled.
 
     @property {Boolean}
     @default YES
@@ -61,30 +61,16 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   /**
     @type Boolean
     @default NO
+    @see SC.WYSIWYGEditorView#forceLineBreaks
+  */
+  forceLineBreaks: NO,
+
+  /**
+    @type Boolean
+    @default NO
     @see SC.WYSIWYGEditorView#pasteAsPlainText
   */
   pasteAsPlainText: NO,
-
-  /** @deprecated Use carriageReturnMarkup instead. */
-  carriageReturnText: null,
-
-  /**
-   @type String
-   @default '<p><br></p>'
-   @see SC.WYSIWYGEditorView#carriageReturnMarkup
-   */
-  carriageReturnMarkup: function() {
-    // This is only a calc property to allow the deprecation notice. Feel free to override in your own code.
-    var carriageReturnText = this.get('carriageReturnText');
-
-    //@if(debug)
-    if (!SC.none(carriageReturnText)) {
-      SC.warn("Developer Warning: The SC.WYSIWYGEditorView property `carriageReturnText` has been renamed `carriageReturnMarkup`. Please update your views.");
-    }
-    //@endif
-
-    return carriageReturnText || '<p><br></p>';
-  }.property('carriageReturnText').cacheable(),
 
   /**
     Class name or array of class names to add to the RTE editor
@@ -180,7 +166,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
       pasteAsPlainText: SC.outlet('wysiwygView.pasteAsPlainText'),
 
-      carriageReturnMarkup: SC.outlet('wysiwygView.carriageReturnMarkup'),
+      forceLineBreaks: SC.outlet('wysiwygView.forceLineBreaks'),
 
       minHeightBinding: SC.Binding.transform(function (frame) {
         return frame ? frame.height : 0;
