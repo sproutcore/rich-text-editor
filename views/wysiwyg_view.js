@@ -151,7 +151,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
       update: function() {
         var wysiwygView = this.get('wysiwygView');
-        if (wysiwygView) parentView.$().setClass('focus', this.get('isFirstResponder'));
+        if (wysiwygView) wysiwygView.$().setClass('focus', this.get('isFirstResponder'));
 
         sc_super();
       },
