@@ -152,12 +152,14 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   render: function (context) {
-    var padding = this.get('documentPadding');
+    var value = this.get('value'),
+        padding = this.get('documentPadding');
 
     // The contenteditable element itself.
     context = context.begin().addClass('sc-wysiwyg-editor-inner');
       context.setAttr('contenteditable', this.get('contentEditable'));
       if (!SC.none(padding)) context.addStyle('padding', padding);
+      if (!SC.none(value)) context.push(value);
     context = context.end();
 
     // The hint.
