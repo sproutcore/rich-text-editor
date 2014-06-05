@@ -804,7 +804,14 @@ SC.WYSIWYGEditorView = SC.View.extend({
   insertNewline: function (evt) {
     // If we're forcing line breaks, insert a line break.
     if (this.get('forceLineBreaks')) {
-      this.insertHtmlAtCaret('<br>');
+      // If we're empty, we need to jump-start things with a double line-break.
+      if (!this.$().find('.sc-wysiwyg-editor-inner').html()) {
+        this.insertHtmlAtCaret('<br><br>');
+      }
+      // Otherwise just a single one.
+      else {
+        this.insertHtmlAtCaret('<br>');
+      }
     }
     // If we're empty, we're at our most vulnerable to unwanted browser defaults sneaking through.
     else if (!this.$().find('.sc-wysiwyg-editor-inner').html()) {
