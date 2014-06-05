@@ -200,18 +200,28 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private */
   didCreateLayer: function () {
-    SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'focus', this, 'focus');
-    SC.Event.add(this.$().find('.sc-wysiwyg-editor-hint'), 'click', this, 'focus');
-    SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'blur', this, 'blur');
-    SC.Event.add(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
+    // Cache element references.
+    this.$inner = this.$().find('.sc-wysiwyg-editor-inner');
+    this.$hint = this.$().find('.sc-wysiwyg-editor-hint')
+
+    // Hook up extra events.
+    SC.Event.add(this.$inner, 'focus', this, 'focus');
+    SC.Event.add(this.$hint, 'click', this, 'focus');
+    SC.Event.add(this.$inner, 'blur', this, 'blur');
+    SC.Event.add(this.$inner, 'paste', this, 'paste');
   },
 
   /** @private */
   willDestroyLayer: function () {
-    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'focus', this, 'focus');
-    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-hint'), 'click', this, 'focus');
-    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'blur', this, 'blur');
-    SC.Event.remove(this.$().find('.sc-wysiwyg-editor-inner'), 'paste', this, 'paste');
+    // Clear element references.
+    this.$inner = null;
+    this.$hint = null;
+
+    // Unhook the events.
+    SC.Event.remove(this.$inner, 'focus', this, 'focus');
+    SC.Event.remove(this.$hint, 'click', this, 'focus');
+    SC.Event.remove(this.$inner, 'blur', this, 'blur');
+    SC.Event.remove(this.$inner, 'paste', this, 'paste');
   },
 
   viewDidResize: function() {
@@ -265,7 +275,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   _doUpdateValue: function() {
     var value = this.get('value') || '';
-    this.$().find('.sc-wysiwyg-editor-inner').html(value);
+    this.$inner.html(value);
     this.resetUndoStack();
     this.updateFrameHeight();
   },
@@ -275,7 +285,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   notifyDomValueChange: function () {
     var value = this.get('value'),
-      html = this.$().find('.sc-wysiwyg-editor-inner').html(); // get the value from the inner document
+      html = this.$inner.html(); // get the value from the inner document
 
     if (value !== html) {
       this._changeByEditor = true;
@@ -311,7 +321,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   computeHeight: function () {
     // Get the height of the editable element.
-    var layer = this.$().find('.sc-wysiwyg-editor-inner')[0];
+    var layer = this.$inner[0];
     if (!layer) return 0;
 
     // We need to add enough height that there's room for a carriage return before we go offscreen.
@@ -629,7 +639,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   rangeIsInsideEditor: function (range) {
     range = range.commonAncestorContainer;
-    var editor = this.$().find('.sc-wysiwyg-editor-inner')[0];
+    var editor = this.$inner[0];
 
     while (range) {
       if (range === editor) {
@@ -646,7 +656,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return range
    */
   selectNodeContents: function (layer) {
-    layer = layer || this.$().find('.sc-wysiwyg-editor-inner')[0];
+    layer = layer || this.$inner[0];
     var range = this.createRange();
 
     if (document.getSelection) {
@@ -762,13 +772,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   didBecomeFirstResponder: function () {
     this.invokeNext(function () {
-      this.$().find('.sc-wysiwyg-editor-inner').focus();
+      this.$inner.focus();
     });
   },
 
   /** @private*/
   willLoseFirstResponder: function () {
-    this.$().find('.sc-wysiwyg-editor-inner').blur();
+    this.$inner.blur();
   },
 
   /** @private*/
@@ -780,7 +790,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private TODO: We do a lot of munging here. Might not catch everything (e.g. paste-from-menu). */
   keyUp: function (evt) {
-    var inner = this.$().find('.sc-wysiwyg-editor-inner'),
+    var inner = this.$inner,
         contents = inner.contents(),
         first = contents[0],
         last = contents[contents.length - 1],
@@ -807,7 +817,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     // If we're forcing line breaks, insert a line break.
     if (this.get('forceLineBreaks')) {
       // If we're empty, we need to jump-start things with a double line-break.
-      if (!this.$().find('.sc-wysiwyg-editor-inner').html()) {
+      if (!this.$inner.html()) {
         this.insertHtmlAtCaret('<br><br>');
       }
       // Otherwise just a single one.
@@ -816,7 +826,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       }
     }
     // If we're empty, we're at our most vulnerable to unwanted browser defaults sneaking through.
-    else if (!this.$().find('.sc-wysiwyg-editor-inner').html()) {
+    else if (!this.$inner.html()) {
       // If we're Webkit, insert two <p>s. By default, it would insert two <div>s, which would be
       // potentially expensive to track down and replace.
       if (SC.browser.isWebkit) {
@@ -945,11 +955,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     if (!pasteAsPlainText) {
       SC.run(function () {
         this.invokeNext(function () {
-          this._normalizeMarkup(this.$().find('.sc-wysiwyg-editor-inner').children());
-          this._stripFormatting(this.$().find('.sc-wysiwyg-editor-inner').children());
+          this._normalizeMarkup(this.$inner.children());
+          this._stripFormatting(this.$inner.children());
           // TODO: Integrate the MSO filter into the prior two methods to reduce recursive
           // passes through the DOM.
-          this._stripMsoJunk(this.$().find('.sc-wysiwyg-editor-inner'));
+          this._stripMsoJunk(this.$inner);
           this.notifyDomValueChange();
         });
       }, this);
@@ -1283,7 +1293,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var that = this;
 
     this.undoManager.registerUndoAction(null, function () {
-      that.$().find('.sc-wysiwyg-editor-inner').html(value);
+      this.$inner.html(value);
       that.notifyDomValueChange();
       that.setCaretAtEditorEnd();
     });
