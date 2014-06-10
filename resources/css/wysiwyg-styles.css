@@ -17,7 +17,6 @@ $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-inner {
   -webkit-font-smoothing: antialiased;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
   font-size: 18px;
-  line-height: 25px;
   white-space: normal;
   /* Hiding overflow is required to get images which float off the bottom of the text to behave correctly. */
   overflow: hidden;
@@ -64,48 +63,41 @@ $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-inner {
       @extend .smoothed;
       font-weight: bold !important;
       font-size: 32px;
-      line-height: 1.5;
   }
 
   h2 {
       @extend .smoothed;
       font-weight: bold !important;
       font-size: 28px;
-      line-height: 1.5;
   }
 
   h3 {
       @extend .smoothed;
       font-weight: bold !important;
       font-size: 24px;
-      line-height: 1.5;
   }
 
   h4 {
       @extend .smoothed;
       font-weight: bold !important;
       font-size: 20px;
-      line-height: 1.5;
   }
 
   h5 {
       @extend .smoothed;
       font-weight: bold !important;
       font-size: 18px;
-      line-height: 1.5;
   }
 
   h6 {
       @extend .smoothed;
       font-weight: bold !important;
       font-size: 14px;
-      line-height: 1.5;
   }
 
   /* div is included because they are momentarily inserted before we reformat them as p */
   p, div {
       margin-bottom: 15px;
-      line-height: 1.5;
       overflow: visible;
 
       &:last-child {
