@@ -6,53 +6,70 @@
  -------------------------------------------------------------------------------------------------*/
 sc_require('delegates/wysiwyg_toolbar_view_delegate');
 
-SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {
+/**@class
+  Set the `editor` property to the associated instance of SC.WYSIWYGEditorView. Set the
+  `commands` property to a list of supported commands (see SC.WYSIWYGCommandFactory for
+  examples).
 
-  classNames: 'sc-wysiwyg-toolbar',
+  Buttons are generated automatically from the commands list, and laid out by the
+  SC.FlowedLayout mixin. You can control the details of this with the `flowPadding` and
+  `defaultFlowSpacing` properties.
+
+  @extends SC.ToolbarView
+  @extends SC.FlowedLayout
+  @extends SC.WYSIWYGToolbarViewDelegate
+*/
+
+SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {
+  /**
+    The commands to display in the toolbar. You may update this list at any time.
+
+    @type Array
+    @default null
+  */
+  commands: null,
 
   /**
-    delegate for controlling the toolbar command creation.
+    The editor instance at which this toolbar should target its commands. (Note that you may
+    not change this property's value after create time.)
+
+    @property {SC.WYSIWYGEditorView}
+  */
+  editor: null,
+
+  /**
+    Delegate for controlling the toolbar command creation.
 
     @type SC.WYSIWYGToolbarViewDelegate
     @default null
   */
   delegate: null,
 
+  /**
+    @see SC.FlowedLayout
+  */
   flowPadding: { top: 0, left: 0, right: 4, bottom: 4 },
 
+  /**
+    @see SC.FlowedLayout
+  */
   defaultFlowSpacing: { top: 4, left: 4 },
 
-  /**
-    Only SC.ANCHOR_TOP is handle by SC.WYSIWYGView.
+  /** @private */
+  classNames: ['sc-wysiwyg-toolbar'],
 
-    @type Object
-  */
-  anchorLocation: SC.ANCHOR_TOP,
+  /** @private */
+  init: function() {
+    sc_super();
+    this.invokeNext(this.commandsDidChange);
+    return this;
+  },
 
-  /**
-    The commands to display in the toolbar.
-    This property is set by SC.WYSIWYGView at initialization.
-
-    @type Array
-  */
-  commands: null,
-
-  /**
-    The editor instance.
-    This property is set by SC.WYSIWYGView at initialization
-
-    @readOnly
-    @property {SC.WYSIWYGEditorView}
-  */
-  editor: null,
-
-  calculatedHeightDidChange: function () {
-    this.adjust('height', this.get('calculatedHeight'));
-  }.observes('calculatedHeight'),
-
+  /** @private */
   commandsDidChange: function () {
-    var commands = this.get('commands');
-    for (var i = 0; i < commands.length; i++) {
+    this.removeAllChildren(); // TODO: Fix this blunt instrument.
+    var commands = this.get('commands') || SC.EMPTY_ARRAY;
+    for (var i = 0, len = commands.length; i < len; i++) {
       var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
       if (view) {
         this.appendChild(view);
@@ -60,6 +77,7 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
     }
   }.observes('commands'),
 
+  /** @private */
   viewDelegate: function () {
     return this.delegateFor('isWYSIWYGToolbarViewDelegate', this.get('delegate'));
   }.property('delegate')
