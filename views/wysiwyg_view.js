@@ -59,6 +59,8 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   isEditable: YES,
 
   /**
+    EXPERIMENTAL (see documentation on WYSIWYGEditorView)
+
     @type Boolean
     @default NO
     @see SC.WYSIWYGEditorView#forceLineBreaks
@@ -73,7 +75,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   pasteAsPlainText: NO,
 
   /**
-    Class name or array of class names to add to the RTE editor
+    Class name or array of class names to add to the inner editor view.
 
     @property {Array|String}
     @default null
