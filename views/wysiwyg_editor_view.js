@@ -716,26 +716,37 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   mouseDown: function (evt) {
-    this._mouseDown = YES;
-    this._mouseDownEvent = evt;
-    evt.allowDefault();
-    this.updateState();
+    if (evt.target === this.get('layer')) {
+      this._mouseDownOutsideOfEditor = YES; // TODO: yeah this is kind of hacky
+      this.becomeFirstResponder();
+      this.setCaretAtEditorEnd();
+    }
+    else {
+      this._mouseDown = YES;
+      this._mouseDownEvent = evt;
+      evt.allowDefault();
+      this.updateState();
+    }
     return YES;
   },
 
   /** @private*/
   mouseDragged: function (evt) {
-    this.startDrag();
-    this._mouseDragged = true;
+    if (!this._mouseDownOutsideOfEditor) {
+      this.startDrag();
+      this._mouseDragged = true;
+    }
     return YES;
   },
 
   /** @private*/
   mouseUp: function (evt) {
-    evt.allowDefault();
-    if (!this._mouseDragged) this.becomeFirstResponder();
-    this.updateState();
-    this._mouseDownEvent = this._mouseDragged = null;
+    if (!this._mouseDownOutsideOfEditor) {
+      evt.allowDefault();
+      this.updateState();
+      this._mouseDownEvent = null;
+    }
+    this._mouseDownOutsideOfEditor = NO;
     return YES;
   },
 
