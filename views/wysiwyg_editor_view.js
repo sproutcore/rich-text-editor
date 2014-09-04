@@ -198,8 +198,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
       this._changeByEditor = true;
       this.set('value', html);
       this.registerUndo(value);
-      this.updateState();
-    }
+     }
+
+     this.updateState();
   },
 
   /** @private
@@ -856,17 +857,17 @@ SC.WYSIWYGEditorView = SC.View.extend({
   // TODO: Integrate the MSO filter into the prior two methods to reduce recursive passes through the DOM.
   _stripMsoJunk: function($el) {
     var content = $el.html();
-    
+
     // Gatekeep: No word junk.
     if (!/class="?Mso|style="[^"]*\bmso-|style='[^'']*\bmso-|w:WordDocument/i.test(content)) return;
-    
+
     // Remove rampant HTML comment if blocks.
     content = content.replace(/<!--[\s\S]+?-->/gi, '');
 
     // Remove various unwanted tags (comments, scripts (e.g. msoShowComment), the XML tag, VML
     // content, MS Office namespaced tags, and a few others).
     content = content.replace(/<(!|script[^>]*>.*?<\/script(?=[>\s])|\/?(\?xml(:\w+)?|img|meta|link|style|\w:\w+)(?=[\s\/>]))[^>]*>/gi, '');
-    
+
     // OpenXML has this awful thing (<span style="mso-spacerun:yes">    </span>) for runs of empty
     // spaces. Convert them to normal things.
     content = content.replace(
@@ -966,13 +967,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
     var $el = $(el),
         styles = $el.attr('style') || '',
         newStyles;
-    
+
     // Replace known MSO-weird styles with happy W3C ones.
     newStyles = styles.replace(/horiz-align/gi, 'text-align')
                    .replace(/vert-align/gi, 'vertical-align')
                    .replace(/font-color|mso-foreground/gi, 'color')
                    .replace(/mso-background|mso-highlight/gi, 'background');
-    
+
     // TODO: It would be nice to get rid of any other "mso-" styles. They're ignored by browsers
     // though, and at the moment I embarrassingly don't have the brainspace to work out the regex
     // for "mso-[non-whitespace]: [non-whitespace];".
