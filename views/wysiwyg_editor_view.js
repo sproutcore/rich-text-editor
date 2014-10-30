@@ -790,6 +790,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   willLoseFirstResponder: function () {
+
+    // There is an apparent bug in WebKit that prevents contenteditable elements from properly giving up
+    // focus when told to blur. As a work around, we clear the selection, which frees up the element to blur.
+    var sel = document.getSelection();
+    sel.removeAllRanges();
+
     this.$inner.blur();
   },
 
