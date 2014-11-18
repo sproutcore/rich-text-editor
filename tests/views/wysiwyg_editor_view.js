@@ -49,23 +49,26 @@ test('Anchor tag within editor markup', function() {
         pane.setPath('editorView.value', '<div><p>So here is <a href="http://www.turnitin.com">the link</a><span>;)</span><p></div>');
     });
 
-    var _linkOpenedWindow;
-    editorView.$('a').on('click', function(e) {
-        // If the `mouseDown` returns false, the event
-        //  was NOT handled via the view's own responder
-        //  Therefore, we can assume the link click opened a
-        //  window.
-        var evt = SC.Event.create(e);
-        _linkOpenedWindow = !editorView.mouseDown(evt);
-    }.bind(editorView));
+    var evt;
+    // Doing this just to get a handle on the event object after the view deals with it
+    SC.Event.add(editorView.$('a'), 'mousedown', editorView, function(e) {
+        editorView.mouseDown(e);
+        evt = e;
+    });
 
     // We turn off this switch off so that we don't actually open a new window...
     // Of course, this is because we EXPECT to open a window when clicking a link.
     editorView._followRedirects = NO;
-    editorView.$('a').trigger('click');
+
+    // Firing off the event directly on the anchor tag should cause the `evt` object to
+    //  update with a `evt.originalEvent.cancelled` value of YES or NO
+    SC.Event.trigger(editorView.$('a'), 'mousedown');
 
     equals(pane.getPath('editorView.isFirstResponder'), NO, 'The editor is NOT `isFirstResponder`');
-    equals(_linkOpenedWindow, YES, 'Clicking the link opened a window.');
+
+    // Because `evt.preventDefault` should have been called, the view handled this event specially
+    equals(evt.originalEvent.cancelled, YES, 'Clicking the link opened a window.');
+    equals(evt.hasCustomEventHandling, YES, 'The event went through `evt.preventDefault`.');
 
     SC.run(function() {
         editorView.focus();
@@ -74,8 +77,12 @@ test('Anchor tag within editor markup', function() {
     equals(pane.getPath('editorView.isFirstResponder'), YES, 'The editor `isFirstResponder`');
 
     // Try the click again when the editer has `isFirstResponder`
-    editorView.$('a').trigger('click');
+    SC.Event.trigger(editorView.$('a'), 'mousedown');
 
-    equals(_linkOpenedWindow, NO, 'Clicking the link did NOT open a window.');
+    // Because `evt.allowDefault` should have been called, the view propagated the event.
+    equals(evt.originalEvent.cancelled, NO, 'Clicking the link did NOT open a window.');
+    equals(evt.hasCustomEventHandling, YES, 'The event went through `evt.allowDefault`.');
 
+    // Just turning the flag back for manual poking/prodding in the SC test runner
+    editorView._followRedirects = YES;
 });

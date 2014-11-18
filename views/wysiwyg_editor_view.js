@@ -50,13 +50,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @deprecated Use `hint` instead. */
   defaultValue: null,
 
-  /**
+  /** @private
    When running unit tests, a link click may trigger a call to `window.open`.
 
    This flag allows the view to prevent this since we don't want unit tests actually
    opening windows.
-
-   TODO Is there a better way to handle this in a more generalized way? e.g. `@debug`?
 
    @type Boolean
    @default YES
@@ -336,7 +334,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   computeHeight: function () {
 
     // If there's no editable content, bail.
-    if(!this.$inner || this.$inner[0]) { return 0; }
+    if(!this.$inner || !this.$inner[0]) { return 0; }
 
     // Get the height of the editable element.
     var layer = this.$inner[0];
@@ -742,7 +740,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
       && !this.get('hasFirstResponder')
     ) {
       if(this.get('_followRedirects')) { window.open(evt.target.href, '_blank'); }
-      return NO;
+
+      // Instead of returning NO, indicate the view handled the event specially
+      evt.preventDefault();
     }
     else if (evt.target === this.get('layer')) {
       this._mouseDownOutsideOfEditor = YES; // TODO: yeah this is kind of hacky
@@ -812,7 +812,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @private*/
   didBecomeFirstResponder: function () {
     // Need closure on the inner element for unit test.
-    //  Othersiws, the element is null by time `invokeNext` fires.
+    //  Otherwise, the element is null by time `invokeNext` fires.
     var inner = this.$inner;
     this.invokeNext(function () {
       inner.focus();
