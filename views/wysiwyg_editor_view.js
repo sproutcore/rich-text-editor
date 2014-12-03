@@ -50,6 +50,17 @@ SC.WYSIWYGEditorView = SC.View.extend({
   /** @deprecated Use `hint` instead. */
   defaultValue: null,
 
+  /** @private
+   When running unit tests, a link click may trigger a call to `window.open`.
+
+   This flag allows the view to prevent this since we don't want unit tests actually
+   opening windows.
+
+   @type Boolean
+   @default YES
+   */
+  _followRedirects: YES,
+
   /**
    A text hint displayed when no value is present.
 
@@ -259,7 +270,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
   _valueDidChange: function () {
     if (!this._changeByEditor) {
       // If we're not the first responder, an external force may have changed the hint's visibility. (Note that
-      // the hasFirstResopnder check may essentially duplicate the _changeByEditor check and may not be needed.)
+      // the hasFirstResponder check may essentially duplicate the _changeByEditor check and may not be needed.)
       if (!this.get('hasFirstResponder')) this.notifyPropertyChange('hintIsVisible');
       // If the layer isn't yet available, we wait a cycle for it to be created.
       if (this.get('layer')) {
@@ -291,9 +302,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
       this._changeByEditor = true;
       this.set('value', html);
       this.registerUndo(value);
-     }
+    }
 
-     this.updateState();
+    this.updateState();
   },
 
   /** @private
@@ -321,9 +332,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return {Number}
    */
   computeHeight: function () {
+
+    // If there's no editable content, bail.
+    if(!this.$inner || !this.$inner[0]) { return 0; }
+
     // Get the height of the editable element.
     var layer = this.$inner[0];
-    if (!layer) return 0;
 
     // We need to add enough height that there's room for a carriage return before we go offscreen.
     var padding = (this.get('lineHeight')) - (this.get('documentPadding') || 0);
@@ -717,7 +731,20 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   mouseDown: function (evt) {
-    if (evt.target === this.get('layer')) {
+
+    // If user hits a link in the editor's HTML while not editing,
+    //  instead of becoming `firstResponder`, open the link in a new window
+    if(
+      evt.target.hasOwnProperty('tagName')
+      && evt.target.tagName === 'A'
+      && !this.get('hasFirstResponder')
+    ) {
+      if(this.get('_followRedirects')) { window.open(evt.target.href, '_blank'); }
+
+      // Instead of returning NO, indicate the view handled the event specially
+      evt.preventDefault();
+    }
+    else if (evt.target === this.get('layer')) {
       this._mouseDownOutsideOfEditor = YES; // TODO: yeah this is kind of hacky
       this.becomeFirstResponder();
       this.setCaretAtEditorEnd();
@@ -728,6 +755,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
       evt.allowDefault();
       this.updateState();
     }
+
     return YES;
   },
 
@@ -783,8 +811,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   didBecomeFirstResponder: function () {
+    // Need closure on the inner element for unit test.
+    //  Otherwise, the element is null by time `invokeNext` fires.
+    var inner = this.$inner;
     this.invokeNext(function () {
-      this.$inner.focus();
+      inner.focus();
     });
   },
 

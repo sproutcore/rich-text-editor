@@ -11,12 +11,9 @@ module('SC.WYSIWYGEditorView', {
 
         pane = SC.ControlTestPane.create({
             height: 900,
-            childViews: ['editorView', 'otherView'],
-            editorView: SC.WYSIWYGEditorView.design(),
-            otherView: SC.View.design()
+            childViews: ['editorView'],
+            editorView: SC.WYSIWYGEditorView.design()
         });
-
-        pane.append(); // make visible so it will have root responder
 
         // mock the default responder
         SC.RootResponder.responder.defaultResponder = SC.Object.create({
@@ -25,15 +22,12 @@ module('SC.WYSIWYGEditorView', {
 
     },
 
-    teardown: function() {
-        pane.removeAllChildren();
-    }
+    teardown: function() {}
 
 });
 
 test('Editor focuses to / blurs from `firstResponder`', function() {
 
-    var otherView = pane.getPath('otherView');
     SC.run(function() {
         pane.getPath('editorView').focus();
     });
@@ -46,4 +40,49 @@ test('Editor focuses to / blurs from `firstResponder`', function() {
 
     equals(pane.getPath('editorView.isFirstResponder'), NO, 'The editor is NOT `isFirstResponder`');
 
+});
+
+test('Anchor tag within editor markup', function() {
+    var editorView = pane.get('editorView');
+
+    SC.run(function() {
+        pane.setPath('editorView.value', '<div><p>So here is <a href="http://www.turnitin.com">the link</a><span>;)</span><p></div>');
+    });
+
+    var evt;
+    // Doing this just to get a handle on the event object after the view deals with it
+    SC.Event.add(editorView.$('a'), 'mousedown', editorView, function(e) {
+        editorView.mouseDown(e);
+        evt = e;
+    });
+
+    // We turn off this switch off so that we don't actually open a new window...
+    // Of course, this is because we EXPECT to open a window when clicking a link.
+    editorView._followRedirects = NO;
+
+    // Firing off the event directly on the anchor tag should cause the `evt` object to
+    //  update with a `evt.originalEvent.cancelled` value of YES or NO
+    SC.Event.trigger(editorView.$('a'), 'mousedown');
+
+    equals(pane.getPath('editorView.isFirstResponder'), NO, 'The editor is NOT `isFirstResponder`');
+
+    // Because `evt.preventDefault` should have been called, the view handled this event specially
+    equals(evt.originalEvent.cancelled, YES, 'Clicking the link opened a window.');
+    equals(evt.hasCustomEventHandling, YES, 'The event went through `evt.preventDefault`.');
+
+    SC.run(function() {
+        editorView.focus();
+    });
+
+    equals(pane.getPath('editorView.isFirstResponder'), YES, 'The editor `isFirstResponder`');
+
+    // Try the click again when the editer has `isFirstResponder`
+    SC.Event.trigger(editorView.$('a'), 'mousedown');
+
+    // Because `evt.allowDefault` should have been called, the view propagated the event.
+    equals(evt.originalEvent.cancelled, NO, 'Clicking the link did NOT open a window.');
+    equals(evt.hasCustomEventHandling, YES, 'The event went through `evt.allowDefault`.');
+
+    // Just turning the flag back for manual poking/prodding in the SC test runner
+    editorView._followRedirects = YES;
 });
