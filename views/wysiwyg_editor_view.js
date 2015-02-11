@@ -132,12 +132,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
   isTextSelectable: YES,
 
   /**
-   We want the editor to respond to key events
+   We want the editor to respond to key events when it is enabled
 
    @type Boolean
-   @default YES
    */
-  acceptsFirstResponder: YES,
+  acceptsFirstResponder: function() {
+    return this.get('isEnabledInPane');
+  }.property('isEnabledInPane').cacheable(),
 
   // ..........................................................
   // INTERNAL SUPPORT

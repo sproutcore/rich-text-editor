@@ -86,3 +86,23 @@ test('Anchor tag within editor markup', function() {
     // Just turning the flag back for manual poking/prodding in the SC test runner
     editorView._followRedirects = YES;
 });
+
+test('Editor accepts first respondership when enabled', function() {
+
+    var editorView = pane.get('editorView');
+
+    ok(editorView.get('isEnabled'), 'Verify that editor is enabled');
+    ok(editorView.get('acceptsFirstResponder'), 'Editor accepts first respondership');
+});
+
+test('Editor refuses first respondership when disabled', function() {
+
+    var editorView = pane.get('editorView');
+
+    SC.run(function() {
+        editorView.set('isEnabled', false);
+    });
+
+    ok(!editorView.get('isEnabled'), 'Verify that editor is not enabled');
+    ok(!editorView.get('acceptsFirstResponder'), 'Editor does not accept first respondership');
+});
