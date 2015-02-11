@@ -195,14 +195,21 @@ SC.WYSIWYGEditorView = SC.View.extend({
   init: function () {
     sc_super();
     this.undoManager = SC.UndoManager.create();
+  },
 
+  /** @private */
+  _isEnabledInPaneDidChange: function() {
     // Firefox: Disable image resizing
     if (SC.browser.isMozilla) {
       this.invokeLast(function () {
-        document.execCommand("enableObjectResizing", false, false);
+        // need to make sure editor is actually editable, otherwise Firefox will
+        // throw an error if no element on the page is contentEditable
+        if (this.get("isEnabledInPane")) {
+            document.execCommand("enableObjectResizing", false, false);
+        }
       });
     }
-  },
+  }.observes('isEnabledInPane'),
 
   /** @private */
   destroy: function () {
