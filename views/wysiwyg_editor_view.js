@@ -752,7 +752,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
     }
     else {
       this._mouseDown = YES;
-      this._mouseDownEvent = evt;
+
+      // Making a copy of the event so that we can use it later without fear the
+      // event will be cleared.
+      // NOTE: SC.Event now only caches one event object by event type.
+      // https://github.com/sproutcore/sproutcore/commit/36b18d31bb378ee5211f124f176b2a19c9629a63#diff-4ac32a78649ca5bdd8e0ba38b7006a1e
+      this._mouseDownEvent = SC.copy(evt);
+
       evt.allowDefault();
       this.updateState();
     }
