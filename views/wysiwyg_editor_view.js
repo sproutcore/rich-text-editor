@@ -532,6 +532,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
       if (sel.getRangeAt && sel.rangeCount) {
         // If any text is selected, remove it.
         range = sel.getRangeAt(0);
+
+        // If the range is outside the editor then set it back
+        if (!this.rangeIsInsideEditor(range)) {
+          range = this.selectNodeContents();
+        }
+
         range.deleteContents();
 
         // The dummy div element is used to turn the HTML into DOM, which is then removed and appended to
