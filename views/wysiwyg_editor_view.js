@@ -221,6 +221,14 @@ SC.WYSIWYGEditorView = SC.View.extend({
     SC.Event.add(this.$hint, 'click', this, 'focus');
     SC.Event.add(this.$inner, 'blur', this, 'blur');
     SC.Event.add(this.$inner, 'paste', this, 'paste');
+
+    // Handle 'input' events such as making a selection from the
+    // autocorrect menu when a misspelled word is right-clicked
+    SC.Event.add(this.$inner, 'input', this, function() {
+        SC.RunLoop.begin();
+        this.notifyDomValueChange();
+        SC.RunLoop.end();
+    });
   },
 
   /** @private */
