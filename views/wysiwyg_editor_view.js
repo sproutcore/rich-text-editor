@@ -214,13 +214,21 @@ SC.WYSIWYGEditorView = SC.View.extend({
   didCreateLayer: function () {
     // Cache element references.
     this.$inner = this.$().find('.sc-wysiwyg-editor-inner');
-    this.$hint = this.$().find('.sc-wysiwyg-editor-hint')
+    this.$hint = this.$().find('.sc-wysiwyg-editor-hint');
 
     // Hook up extra events.
     SC.Event.add(this.$inner, 'focus', this, 'focus');
     SC.Event.add(this.$hint, 'click', this, 'focus');
     SC.Event.add(this.$inner, 'blur', this, 'blur');
     SC.Event.add(this.$inner, 'paste', this, 'paste');
+
+    // Handle 'input' events such as making a selection from the
+    // autocorrect menu when a misspelled word is right-clicked
+    SC.Event.add(this.$inner, 'input', this, function() {
+        SC.RunLoop.begin();
+        this.notifyDomValueChange();
+        SC.RunLoop.end();
+    });
   },
 
   /** @private */
@@ -464,7 +472,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
         ret = document.queryCommandState(commandName);
       }
       catch (e) {
-        SC.error('Quering for command state failed: ' + commandName)
+        SC.error('Quering for command state failed: ' + commandName);
       }
       return ret;
     }
