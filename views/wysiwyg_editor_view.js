@@ -461,25 +461,24 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
         case 'bold':
           return this._searchForParentNamed(aNode, 'B');
-          break;
 
         case 'italic':
           return this._searchForParentNamed(aNode, 'I');
-          break;
 
         default:
           return '';
-          break;
       }
 
     }
     else {
       var ret = false;
       try {
-        ret = document.queryCommandState(commandName);
+        if (document.queryCommandSupported(commandName) && document.queryCommandEnabled(commandName)) {
+            ret = document.queryCommandState(commandName);
+        }
       }
       catch (e) {
-        SC.error('Quering for command state failed: ' + commandName);
+        SC.error('Querying for command state failed: ' + commandName);
       }
       return ret;
     }
@@ -528,7 +527,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
       }
     }
     else {
-      return document.queryCommandValue(commandName);
+      var ret = false;
+      try {
+        if (document.queryCommandSupported(commandName) && document.queryCommandEnabled(commandName)) {
+            ret = document.queryCommandValue(commandName);
+        }
+      }
+      catch (e) {
+        SC.error('Querying for command value failed: ' + commandName);
+      }
+      return ret;
     }
   },
 
