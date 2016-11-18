@@ -197,11 +197,11 @@ SC.WYSIWYGEditorView = SC.View.extend({
     this.undoManager = SC.UndoManager.create();
 
     // Firefox: Disable image resizing
-    if (SC.browser.isMozilla) {
-      this.invokeLast(function () {
-        document.execCommand("enableObjectResizing", false, false);
-      });
-    }
+    // if (SC.browser.isMozilla) {
+    //   this.invokeLast(function () {
+    //     document.execCommand("enableObjectResizing", false, false);
+    //   });
+    // }
   },
 
   /** @private */
