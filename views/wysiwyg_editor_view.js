@@ -993,24 +993,23 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   paste: function (evt) {
-    // We need to use originalEvent to be able to access the clipboardData property
-    var evt = evt.originalEvent,
+    var clipboardData = evt.originalEvent.clipboardData,
       pasteAsPlainText = this.get('pasteAsPlainText');
 
-    if (evt.clipboardData) {
+    if (clipboardData) {
       var data;
       if (pasteAsPlainText) {
-        data = evt.clipboardData.getData('text');
+        data = clipboardData.getData('text');
       }
       else {
-        data = evt.clipboardData.getData('text/html');
+        data = clipboardData.getData('text/html');
         if (data.indexOf('<body>') !== -1) {
           data = data.substring(data.indexOf('<body>'), data.indexOf('</body>'));
         }
 
         // some times text can be plain
         if (!data) {
-          data = evt.clipboardData.getData('text');
+          data = clipboardData.getData('text');
         }
       }
       this.insertHtmlAtCaret(data, false);
