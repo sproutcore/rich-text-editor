@@ -1081,7 +1081,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
       var $child = $(child),
         nodeName = child.nodeName,
         fontWeight = $child.css('font-weight'),
-        textAlign = $child.css('text-align');
+        textAlign = $child.css('text-align'),
+        fontStyle = $child.css('font-style'),
+        textDecoration = $child.css('text-decoration');
 
       // Make sure all anchors spawn new windows.
       if (nodeName === 'A') {
@@ -1099,12 +1101,19 @@ SC.WYSIWYGEditorView = SC.View.extend({
         $child.children().unwrap();
       }
 
+      // clear id, style, and class of element
       $child.attr({
         'id': null,
         'style': null,
         'class': null
       });
+
+      // reapply these styles
       $child.css('text-align', textAlign);
+      $child.css('font-weight', fontWeight);
+      $child.css('font-style', fontStyle);
+      $child.css('text-decoration', textDecoration);
+
       self._stripFormatting($child.children());
     });
   },
