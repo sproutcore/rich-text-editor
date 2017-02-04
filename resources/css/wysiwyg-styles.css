@@ -1,4 +1,3 @@
-@import "compass/css3";
 
 $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint {
   position: absolute;
@@ -11,138 +10,11 @@ $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint {
 
 $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-hint,
 $theme.sc-wysiwyg-editor > .sc-wysiwyg-editor-inner {
-  word-wrap: break-word;
-  font-family: Helvetica, Arial, sans-serif;
-  color: #404040;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  font-size: 18px;
-  white-space: normal;
   /* Hiding overflow is required to get images which float off the bottom of the text to behave correctly. */
   overflow: hidden;
 
   /* Override the blue webkit focus outline. */
   &:focus {
     outline: none;
-  }
-
-  .smoothed {
-      -webkit-font-smoothing: antialiased;
-      font-smoothing: antialiased;
-      font-smooth: always;
-  }
-
-  span.tab {
-      margin-left: 2em;
-  }
-
-  img {
-      display: block;
-      margin: 2px auto 2px auto;
-  }
-
-  a {
-      color: #3b74d5;
-
-      &:hover {
-          color: #3b74d5;
-          cursor: pointer;
-      }
-
-      &:active {
-          color: #3b74d5;
-          cursor: pointer;
-      }
-
-      &:visited {
-          color: #3b74d5;
-      }
-  }
-
-  h1 {
-      @extend .smoothed;
-      font-weight: bold !important;
-      font-size: 32px;
-  }
-
-  h2 {
-      @extend .smoothed;
-      font-weight: bold !important;
-      font-size: 28px;
-  }
-
-  h3 {
-      @extend .smoothed;
-      font-weight: bold !important;
-      font-size: 24px;
-  }
-
-  h4 {
-      @extend .smoothed;
-      font-weight: bold !important;
-      font-size: 20px;
-  }
-
-  h5 {
-      @extend .smoothed;
-      font-weight: bold !important;
-      font-size: 18px;
-  }
-
-  h6 {
-      @extend .smoothed;
-      font-weight: bold !important;
-      font-size: 14px;
-  }
-
-  /* div is included because they are momentarily inserted before we reformat them as p */
-  p, div {
-      margin-bottom: 15px;
-      overflow: visible;
-
-      &:last-child {
-          margin-bottom: 0;
-      }
-  }
-
-  pre {
-      margin-bottom: 10px;
-  }
-
-  ul {
-      list-style: disc outside none !important;
-      li {
-          list-style: disc outside none !important;
-      }
-  }
-
-  ol {
-      padding: 0px 0px 15px 40px;
-      margin-left: 8px !important;
-
-      li {
-          padding: 2px 2px 0px 2px;
-      }
-
-      li:last-child {
-          padding: 2px 2px 2px 2px;
-      }
-  }
-
-  ul {
-      padding: 0px 0px 15px 40px;
-      margin: 0 0 0 0 !important;
-
-      li {
-          padding: 2px 2px 0px 2px;
-      }
-
-      li:last-child {
-          padding: 2px 2px 2px 2px;
-      }
-  }
-
-  blockquote {
-      margin-left: 40px;
   }
 }
