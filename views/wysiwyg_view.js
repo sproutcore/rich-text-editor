@@ -39,9 +39,9 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   /**
     @property {String}
     @default ''
-    @see SC.WYSIWYGEditorView#defaultValue
+    @see SC.WYSIWYGEditorView#hint
   */
-  defaultValue: '',
+  hint: '',
 
   /**
     @property {Number}
@@ -163,7 +163,7 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
 
       isEnabledBinding: SC.Binding.oneWay('.wysiwygView.isEditable'),
 
-      defaultValue: SC.outlet('wysiwygView.defaultValue'),
+      hint: SC.outlet('wysiwygView.hint'),
 
       documentPadding: SC.outlet('wysiwygView.documentPadding'),
 
