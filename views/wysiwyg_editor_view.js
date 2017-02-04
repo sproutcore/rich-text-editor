@@ -302,7 +302,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   _doUpdateValue: function() {
     var value = this.get('value') || '';
-    this.$inner.html(value);
+    try {
+      this.$inner.html(value);
+    }
+    catch(e) {
+      SC.Logger.error('Error while updating the rich text editor content: '+e.message);
+    }
     this.resetUndoStack();
     this.updateFrameHeight();
   },
