@@ -552,6 +552,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
       var sel = this.getSelection(),
         range;
 
+      // If there is no range, we add the html at the end of the editor.
+      // This may be usefull when inserting images.
+      if (!sel.rangeCount) {
+        this.setCaretAtEditorEnd();
+      }
+
       if (sel.getRangeAt && sel.rangeCount) {
         // If any text is selected, remove it.
         range = sel.getRangeAt(0);
