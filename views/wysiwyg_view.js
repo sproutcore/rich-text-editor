@@ -59,15 +59,6 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
   isEditable: YES,
 
   /**
-    EXPERIMENTAL (see documentation on WYSIWYGEditorView)
-
-    @type Boolean
-    @default NO
-    @see SC.WYSIWYGEditorView#forceLineBreaks
-  */
-  forceLineBreaks: NO,
-
-  /**
     @type Boolean
     @default NO
     @see SC.WYSIWYGEditorView#pasteAsPlainText
@@ -168,8 +159,6 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
       documentPadding: SC.outlet('wysiwygView.documentPadding'),
 
       pasteAsPlainText: SC.outlet('wysiwygView.pasteAsPlainText'),
-
-      forceLineBreaks: SC.outlet('wysiwygView.forceLineBreaks'),
 
       minHeightBinding: SC.Binding.transform(function (frame) {
         return frame ? frame.height : 0;
