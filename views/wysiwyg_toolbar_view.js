@@ -21,6 +21,9 @@ sc_require('delegates/wysiwyg_toolbar_view_delegate');
 */
 
 SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.FlowedLayout, {
+
+  // Prevent the icons of the toolbar from being paste on the left
+  layout: { left: 0, right: 0, height: 26, zIndex: 10 },
   /**
     The commands to display in the toolbar. You may update this list at any time.
 
@@ -59,16 +62,18 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
   classNames: ['sc-wysiwyg-toolbar'],
 
   /** @private */
-  init: function() {
-    sc_super();
-    this.invokeNext(this.commandsDidChange);
-    return this;
-  },
-
-  /** @private */
   commandsDidChange: function () {
-    this.removeAllChildren(); // TODO: Fix this blunt instrument.
+    // This mayRender thing prevent a first execution because of _iviwDidChange
+    // while isVisibleInWindow is not coherent 
+    this._mayRender = true;
+    if (!this.get('isVisibleInWindow')) return;
+
     var commands = this.get('commands') || SC.EMPTY_ARRAY;
+    if (this._lastCommands === commands) return;
+    this._lastCommands = commands;
+
+    this.removeAllChildren(); // TODO: Fix this blunt instrument.
+
     for (var i = 0, len = commands.length; i < len; i++) {
       var view = this.invokeDelegateMethod(this.get('viewDelegate'), 'toolbarViewCreateControlForCommandNamed', this, commands[i]);
       if (view) {
@@ -76,6 +81,10 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
       }
     }
   }.observes('commands'),
+
+  _iviwDidChange: function () {
+    if (this.get('isVisibleInWindow') && this._mayRender) this.commandsDidChange();
+  }.observes('isVisibleInWindow'),
 
   /** @private */
   viewDelegate: function () {
