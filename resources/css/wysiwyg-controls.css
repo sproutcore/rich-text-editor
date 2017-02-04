@@ -17,7 +17,7 @@ $theme.sc-view.sc-wysiwyg-view {
 	@include border-radius(5px);
 	background-color: #fefefe;
 	border: 1px solid #aaa;
-	
+
 	&.focus {
 		@include box-shadow(0px 0px 5px rgba(#0059e0, 1));
 		border-color: #0059e0;
@@ -61,20 +61,27 @@ $theme.sc-view.menu {
 			span { color: white; }
 			border-top: 1px solid #5394c7;
 			border-bottom: 1px solid #2d57a3;
-			
+
 			// replace this if you want non css3 compatibility
 			background-color: #5fa8e6;
-			@include background(linear-gradient(#5fa8e6, #3b74d5));	
+			@include background(linear-gradient(#5fa8e6, #3b74d5));
 			text-shadow: 0px -1px 1px rgba(0, 0, 0, .6);
 		}
 	}
 }
 
 $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wysiwyg-menu-item {
+
+  .smoothed {
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+    font-smooth: always;
+	}
+
 	h1, h2, h3, h4, h5, h6, a, span {
 		line-height: inherit !important;
 	}
-	
+
 	h1 {
 		@extend .smoothed;
 		font-weight: bold;
@@ -113,7 +120,7 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 }
 
 .sc-wysiwyg-drag-view {
-	cursor: copy;	
+	cursor: copy;
 }
 
 $theme.sc-view.sc-wysiwyg-video-preview {
@@ -123,7 +130,7 @@ $theme.sc-view.sc-wysiwyg-video-preview {
 	background: #fefefe;
 	font-weight: bold;
 	font-size: 16px;
-	
+
 	p {
 		margin-top: 30px;
 	}
