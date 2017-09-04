@@ -451,37 +451,16 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @returns {Boolean}
    */
   queryCommandState: function (commandName) {
-    if (SC.browser.isMozilla) {
-      var sel = this.getSelection();
-      if (!sel || !sel.anchorNode) return;
-
-      var aNode = sel.anchorNode;
-
-      switch (commandName.toLowerCase()) {
-
-        case 'bold':
-          return this._searchForParentNamed(aNode, 'B');
-
-        case 'italic':
-          return this._searchForParentNamed(aNode, 'I');
-
-        default:
-          return '';
+    var ret = false;
+    try {
+      if (document.queryCommandSupported(commandName) && document.queryCommandEnabled(commandName)) {
+          ret = document.queryCommandState(commandName);
       }
-
     }
-    else {
-      var ret = false;
-      try {
-        if (document.queryCommandSupported(commandName) && document.queryCommandEnabled(commandName)) {
-            ret = document.queryCommandState(commandName);
-        }
-      }
-      catch (e) {
-        SC.error('Querying for command state failed: ' + commandName);
-      }
-      return ret;
+    catch (e) {
+      SC.error('Querying for command state failed: ' + commandName);
     }
+    return ret;
   },
 
   _searchForParentNamed: function (node, name) {
@@ -498,46 +477,20 @@ SC.WYSIWYGEditorView = SC.View.extend({
    Determines whether or not a commandHasBeen executed at the current
    selection.
 
-   TODO: refactor this mess
-
    @param commandName
    @returns {Boolean}
    */
   queryCommandValue: function (commandName) {
-    if (SC.browser.isMozilla) {
-      var sel = this.getSelection();
-      if (!sel || !sel.anchorNode) return;
-
-      var node = sel.anchorNode;
-      switch (commandName.toLowerCase()) {
-
-        case 'formatblock':
-          while (node && node.nodeName !== "DIV") {
-            if (node.nodeName.match(/(P|H[1-6])/)) {
-              return node.nodeName.toLowerCase();
-            }
-            node = node.parentNode;
-          }
-          return '';
-          break;
-
-        default:
-          return '';
-          break;
+    var ret = false;
+    try {
+      if (document.queryCommandSupported(commandName) && document.queryCommandEnabled(commandName)) {
+          ret = document.queryCommandValue(commandName);
       }
     }
-    else {
-      var ret = false;
-      try {
-        if (document.queryCommandSupported(commandName) && document.queryCommandEnabled(commandName)) {
-            ret = document.queryCommandValue(commandName);
-        }
-      }
-      catch (e) {
-        SC.error('Querying for command value failed: ' + commandName);
-      }
-      return ret;
+    catch (e) {
+      SC.error('Querying for command value failed: ' + commandName);
     }
+    return ret;
   },
 
   /**
