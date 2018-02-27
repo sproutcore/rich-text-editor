@@ -4,5 +4,7 @@
 
 BT.addFramework(BT.Framework.extend({
   ref: "rich-text-editor",
-  path: dirname()
+  path: dirname(),
+  dependencies: ["sproutcore:desktop"],
+  testDependencies: ["sproutcore:debug", "sproutcore:testing"]
 }));
