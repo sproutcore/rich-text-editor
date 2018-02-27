@@ -10,7 +10,7 @@ $theme.sc-view.button.sc-button-view.sc-wysiwyg-button {
 		margin: 0 0 0 0;
 		padding: 0 0 0 0;
 		line-height: 22px;
-		
+
 		.icon {
 			top: 0;
 			right: 0;
@@ -28,97 +28,97 @@ $theme.sc-wysiwyg-toolbar, $theme.sc-wysiwyg-segmented {
 	.bold {
 		width: 14px;
 		height: 19px;
-		@include slice("../images/icons2/bold.png");
+		background-image: sc_static("../images/icons2/bold.png");
 	}
-	
+
 	.italic {
 		width: 12px;
 		height: 19px;
-		@include slice("../images/icons2/italic.png");
+		background-image: sc_static("../images/icons2/italic.png");
 	}
-	
+
 	.underline {
 		width: 13px;
 		height: 15px;
-		@include slice("../images/icons/text_underline.png");
+		background-image: sc_static("../images/icons/text_underline.png");
 	}
-	
+
 	.insert-ordered-list {
 		width: 17px;
 		height: 17px;
-		@include slice("../images/icons2/ordered-list.png");
+		background-image: sc_static("../images/icons2/ordered-list.png");
 
 	}
 
 	.insert-unordered-list {
 		width: 17px;
 		height: 15px;
-		@include slice("../images/icons2/unordered-list.png");		
+		background-image: sc_static("../images/icons2/unordered-list.png");
 	}
 
 	.justify-left {
 		width: 15px;
 		height: 14px;
-		@include slice("../images/icons/align_left.png");
+		background-image: sc_static("../images/icons/align_left.png");
 	}
 
 	.justify-full {
 		width: 15px;
 		height: 14px;
-		@include slice("../images/icons/justify.png");
+		background-image: sc_static("../images/icons/justify.png");
 	}
 
 	.justify-center {
 		width: 15px;
 		height: 14px;
-		@include slice("../images/icons/align_center.png");
+		background-image: sc_static("../images/icons/align_center.png");
 	}
 
 	.justify-right{
 		width: 15px;
 		height: 14px;
-		@include slice("../images/icons/align_right.png");
+		background-image: sc_static("../images/icons/align_right.png");
 	}
-	
+
 	.indent {
 		width: 25px;
 		height: 25px;
-		@include slice("../images/icons2/left_indent.png");
+		background-image: sc_static("../images/icons2/left_indent.png");
 	}
-	
+
 	.outdent {
 		width: 25px;
 		height: 25px;
-		@include slice("../images/icons2/right_indent.png");
+		background-image: sc_static("../images/icons2/right_indent.png");
 	}
-	
+
 	.insert-image {
 		width: 17px;
 		height: 15px;
-		@include slice("../images/icons2/picture.png");
+		background-image: sc_static("../images/icons2/picture.png");
 	}
-	
+
 	.embed {
 		width: 19px;
 		height: 9px;
-		@include slice("../images/icons/embed.png");
+		background-image: sc_static("../images/icons/embed.png");
 	}
-	
+
 	.link {
 		width: 17px;
 		height: 19px;
-		@include slice("../images/icons2/link.png");
+		background-image: sc_static("../images/icons2/link.png");
 	}
-	
+
 	.embed-video {
 		width: 25px;
 		height: 25px;
-		@include slice("../images/icons2/film.png");
+		background-image: sc_static("../images/icons2/film.png");
 	}
-	
+
 	.fullscreen {
 		width: 25px;
 		height: 25px;
-		@include slice("../images/icons2/fullscreen.png");
+		background-image: sc_static("../images/icons2/fullscreen.png");
 	}
 }
