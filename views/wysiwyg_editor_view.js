@@ -40,6 +40,17 @@ SC.WYSIWYGEditorView = SC.View.extend({
   isEnabled: YES,
 
   /**
+    The composition of a passage of text is in progress
+
+    This is true when compositionstart has been fired but compositionend
+    has not yet been fired.
+
+      @type Boolean
+      @default NO
+  */
+    compositionInProgress: NO,
+
+  /**
    A padding, in pixels, that is added to the editor element.
 
    @type Number
@@ -235,6 +246,27 @@ SC.WYSIWYGEditorView = SC.View.extend({
         SC.RunLoop.begin();
         this.notifyDomValueChange();
         SC.RunLoop.end();
+    });
+
+    SC.Event.add(this.$inner, 'compositionstart', this, function() {
+        this.set('compositionInProgress', YES);
+    });
+
+    SC.Event.add(this.$inner, 'compositionend', this, function() {
+        this.set('compositionInProgress', NO);
+        var inner = this.$inner,
+            contents = inner.contents(),
+            first = contents[0],
+            last = contents[contents.length - 1],
+            forceLineBreaks = this.get('forceLineBreaks');
+        // This is usually called in keyUp but its possible that compositionEnd is called without keyUp.
+        // If the first content is a text node, or a line break (and we're not forcing <br> mode), let's wrap it up.
+        if (!forceLineBreaks && first && (first.nodeType === 3 /* TEXT NODE */ || first.nodeName === "BR")) {
+          document.execCommand('formatBlock', false, 'p');
+        }
+        else if (!forceLineBreaks && last && (last.nodeType === 3 /* TEXT NODE */ || last.nodeName === "BR")) {
+          document.execCommand('formatBlock', false, 'p');
+        }
     });
   },
 
@@ -879,12 +911,13 @@ SC.WYSIWYGEditorView = SC.View.extend({
         contents = inner.contents(),
         first = contents[0],
         last = contents[contents.length - 1],
-        forceLineBreaks = this.get('forceLineBreaks');
+        forceLineBreaks = this.get('forceLineBreaks'),
+        compositionInProgress = this.get('compositionInProgress');
     // If the first content is a text node, or a line break (and we're not forcing <br> mode), let's wrap it up.
-    if (!forceLineBreaks && first && (first.nodeType === 3 /* TEXT NODE */ || first.nodeName === "BR")) {
+    if (!compositionInProgress && !forceLineBreaks && first && (first.nodeType === 3 /* TEXT NODE */ || first.nodeName === "BR")) {
       document.execCommand('formatBlock', false, 'p');
     }
-    else if (!forceLineBreaks && last && (last.nodeType === 3 /* TEXT NODE */ || last.nodeName === "BR")) {
+    else if (!compositionInProgress && !forceLineBreaks && last && (last.nodeType === 3 /* TEXT NODE */ || last.nodeName === "BR")) {
       document.execCommand('formatBlock', false, 'p');
     }
     // In Webkit, we need to make sure that the very last <br> element, which is removed when we type above it,
