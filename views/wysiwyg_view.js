@@ -128,19 +128,6 @@ SC.WYSIWYGView = SC.View.extend(SC.Control, {
     }),
 
     contentView: SC.WYSIWYGEditorView.extend({
-      // Adds class names from the wrapper view. (TODO: See if we can't do this with a simple classNames binding.)
-      init: function() {
-        sc_super();
-
-        var wysiwygView = this.get('wysiwygView'),
-            editorClassNames = wysiwygView.get('editorClassNames');
-
-        if (editorClassNames) {
-          editorClassNames = SC.makeArray(editorClassNames);
-          this.classNames.pushObjects(editorClassNames);
-        }
-      },
-
       wysiwygView: SC.outlet('parentView.parentView.parentView'),
 
       update: function() {
