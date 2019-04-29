@@ -56,7 +56,7 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
   /**
     @see SC.FlowedLayout
   */
-  defaultFlowSpacing: { top: 4, left: 4 },
+  defaultFlowSpacing: { top: 2, left: 2, bottom: 2 },
 
   /** @private */
   classNames: ['sc-wysiwyg-toolbar'],
@@ -64,7 +64,7 @@ SC.WYSIWYGToolbarView = SC.ToolbarView.extend(SC.WYSIWYGToolbarViewDelegate, SC.
   /** @private */
   commandsDidChange: function () {
     // This mayRender thing prevent a first execution because of _iviwDidChange
-    // while isVisibleInWindow is not coherent 
+    // while isVisibleInWindow is not coherent
     this._mayRender = true;
     if (!this.get('isVisibleInWindow')) return;
 
