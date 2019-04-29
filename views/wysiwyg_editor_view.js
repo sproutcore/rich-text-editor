@@ -315,6 +315,12 @@ SC.WYSIWYGEditorView = SC.View.extend({
     html = html.replaceAll('&gt;', '>').replaceAll('&lt;', '<');
 
     if (value !== html) {
+      if (!value && html.length === 1) {
+        html = '<p>'+html+'</p>';
+        this.$inner.html(html);
+        this.setCaretAtEditorEnd();
+      }
+
       this._changeByEditor = true;
       this.set('value', html);
       this.registerUndo(value);
