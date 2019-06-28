@@ -510,63 +510,57 @@ SC.WYSIWYGEditorView = SC.View.extend({
   insertHtmlAtCaret: function (html, notify) {
     var didInsertNode = false;
 
-    if (document.getSelection) {
-      var sel = this.getSelection(),
-        range;
+    var sel = this.getSelection(),
+      range;
 
-      // If there is no range, we add the html at the end of the editor.
-      // This may be usefull when inserting images.
-      if (!sel.rangeCount) {
-        this.setCaretAtEditorEnd();
-      }
-
-      if (sel.getRangeAt && sel.rangeCount) {
-        // If any text is selected, remove it.
-        range = sel.getRangeAt(0);
-
-        // If the range is outside the editor then set it back
-        if (!this.rangeIsInsideEditor(range)) {
-          range = this.selectNodeContents();
-        }
-
-        range.deleteContents();
-
-        //https://github.com/ilyabirman/Likely/issues/69
-        // If the range is outside the editor then set it back
-        if (!this.rangeIsInsideEditor(range)) {
-          range = this.selectNodeContents();
-        }
-
-        // The dummy div element is used to turn the HTML into DOM, which is then removed and appended to
-        // the element fragment (frag).
-        var el = document.createElement("div"),
-          frag = document.createDocumentFragment(),
-          node = null,
-          lastNode = null;
-
-        el.innerHTML = html;
-
-        while (node = el.firstChild) {
-          lastNode = frag.appendChild(node);
-        }
-
-        // The fragment, now full of the DOM we generated from html goes into the document at range.
-        range.insertNode(frag);
-        didInsertNode = true;
-
-        // If we actually inserted anything, move the cursor to the end.
-        if (lastNode) {
-          range = range.cloneRange();
-          range.setStartAfter(lastNode);
-          range.collapse(true);
-          sel.removeAllRanges();
-          sel.addRange(range);
-        }
-      }
+    // If there is no range, we add the html at the end of the editor.
+    // This may be usefull when inserting images.
+    if (!sel.rangeCount) {
+      this.setCaretAtEditorEnd();
     }
-    else if (document.selection && document.selection.type != "Control") {
-      document.selection.createRange().pasteHTML(html);
+
+    if (sel.getRangeAt && sel.rangeCount) {
+      // If any text is selected, remove it.
+      range = sel.getRangeAt(0);
+
+      // If the range is outside the editor then set it back
+      if (!this.rangeIsInsideEditor(range)) {
+        range = this.selectNodeContents();
+      }
+
+      range.deleteContents();
+
+      //https://github.com/ilyabirman/Likely/issues/69
+      // If the range is outside the editor then set it back
+      if (!this.rangeIsInsideEditor(range)) {
+        range = this.selectNodeContents();
+      }
+
+      // The dummy div element is used to turn the HTML into DOM, which is then removed and appended to
+      // the element fragment (frag).
+      var el = document.createElement("div"),
+        frag = document.createDocumentFragment(),
+        node = null,
+        lastNode = null;
+
+      el.innerHTML = html;
+
+      while (node = el.firstChild) {
+        lastNode = frag.appendChild(node);
+      }
+
+      // The fragment, now full of the DOM we generated from html goes into the document at range.
+      range.insertNode(frag);
       didInsertNode = true;
+
+      // If we actually inserted anything, move the cursor to the end.
+      if (lastNode) {
+        range = range.cloneRange();
+        range.setStartAfter(lastNode);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
     }
 
     if (notify !== false) this.notifyDomValueChange();
@@ -598,12 +592,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return range
    */
   createRange: function () {
-    if (document.getSelection) {
-      return document.createRange();
-    }
-    else if (document.selection) { //IE 8 and lower
-      return document.body.createTextRange();
-    }
+    return document.createRange();
   },
 
   /**
@@ -614,14 +603,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
    */
   setRange: function (range) {
     if (range) {
-      if (document.getSelection) {
-        var sel = this.getSelection();
-        if (sel.rangeCount > 0) sel.removeAllRanges();
-        sel.addRange(range);
-      }
-      else if (document.selection && range.select) {
-        range.select();
-      }
+      var sel = this.getSelection();
+      if (sel.rangeCount > 0) sel.removeAllRanges();
+      sel.addRange(range);
     }
   },
 
@@ -631,7 +615,7 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return selection
    */
   getSelection: function () {
-    return document.selection || document.getSelection();
+    return window.getSelection();
   },
 
   /**
@@ -640,14 +624,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
    @return range
    */
   getFirstRange: function () {
-    if (document.getSelection) {
-      var sel = document.getSelection();
+    var sel = this.getSelection();
 
-      return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
-    }
-    else if (document.selection && document.selection.createRange) {
-      return document.selection.createRange();
-    }
+    return sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
   },
 
   /**
@@ -678,12 +657,8 @@ SC.WYSIWYGEditorView = SC.View.extend({
     layer = layer || this.$inner[0];
     var range = this.createRange();
 
-    if (document.getSelection) {
-      range.selectNodeContents(layer);
-    }
-    else if (document.selection) { //IE 8 and lower
-      range.moveToElementText(layer);
-    }
+    range.selectNodeContents(layer);
+
     return range;
   },
 
@@ -831,10 +806,9 @@ SC.WYSIWYGEditorView = SC.View.extend({
 
   /** @private*/
   willLoseFirstResponder: function () {
-
     // There is an apparent bug in WebKit that prevents contenteditable elements from properly giving up
     // focus when told to blur. As a work around, we clear the selection, which frees up the element to blur.
-    var sel = document.getSelection();
+    var sel = this.getSelection();
     sel.removeAllRanges();
 
     this.$inner.blur();
