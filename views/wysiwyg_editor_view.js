@@ -315,10 +315,15 @@ SC.WYSIWYGEditorView = SC.View.extend({
     html = html.replaceAll('&gt;', '>').replaceAll('&lt;', '<');
 
     if (value !== html) {
-      if (!value && html.length === 1) {
+      if ((!value && html.length === 1) || (value === '<br>' && html.length === 5)) {
         html = '<p>'+html+'</p>';
         this.$inner.html(html);
-        this.setCaretAtEditorEnd();
+
+        // Because `this.setCaretAtEditorEnd();` does not works here with firefox
+        var range = this.selectNodeContents();
+        range.setStart(this.$inner[0].childNodes[0], 1);
+        range.collapse(true);
+        this.setRange(range);
       }
 
       this._changeByEditor = true;
