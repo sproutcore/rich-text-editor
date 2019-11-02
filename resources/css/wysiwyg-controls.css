@@ -3,15 +3,15 @@
  *	SC.WYSIWYGView
  */
 $theme.sc-view.sc-wysiwyg-view {
-	@include transition(box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out);
-	@include box-shadow(0px 0px 5px rgba(#00cdf5, 0));
-	@include border-radius(5px);
+  transition: all 200ms linear;
+  box-shadow: inset 0px 1px 3px rgba(0,0,0,.1);
+  border-radius: 2px;
 	background-color: #fefefe;
-	border: 1px solid #aaa;
+  border: 1px solid #CCC;
 
 	&.focus {
-		@include box-shadow(0px 0px 5px rgba(#0059e0, 1));
-		border-color: #0059e0;
+    box-shadow: 0 0 5px rgba(82, 168, 236, 0.6), inset 0px 1px 3px rgba(0,0,0,0.1);
+    border-color: rgba(82, 168, 236, 0.8);
 	}
 }
 
@@ -19,8 +19,9 @@ $theme.sc-view.sc-wysiwyg-view {
  *	SC.WYSIWYGEditorView
  */
 $theme.sc-wysiwyg-editor {
-	@include border-bottom-radius(5px);
-	@include box-shadow(0 1px 5px rgba(black, 0.2) inset);
+	border-top-right-radius: 2px;
+	border-top-left-radius: 2px;
+	box-shadow: inset 0 1px 5px rgba(black, 0.2);
 	border: none;
 	background: none;
 	overflow: hidden;
@@ -30,9 +31,10 @@ $theme.sc-wysiwyg-editor {
  *	SC.WYSIWYGToolbarView
  */
 $theme.toolbar.sc-toolbar-view.sc-wysiwyg-toolbar {
-	@include border-top-radius(5px);
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	background-color: #DDD;
-	@include background-image(linear-gradient(top, #EEEEEE, #C0C0C0));
+	background-image: linear-gradient(top, #EEEEEE, #C0C0C0);
 	background-position: top left;
 	background-repeat: repeat;
 
@@ -55,7 +57,7 @@ $theme.sc-view.menu {
 
 			// replace this if you want non css3 compatibility
 			background-color: #5fa8e6;
-			@include background(linear-gradient(#5fa8e6, #3b74d5));
+			background: linear-gradient(#5fa8e6, #3b74d5);
 			text-shadow: 0px -1px 1px rgba(0, 0, 0, .6);
 		}
 	}
@@ -115,7 +117,7 @@ $theme.menu $theme.sc-menu-item.sc-wysiwyg-menu-item, $theme.sc-menu-item.sc-wys
 }
 
 $theme.sc-view.sc-wysiwyg-video-preview {
-	@include border-radius(5px);
+	border-radius: 5px;
 	border: 5px dashed #ccc;
 	text-align: center;
 	background: #fefefe;
